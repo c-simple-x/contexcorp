@@ -1,128 +1,244 @@
-import { Globe2, MapPin, BadgeCheck, Sparkles, CheckCircle2, Rocket, Building2, FileText, Phone, Mail, Link as LinkIcon } from "lucide-react";
-import ContactForm from "./components/ContactForm";
+"use client";
 
-function Section({ id, children, className = "" }: { id?: string; children: React.ReactNode; className?: string }) {
-  return <section id={id} className={`container ${className}`}>{children}</section>;
+import { motion } from "framer-motion";
+import {
+  Move3D,
+  MapPin,
+  Radar,
+  ShieldCheck,
+  Sparkles,
+  Rocket,
+  Building2,
+  FileText,
+  Phone,
+  Mail,
+  Link as LinkIcon,
+  CheckCircle2,
+  ArrowRight,
+} from "lucide-react";
+import ContactForm from "@/app/components/ContactForm";
+
+function Section({
+  id,
+  className = "",
+  children,
+}: {
+  id?: string;
+  className?: string;
+  children: React.ReactNode;
+}) {
+  return (
+    <section id={id} className={`container ${className}`}>{children}</section>
+  );
 }
 
 export default function Page() {
   return (
-    <div>
-      {/* Header */}
-      <header className="sticky top-0 z-50 border-b backdrop-blur bg-white/70">
+    <div className="relative">
+      {/* ======= NAVBAR ======= */}
+      <header className="sticky top-0 z-50 border-b border-black/5 bg-white/70 backdrop-blur-xl">
         <div className="container h-16 flex items-center justify-between">
-          <a href="#hero" className="flex items-center gap-2 font-bold">
-            <div className="h-7 w-7 rounded-xl bg-blue-500/10 grid place-items-center">
-              <Globe2 className="h-4 w-4 text-blue-600" />
+          <a href="#hero" className="group flex items-center gap-3">
+            <div className="h-8 w-8 rounded-xl bg-gradient-to-br from-blue-600/20 to-cyan-500/20 grid place-items-center border">
+              <Radar className="h-4 w-4 text-blue-600" />
             </div>
-            <span>CONTEX <span className="hidden sm:inline">Corp.</span></span>
+            <span className="font-extrabold tracking-tight">
+              CONTEX <span className="hidden sm:inline font-semibold opacity-70">Corp.</span>
+            </span>
           </a>
-          <nav className="hidden md:flex items-center gap-6 text-sm">
-            <a href="#services" className="hover:text-blue-600">서비스</a>
-            <a href="#ar" className="hover:text-blue-600">AR 광고</a>
-            <a href="#pricing" className="hover:text-blue-600">요금</a>
-            <a href="#process" className="hover:text-blue-600">진행절차</a>
-            <a href="#contact" className="hover:text-blue-600">문의</a>
+          <nav className="hidden md:flex items-center gap-7 text-sm">
+            <a className="navlink" href="#solutions">솔루션</a>
+            <a className="navlink" href="#showcase">AR 프리뷰</a>
+            <a className="navlink" href="#pricing">요금</a>
+            <a className="navlink" href="#process">프로세스</a>
+            <a className="navlink" href="#contact">문의</a>
           </nav>
-          <a href="#contact" className="btn">상담 요청</a>
+          <a href="#contact" className="btn hidden sm:inline-flex">
+            상담 요청 <ArrowRight className="ml-2 h-4 w-4" />
+          </a>
         </div>
       </header>
 
-      {/* Hero */}
-      <div id="hero" className="pt-16 pb-10">
-        <Section>
-          <div className="grid lg:grid-cols-2 gap-10 items-center">
+      {/* ======= HERO ======= */}
+      <div id="hero" className="relative overflow-hidden">
+        {/* 배경: 그리드 + 오로라 */}
+        <div className="bg-grid pointer-events-none" />
+        <div className="aurora pointer-events-none" />
+
+        <Section className="py-16 sm:py-20">
+          <div className="grid lg:grid-cols-2 gap-12 items-center">
             <div>
-              <span className="pill">주식회사 콘텍스 (개인사업자: 콘텍스)</span>
-              <h1 className="mt-4 text-4xl font-extrabold tracking-tight">
-                현실과 디지털을 잇는 <span className="text-blue-600">AR·콘텐츠·마케팅</span>
+              <div className="inline-flex items-center gap-2 pill">
+                현실과 디지털을 잇는 AR·콘텐츠·마케팅
+              </div>
+              <h1 className="mt-5 text-4xl md:text-5xl font-extrabold leading-tight tracking-tight">
+                GPS로 <span className="text-blue-600">정확히</span> 띄우는
+                <br /> 위치형 <span className="text-blue-600">AR 배너</span>
               </h1>
               <p className="mt-4 text-gray-600 leading-relaxed">
-                CONTEX는 AR 위치형 광고와 3D 이동형 배너를 기반으로, 콘텐츠 제작부터 광고·마케팅, 판매·유통까지 한 번에 해결하는 종합 솔루션을 제공합니다.
+                CONTEX는 AR 위치형 배너와 3D 이동형 배너를 중심으로,
+                기획·제작·집행·유통까지 한 번에 해결하는 <b>퍼포먼스형 에이전시</b>입니다.
+                지정 좌표 독점 운영, 투명한 요금, 신속한 변경 반영까지 제공합니다.
               </p>
-              <div className="mt-6 flex gap-3">
-                <a href="#ar" className="btn">AR 광고 살펴보기</a>
-                <a href="#pricing" className="btn">요금표 보기</a>
+              <div className="mt-6 flex flex-wrap gap-3">
+                <a href="#showcase" className="btn">
+                  AR 미리보기
+                </a>
+                <a href="#pricing" className="btn">
+                  요금 확인
+                </a>
               </div>
-              <div className="mt-6 grid grid-cols-2 sm:grid-cols-4 gap-4 text-sm">
-                {["AR 배너", "3D 배너", "콘텐츠 제작", "광고/유통 대행"].map((t) => (
-                  <div key={t} className="flex items-center gap-2"><BadgeCheck className="h-4 w-4 text-blue-600"/><span>{t}</span></div>
+
+              <div className="mt-8 grid grid-cols-2 sm:grid-cols-4 gap-4 text-sm">
+                {[
+                  { icon: MapPin, label: "좌표 독점권" },
+                  { icon: ShieldCheck, label: "정확도 ±2m" },
+                  { icon: Move3D, label: "3D 이동 배너" },
+                  { icon: Sparkles, label: "간편 변경" },
+                ].map((f) => (
+                  <div key={f.label} className="feature-chip">
+                    <f.icon className="h-4 w-4 text-blue-600" />
+                    {f.label}
+                  </div>
                 ))}
               </div>
             </div>
-            <div className="card p-6">
-              <div className="rounded-2xl h-64 bg-gradient-to-br from-blue-500/15 via-blue-500/5 to-transparent grid place-items-center">
-                <div className="text-center">
-                  <div className="inline-flex items-center gap-2 rounded-full bg-white/80 px-3 py-1 border text-xs mb-3">
-                    <MapPin className="h-3.5 w-3.5"/> GPS 정밀 노출
+
+            {/* 오른쪽: AR 오브젝트 미리보기 */}
+            <div>
+              <div className="card p-6 relative overflow-hidden">
+                <motion.div
+                  className="absolute -top-20 -right-20 h-56 w-56 rounded-full bg-blue-500/10 blur-3xl"
+                  animate={{ scale: [1, 1.2, 1] }}
+                  transition={{ duration: 6, repeat: Infinity }}
+                />
+                <div className="rounded-2xl h-72 bg-gradient-to-br from-blue-500/10 via-cyan-400/10 to-transparent grid place-items-center border">
+                  <div className="text-center">
+                    <div className="inline-flex items-center gap-2 rounded-full bg-white/80 px-3 py-1 border text-xs mb-3">
+                      <MapPin className="h-3.5 w-3.5" /> GPS 정밀 노출
+                    </div>
+                    <h3 className="text-xl font-semibold">AR 배너 미리보기</h3>
+                    <p className="text-sm text-gray-600 mt-1">
+                      지정 좌표에 정확히 고정되는 브랜드 배너
+                    </p>
                   </div>
-                  <h3 className="text-xl font-semibold">AR 배너 미리보기</h3>
-                  <p className="text-sm text-gray-600 mt-1">지정 좌표에 정확히 띄워지는 브랜드 배너</p>
                 </div>
-              </div>
-              <div className="mt-4 grid grid-cols-2 gap-3 text-sm">
-                <div className="flex items-center gap-2"><CheckCircle2 className="h-4 w-4 text-blue-600"/> 오차 ±2m 내 목표지점</div>
-                <div className="flex items-center gap-2"><CheckCircle2 className="h-4 w-4 text-blue-600"/> 5년간 위치 독점권</div>
-                <div className="flex items-center gap-2"><CheckCircle2 className="h-4 w-4 text-blue-600"/> 최초 1회 무료 세팅</div>
-                <div className="flex items-center gap-2"><CheckCircle2 className="h-4 w-4 text-blue-600"/> 디자인 교체 간편</div>
+                <div className="mt-4 grid grid-cols-2 gap-3 text-sm">
+                  <div className="bullet"><CheckCircle2 className="icon" /> 최초 1회 무료 세팅</div>
+                  <div className="bullet"><CheckCircle2 className="icon" /> 5년간 위치 독점</div>
+                  <div className="bullet"><CheckCircle2 className="icon" /> 증빙 가능한 서면 변경</div>
+                  <div className="bullet"><CheckCircle2 className="icon" /> 실시간 운영 모니터링</div>
+                </div>
               </div>
             </div>
           </div>
         </Section>
       </div>
 
-      {/* Services */}
-      <Section id="services" className="py-16">
+      {/* ======= SOLUTIONS ======= */}
+      <Section id="solutions" className="py-16">
         <div className="text-center max-w-2xl mx-auto">
-          <span className="pill">Services</span>
-          <h2 className="mt-3 text-3xl font-bold">콘텐츠 · 광고 · 유통까지 한 번에</h2>
-          <p className="mt-2 text-gray-600">AR 광고를 중심으로 기획-제작-집행-유통까지 전 과정을 통합 제공합니다.</p>
+          <span className="pill">Solutions</span>
+          <h2 className="mt-3 text-3xl md:text-4xl font-extrabold">AR 중심 풀스택 에이전시</h2>
+          <p className="mt-2 text-gray-600">
+            좌표 기반 AR 노출부터 3D 모션 배너, 콘텐츠 제작, 매체 집행, 유통 컨설팅까지 한 번에.
+          </p>
         </div>
+
         <div className="mt-10 grid md:grid-cols-2 lg:grid-cols-4 gap-5">
-          <div className="card">
-            <div className="p-5 border-b text-lg font-semibold flex items-center gap-2"><Sparkles className="h-4 w-4"/> AR 광고</div>
-            <div className="p-5 text-sm text-gray-600">GPS 기반 AR 위치형 배너 및 3D 이동형 배너. 지정 좌표 독점 운영.</div>
-          </div>
-          <div className="card">
-            <div className="p-5 border-b text-lg font-semibold flex items-center gap-2"><FileText className="h-4 w-4"/> 콘텐츠 제작</div>
-            <div className="p-5 text-sm text-gray-600">브랜드 영상/디자인/카피 제작. 제작 의뢰 시 합리적 견적 제공.</div>
-          </div>
-          <div className="card">
-            <div className="p-5 border-b text-lg font-semibold flex items-center gap-2"><Rocket className="h-4 w-4"/> 광고·마케팅 대행</div>
-            <div className="p-5 text-sm text-gray-600">온라인 매체 기획/집행/리포팅. 성과 중심의 퍼포먼스 운용.</div>
-          </div>
-          <div className="card">
-            <div className="p-5 border-b text-lg font-semibold flex items-center gap-2"><Building2 className="h-4 w-4"/> 판매·유통 지원</div>
-            <div className="p-5 text-sm text-gray-600">커머스 셋업, 상세페이지, 입점/물류 컨설팅까지 연계.</div>
+          {[
+            {
+              icon: Radar,
+              title: "AR 위치형 배너",
+              desc: "정확한 GPS 좌표에 AR 배너를 고정 노출. 오차 ±2m, 위치 독점.",
+            },
+            {
+              icon: Move3D,
+              title: "3D 이동형 배너",
+              desc: "공간 이동/회전/효과를 갖춘 3D 배너. 몰입형 브랜드 경험 제공.",
+            },
+            {
+              icon: FileText,
+              title: "콘텐츠 제작",
+              desc: "브랜드 영상/디자인/카피 제작. 제작 의뢰 시 합리적 고정가 제공.",
+            },
+            {
+              icon: Rocket,
+              title: "광고·마케팅 대행",
+              desc: "매체 전략/운영/리포팅까지 책임. 성과 중심 퍼포먼스 운용.",
+            },
+          ].map((c) => (
+            <div key={c.title} className="card hover-card">
+              <div className="p-5 border-b text-lg font-semibold flex items-center gap-2">
+                <c.icon className="h-4 w-4" /> {c.title}
+              </div>
+              <div className="p-5 text-sm text-gray-600">{c.desc}</div>
+            </div>
+          ))}
+        </div>
+      </Section>
+
+      {/* ======= SHOWCASE (AR PREVIEW) ======= */}
+      <Section id="showcase" className="py-6">
+        <div className="card p-6">
+          <div className="grid lg:grid-cols-3 gap-6 items-center">
+            <div className="lg:col-span-2">
+              <div className="rounded-2xl h-72 md:h-80 border bg-gradient-to-br from-cyan-400/10 via-blue-500/10 to-transparent relative overflow-hidden">
+                <motion.div
+                  className="absolute inset-0"
+                  animate={{ backgroundPosition: ["0% 0%", "100% 100%", "0% 0%"] }}
+                  transition={{ duration: 16, repeat: Infinity, ease: "linear" }}
+                  style={{
+                    backgroundImage:
+                      "radial-gradient(600px 200px at 20% 0%, rgba(59,130,246,0.2), transparent), radial-gradient(500px 180px at 80% 100%, rgba(34,211,238,0.18), transparent)",
+                    backgroundRepeat: "no-repeat",
+                  }}
+                />
+                <div className="absolute inset-0 grid place-items-center">
+                  <div className="text-center">
+                    <div className="pill mb-3 inline-flex">Live AR Preview (샘플)</div>
+                    <p className="text-sm text-gray-600">
+                      실제 캠/지도 연동 전시 데모 공간. 브랜드에 맞춘 프리뷰 제공.
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <ul className="space-y-3 text-sm text-gray-700">
+              <li className="bullet"><CheckCircle2 className="icon" /> 좌표 고정: 상권·랜드마크 지정</li>
+              <li className="bullet"><CheckCircle2 className="icon" /> 브랜딩 가이드 반영</li>
+              <li className="bullet"><CheckCircle2 className="icon" /> 3D 이동/회전/파티클 효과</li>
+              <li className="bullet"><CheckCircle2 className="icon" /> 가벼운 리소스로 빠른 로딩</li>
+            </ul>
           </div>
         </div>
       </Section>
 
-      {/* Pricing */}
+      {/* ======= PRICING ======= */}
       <Section id="pricing" className="py-16">
         <div className="text-center max-w-2xl mx-auto">
           <span className="pill">Pricing</span>
-          <h3 className="mt-3 text-3xl font-bold">투명한 요금 정책</h3>
+          <h3 className="mt-3 text-3xl font-extrabold">투명한 요금 정책</h3>
           <p className="mt-2 text-gray-600">장기 독점 운영 + 합리적 교체/제작 비용으로 예산을 예측하세요.</p>
         </div>
-        <div className="mt-10 grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {[
-            {t:'AR 위치형 배너 (5년)', p:'₩550,000', f:['최초 1회 무료 세팅','좌표 독점 운영권','GPS 오차 ±2m']},
-          ].map((c)=> (
-            <div className="card" key={c.t}>
-              <div className="p-5 border-b text-lg font-semibold">{c.t}</div>
-              <div className="p-5">
-                <div className="text-3xl font-extrabold">{c.p}</div>
-                <ul className="mt-4 space-y-2 text-sm text-gray-600">
-                  {c.f.map(x=> <li key={x} className="flex gap-2"><CheckCircle2 className="h-4 w-4 text-blue-600"/>{x}</li>)}
-                </ul>
-                <a href="#contact" className="btn mt-6 w-full">이 플랜 상담</a>
-              </div>
-            </div>
-          ))}
 
-          {/* 변경/제작/3D */}
-          <div className="card">
+        <div className="mt-10 grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+          {/* AR 위치형 배너 */}
+          <div className="card hover-card">
+            <div className="p-5 border-b text-lg font-semibold">AR 위치형 배너 (5년)</div>
+            <div className="p-5">
+              <div className="text-3xl font-extrabold">₩550,000</div>
+              <ul className="mt-4 space-y-2 text-sm text-gray-600">
+                {["최초 1회 무료 세팅", "좌표 독점 운영권", "GPS 오차 ±2m"].map((x) => (
+                  <li key={x} className="bullet"><CheckCircle2 className="icon" /> {x}</li>
+                ))}
+              </ul>
+              <a href="#contact" className="btn mt-6 w-full">이 플랜 상담</a>
+            </div>
+          </div>
+
+          {/* 디자인/문구 변경 */}
+          <div className="card hover-card">
             <div className="p-5 border-b text-lg font-semibold">디자인/문구 변경</div>
             <div className="p-5">
               <div className="text-3xl font-extrabold">₩22,000 <span className="text-base font-medium">/ 회</span></div>
@@ -130,7 +246,9 @@ export default function Page() {
               <a href="#contact" className="btn mt-6 w-full">변경 요청</a>
             </div>
           </div>
-          <div className="card">
+
+          {/* 디자인 제작 */}
+          <div className="card hover-card">
             <div className="p-5 border-b text-lg font-semibold">디자인 제작 의뢰</div>
             <div className="p-5">
               <div className="text-3xl font-extrabold">₩110,000 <span className="text-base font-medium">/ 회</span></div>
@@ -138,41 +256,45 @@ export default function Page() {
               <a href="#contact" className="btn mt-6 w-full">제작 의뢰</a>
             </div>
           </div>
-          <div className="card">
-            <div className="p-5 border-b text-lg font-semibold">3D 이동형 배너 제작</div>
-            <div className="p-5">
-              <div className="text-3xl font-extrabold">₩330,000 <span className="text-base font-medium">/ 회</span></div>
-              <p className="mt-2 text-sm text-gray-600">AR 공간 이동/회전/효과 구현</p>
-              <a href="#contact" className="btn mt-6 w-full">3D 제작 문의</a>
+
+          {/* 3D 배너 */}
+          <div className="grid gap-6">
+            <div className="card hover-card">
+              <div className="p-5 border-b text-lg font-semibold">3D 이동형 배너 제작</div>
+              <div className="p-5">
+                <div className="text-3xl font-extrabold">₩330,000 <span className="text-base font-medium">/ 회</span></div>
+                <p className="mt-2 text-sm text-gray-600">AR 공간 이동/회전/효과 구현</p>
+                <a href="#contact" className="btn mt-6 w-full">3D 제작 문의</a>
+              </div>
             </div>
-          </div>
-          <div className="card">
-            <div className="p-5 border-b text-lg font-semibold">3D 배너 교체</div>
-            <div className="p-5">
-              <div className="text-3xl font-extrabold">₩55,000 <span className="text-base font-medium">/ 회</span></div>
-              <p className="mt-2 text-sm text-gray-600">기존 3D 소재 교체</p>
-              <a href="#contact" className="btn mt-6 w-full">교체 요청</a>
+            <div className="card hover-card">
+              <div className="p-5 border-b text-lg font-semibold">3D 배너 교체</div>
+              <div className="p-5">
+                <div className="text-3xl font-extrabold">₩55,000 <span className="text-base font-medium">/ 회</span></div>
+                <p className="mt-2 text-sm text-gray-600">기존 3D 소재 교체</p>
+                <a href="#contact" className="btn mt-6 w-full">교체 요청</a>
+              </div>
             </div>
           </div>
         </div>
       </Section>
 
-      {/* Process */}
+      {/* ======= PROCESS ======= */}
       <Section id="process" className="py-16">
         <div className="text-center max-w-2xl mx-auto">
           <span className="pill">Process</span>
-          <h3 className="mt-3 text-3xl font-bold">진행 절차</h3>
-          <p className="mt-2 text-gray-600">견적·계약부터 운영까지 5단계로 신속하게 진행합니다.</p>
+          <h3 className="mt-3 text-3xl font-extrabold">5단계 진행 절차</h3>
+          <p className="mt-2 text-gray-600">견적·계약부터 운영까지 신속하고 투명하게.</p>
         </div>
         <div className="mt-10 grid md:grid-cols-5 gap-4">
           {[
-            {n:1,t:"상담/요구사항 정리",d:"목표, 위치 좌표, 예산 확인"},
-            {n:2,t:"견적/계약",d:"AR 좌표 독점권 포함"},
-            {n:3,t:"세팅/제작",d:"초기 세팅(무료) + 필요 시 디자인 제작"},
-            {n:4,t:"검수/반영",d:"증빙 가능한 서면 요청 기반 변경"},
-            {n:5,t:"운영/리포트",d:"노출 안정성 점검 및 변경 요청 반영"},
-          ].map((s)=> (
-            <div className="card" key={s.n}>
+            { n: 1, t: "상담/요구사항 정리", d: "목표, 위치 좌표, 예산 확인" },
+            { n: 2, t: "견적/계약", d: "AR 좌표 독점권 포함" },
+            { n: 3, t: "세팅/제작", d: "초기 세팅(무료) + 필요 시 디자인 제작" },
+            { n: 4, t: "검수/반영", d: "증빙 가능한 서면 요청 기반 변경" },
+            { n: 5, t: "운영/리포트", d: "노출 안정성 점검 및 변경 요청 반영" },
+          ].map((s) => (
+            <div key={s.n} className="card hover-card">
               <div className="p-5 border-b text-lg font-semibold">{s.n}. {s.t}</div>
               <div className="p-5 text-sm text-gray-600">{s.d}</div>
             </div>
@@ -180,17 +302,20 @@ export default function Page() {
         </div>
       </Section>
 
-      {/* Contact */}
+      {/* ======= CONTACT ======= */}
       <Section id="contact" className="py-16">
         <div className="grid lg:grid-cols-2 gap-8">
           <div>
             <span className="pill">Contact</span>
-            <h3 className="mt-3 text-3xl font-bold">상담 및 계약 문의</h3>
-            <p className="mt-2 text-gray-600">아래 양식을 작성해 주시면 빠르게 회신드립니다. 실제 운영 정보로 교체해 주세요.</p>
+            <h3 className="mt-3 text-3xl font-extrabold">상담 및 계약 문의</h3>
+            <p className="mt-2 text-gray-600">
+              아래 양식을 작성해 주세요. 접수 즉시 확인 후 회신 드립니다.
+            </p>
+
             <div className="mt-6 space-y-3 text-sm">
-              <div className="flex items-center gap-2"><Phone className="h-4 w-4"/> 010-0000-0000</div>
-              <div className="flex items-center gap-2"><Mail className="h-4 w-4"/> hello@contexcorp.com</div>
-              <div className="flex items-center gap-2"><LinkIcon className="h-4 w-4"/> contexcorp.com</div>
+              <div className="flex items-center gap-2"><Phone className="h-4 w-4" /> 010-0000-0000</div>
+              <div className="flex items-center gap-2"><Mail className="h-4 w-4" /> hello@contexcorp.com</div>
+              <div className="flex items-center gap-2"><LinkIcon className="h-4 w-4" /> contexcorp.com</div>
             </div>
           </div>
           <div className="card">
@@ -203,13 +328,13 @@ export default function Page() {
         </div>
       </Section>
 
-      {/* Footer */}
-      <footer className="border-t bg-white/60 mt-10">
+      {/* ======= FOOTER ======= */}
+      <footer className="border-t bg-white/70">
         <Section className="py-10">
           <div className="grid md:grid-cols-3 gap-6 items-start">
             <div>
               <div className="font-bold text-lg">CONTEX Corp.</div>
-              <p className="text-sm text-gray-600 mt-2">현실과 디지털을 잇는 AR·콘텐츠·마케팅 솔루션</p>
+              <p className="text-sm text-gray-600 mt-2">AR·콘텐츠·마케팅 종합 솔루션</p>
             </div>
             <div className="text-sm">
               <div className="font-semibold mb-2">사업자 정보</div>
