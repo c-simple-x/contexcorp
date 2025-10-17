@@ -1,48 +1,47 @@
-// app/api/contact/route.ts
 import { NextResponse } from "next/server";
 
 export async function POST(req: Request) {
   try {
-    const {
-      company = "",
-      name = "",
-      email = "",
-      phone = "",
-      message = "",
-      source = "web",
-    } = await req.json();
+    const body = await req.json();
+    const scriptUrl = process.env.NEXT_PUBLIC_CONTEX_APPSCRIPT_URL!;
+    const token = process.env.NEXT_PUBLIC_CONTEX_FORM_TOKEN!;
 
-    const url = process.env.NEXT_PUBLIC_CONTEX_APPSCRIPT_URL;
-    const token = process.env.NEXT_PUBLIC_CONTEX_FORM_TOKEN;
-
-    if (!url || !token) {
-      return NextResponse.json({ ok: false, error: "env_missing" }, { status: 500 });
+    if (!scriptUrl || !token) {
+      console.error("❌ Missing environment variables");
+      return NextResponse.json({ ok: false, error: "missing env" }, { status: 500 });
     }
 
-    const body = new URLSearchParams({
-      company, name, email, phone, message, source,
+    // 전송할 데이터 구성
+    const formData = new URLSearchParams({
+      company: body.company || "",
+      name: body.name || "",
+      email: body.email || "",
+      phone: body.phone || "",
+      message: body.message || "",
+      source: body.source || "web",
       token,
-      origin: "http://localhost:3000", // 로컬 테스트 중이므로
+      origin: process.env.VERCEL_URL
+        ? `https://${process.env.VERCEL_URL}`
+        : "https://www.contexcorp.com",
     });
 
-    const res = await fetch(url, { method: "POST", body });
-    const text = await res.text();
+    // Google Apps Script 호출
+    const res = await fetch(scriptUrl, {
+      method: "POST",
+      headers: { "Content-Type": "application/x-www-form-urlencoded" },
+      body: formData.toString(),
+    });
 
-    // GAS가 ok:false를 주거나 text/plain일 수 있음 → 안전 파싱
-    let data: any = {};
-    try { data = JSON.parse(text); } catch { data = {}; }
-
-    if (!res.ok || data.ok === false) {
-      return NextResponse.json({
-        ok: false,
-        error: data.error || "gas_error",
-        status: res.status,
-        gasRaw: text, // 디버그용: 무슨 응답이 왔는지 보이게
-      }, { status: 500 });
+    if (!res.ok) {
+      const text = await res.text();
+      console.error("❌ GAS request failed:", text);
+      return NextResponse.json({ ok: false, error: "GAS request failed" }, { status: 500 });
     }
 
-    return NextResponse.json({ ok: true });
-  } catch (e: any) {
-    return NextResponse.json({ ok: false, error: e?.message || "server_error" }, { status: 500 });
+    const text = await res.text();
+    return NextResponse.json({ ok: true, gasRaw: text });
+  } catch (e) {
+    console.error("❌ Route error:", e);
+    return NextResponse.json({ ok: false, error: "route exception" }, { status: 500 });
   }
 }
