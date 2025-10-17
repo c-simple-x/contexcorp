@@ -114,12 +114,19 @@ export default function Page() {
         <div className="card p-6">
           <div className="grid lg:grid-cols-3 gap-6 items-center">
             <div className="lg:col-span-2">
-              <div className="rounded-xl h-72 md:h-80 border bg-slate-50 grid place-items-center">
-                <div className="text-center">
-                  <div className="pill mb-3">Live AR Preview (샘플)</div>
-                  <p className="text-sm text-slate-600">실제 캠/지도 연동 전시 데모. 브랜드 맞춤 프리뷰 제공.</p>
-                </div>
+              <div className="rounded-xl h-72 md:h-80 border bg-black overflow-hidden">
+                <video
+                  className="w-full h-full object-cover"
+                  src="/ar-preview.mp4"
+                  poster="/ar-poster.jpg"
+                  controls
+                  autoPlay
+                  muted
+                  loop
+                  playsInline
+                />
               </div>
+
             </div>
             <ul className="space-y-3 text-sm text-slate-700">
               <li className="bullet"><CheckCircle2 className="icon" /> 좌표 고정: 상권·랜드마크 지정</li>
