@@ -223,9 +223,14 @@ export default function Page() {
             <h3 className="mt-3 text-3xl font-extrabold">상담 및 계약 문의</h3>
             <p className="mt-2 text-slate-600">아래 양식을 작성해 주세요. 접수 즉시 확인 후 회신 드립니다.</p>
             <div className="mt-6 space-y-3 text-sm">
-              <div className="flex items-center gap-2"><Phone className="h-4 w-4" /> 010-0000-0000</div>
-              <div className="flex items-center gap-2"><Mail className="h-4 w-4" /> hello@contexcorp.com</div>
-              <div className="flex items-center gap-2"><LinkIcon className="h-4 w-4" /> contexcorp.com</div>
+              <div className="flex items-center gap-2"><Phone className="h-4 w-4" /> 010-3653-1987</div>
+              <div className="flex items-center gap-2"><Mail className="h-4 w-4" /> contexcorp@gmail.com</div>
+              <div className="flex items-center gap-2">
+                <LinkIcon className="h-4 w-4" />
+                <a href="https://contexcorp.com" target="_blank" rel="noopener noreferrer" className="hover:underline">
+                  https://contexcorp.com
+                </a>
+              </div>
             </div>
           </div>
           <div className="card">
@@ -248,10 +253,13 @@ export default function Page() {
             </div>
             <div className="text-sm">
               <div className="font-semibold mb-2">사업자 정보</div>
-              <p>상호: 콘텍스 (개인사업자)</p>
-              <p>향후 법인 전환 표기: 주식회사 콘텍스 (CONTEX Corp.)</p>
-              <p>대표: 홍정민</p>
+              <p>상호 : 콘텍스</p>
+              <p>사업자등록번호 : 181-48-00499</p>
+              <p>통신판매업 신고번호 : 제2021-고양일산서-0031호</p>
+              <p>개인정보처리 담당자 : 홍정민</p>
+              <p>대표 : 홍정민</p>
             </div>
+
             <div className="text-sm">
               <div className="font-semibold mb-2">정책</div>
               <a href="#" className="block hover:underline">서비스 이용 계약서(요청 시 제공)</a>
