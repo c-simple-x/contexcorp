@@ -1,0 +1,14 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --radius: 1rem;
+}
+
+.container { @apply w-full max-w-6xl mx-auto px-4 sm:px-6 lg:px-8; }
+.card { @apply rounded-3xl border bg-white shadow-sm; }
+.btn { @apply inline-flex items-center justify-center rounded-full px-4 py-2 border font-medium; }
+.input { @apply w-full rounded-md border px-3 py-2; }
+.textarea { @apply w-full rounded-md border px-3 py-2; }
+.pill { @apply inline-flex items-center gap-2 rounded-full border px-3 py-1 text-xs font-medium backdrop-blur bg-white/60; }
