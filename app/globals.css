@@ -2,49 +2,28 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Layout scale */
 :root {
-  --radius: 1rem;
+  --radius: 16px;
 }
 
-/* 컨테이너/기본 유틸 */
 .container { @apply w-full max-w-6xl mx-auto px-4 sm:px-6 lg:px-8; }
-.card { @apply rounded-3xl border bg-white shadow-sm; }
-.btn { @apply inline-flex items-center justify-center rounded-full px-4 py-2 border font-medium hover:shadow-sm transition; }
-.input { @apply w-full rounded-md border px-3 py-2; }
-.textarea { @apply w-full rounded-md border px-3 py-2; }
-.pill { @apply inline-flex items-center gap-2 rounded-full border px-3 py-1 text-xs font-medium backdrop-blur bg-white/70; }
+
+/* Cards, buttons, inputs */
+.card { @apply rounded-2xl border border-slate-200 bg-white shadow-sm; }
+.btn { @apply inline-flex items-center justify-center rounded-full px-4 py-2 border border-slate-300 bg-white font-medium hover:bg-slate-50 transition; }
+.input { @apply w-full rounded-lg border border-slate-300 px-3 py-2 outline-none focus:ring-2 focus:ring-blue-500/30; }
+.textarea { @apply w-full rounded-lg border border-slate-300 px-3 py-2 outline-none focus:ring-2 focus:ring-blue-500/30; }
+.pill { @apply inline-flex items-center gap-2 rounded-full border border-slate-300 bg-white px-3 py-1 text-xs font-medium; }
 .navlink { @apply hover:text-blue-600 transition; }
-.bullet { @apply flex items-center gap-2; }
+.bullet { @apply flex items-center gap-2 text-slate-700; }
 .bullet .icon { @apply h-4 w-4 text-blue-600; }
-.feature-chip { @apply flex items-center gap-2 rounded-full border px-3 py-1 bg-white/60 backdrop-blur text-gray-800; }
+.feature-chip { @apply flex items-center gap-2 rounded-full border border-slate-300 bg-white px-3 py-1 text-sm; }
 .hover-card { @apply transition hover:shadow-md hover:-translate-y-0.5; }
 
-/* 그리드 배경 */
-.bg-grid::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  background-image:
-    linear-gradient(to right, rgba(0, 0, 0, 0.04) 1px, transparent 1px),
-    linear-gradient(to bottom, rgba(0, 0, 0, 0.04) 1px, transparent 1px);
-  background-size: 24px 24px;
-  mask-image: radial-gradient(closest-side, black 70%, transparent);
-}
-
-/* 오로라처럼 흘러가는 백그라운드 */
-.aurora {
-  position: absolute;
-  inset: -10% -10% auto -10%;
-  height: 420px;
+/* Hero background (매우 약하게) */
+.hero-bg {
   background:
-    radial-gradient(600px 200px at 20% 0%, rgba(59,130,246,0.12), transparent),
-    radial-gradient(500px 180px at 80% 100%, rgba(34,211,238,0.10), transparent);
-  filter: blur(4px);
-  animation: aurora-move 18s linear infinite;
-  pointer-events: none;
-}
-@keyframes aurora-move {
-  0% { transform: translate3d(0,0,0); }
-  50% { transform: translate3d(0,10px,0); }
-  100% { transform: translate3d(0,0,0); }
+    radial-gradient(600px 200px at 20% 0%, rgba(59,130,246,0.07), transparent),
+    radial-gradient(500px 160px at 80% 100%, rgba(34,211,238,0.06), transparent);
 }
