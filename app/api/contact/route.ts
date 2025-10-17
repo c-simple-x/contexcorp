@@ -1,17 +1,15 @@
 import { NextResponse } from "next/server";
 
-/** 한국 전화번호 보정: 숫자만 → 02/3자리 국번 규칙에 따라 하이픈 삽입 */
+/** 한국 전화번호 보정 (숫자만 → 하이픈 포함 문자열) */
 function normalizeKrPhone(raw: string) {
   const digits = String(raw || "").replace(/\D/g, "");
   if (!digits) return "";
-  // 02(서울)
   if (digits.startsWith("02")) {
     if (digits.length <= 2) return digits;
     if (digits.length <= 5) return `${digits.slice(0, 2)}-${digits.slice(2)}`;
     if (digits.length <= 9) return `${digits.slice(0, 2)}-${digits.slice(2, 5)}-${digits.slice(5)}`;
     return `${digits.slice(0, 2)}-${digits.slice(2, 6)}-${digits.slice(6, 10)}`;
   }
-  // 그 외(010/011/070 등 3자리 국번)
   if (digits.length <= 3) return digits;
   if (digits.length <= 7) return `${digits.slice(0, 3)}-${digits.slice(3)}`;
   if (digits.length <= 11) return `${digits.slice(0, 3)}-${digits.slice(3, 7)}-${digits.slice(7)}`;
@@ -30,7 +28,13 @@ export async function POST(req: Request) {
       return NextResponse.json({ ok: false, error: "env_missing" }, { status: 500 });
     }
 
-    // 2) Turnstile 검증
+    // 2) 이메일 영문 전용 검증
+    const email = String(body.email || "");
+    if (!/^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/.test(email)) {
+      return NextResponse.json({ ok: false, error: "invalid_email" }, { status: 400 });
+    }
+
+    // 3) Turnstile 검증
     const captcha = String(body.captcha || "");
     if (!captcha) return NextResponse.json({ ok: false, error: "captcha_missing" }, { status: 400 });
 
@@ -48,14 +52,14 @@ export async function POST(req: Request) {
       return NextResponse.json({ ok: false, error: "captcha_failed" }, { status: 400 });
     }
 
-    // 3) 전화번호 보정 (하이픈 넣어서 시트에 문자열로 저장되게)
+    // 4) 전화번호 보정
     const formattedPhone = normalizeKrPhone(body.phone);
 
-    // 4) GAS로 전달 (x-www-form-urlencoded)
+    // 5) GAS로 전달
     const formData = new URLSearchParams({
       company: body.company || "",
       name: body.name || "",
-      email: body.email || "",
+      email,
       phone: formattedPhone || "",
       message: body.message || "",
       source: body.source || "web",
