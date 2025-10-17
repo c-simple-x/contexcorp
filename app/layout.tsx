@@ -1,3 +1,4 @@
+import Script from "next/script"; // ← 추가
 import "./globals.css";
 import { Inter } from "next/font/google";
 
@@ -12,9 +13,12 @@ export const metadata = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="ko" className="scroll-smooth">
-      <body className={`${inter.className} text-slate-900 bg-white`}>
-        {children}
+      <body className="min-h-screen bg-gradient-to-b from-background via-white to-muted/20 text-foreground">
+        {/* Turnstile */}
+        <Script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer />
+       {children}
       </body>
+
     </html>
   );
 }

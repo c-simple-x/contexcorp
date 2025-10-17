@@ -14,7 +14,9 @@ export default function ContactForm() {
     const form = e.currentTarget;
     const fd = new FormData(form);
 
-    // 수집 값
+    // Turnstile 토큰 읽기 (자동 생성되는 hidden input)
+    const captcha = (document.querySelector('input[name="cf-turnstile-response"]') as HTMLInputElement)?.value || '';
+
     const payload = {
       company: String(fd.get('company') || ''),
       name: String(fd.get('name') || ''),
@@ -22,9 +24,10 @@ export default function ContactForm() {
       phone: String(fd.get('phone') || ''),
       message: String(fd.get('message') || ''),
       source: 'web',
+      captcha, // ← 추가
     };
 
-    // 간단 유효성(선택): 이메일 형식 체크
+    // 간단 유효성
     const emailRe = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRe.test(payload.email)) {
       setLoading(false);
@@ -35,19 +38,17 @@ export default function ContactForm() {
     // 허니팟(봇 방지)
     if (String(fd.get('homepage') || '').trim() !== '') {
       setLoading(false);
-      setOk(true); // 봇 제출은 무시하면서도 사용자에겐 성공처럼 보이게
+      setOk(true);
       form.reset();
       return;
     }
 
     try {
-      // 내부 API로 전송 (서버에서 GAS로 중계)
       const res = await fetch('/api/contact', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload),
       });
-
       const data = await res.json().catch(() => ({ ok: res.ok }));
       const success = !!(data && (data as any).ok);
       setOk(success);
@@ -65,27 +66,24 @@ export default function ContactForm() {
       <input name="name" placeholder="담당자명" required className="input" />
       <input name="email" type="email" placeholder="이메일" required className="input" />
       <input name="phone" placeholder="연락처" className="input" />
-      <textarea
-        name="message"
-        placeholder="요청 내용 (위치 좌표, 기간, 예산 등)"
-        rows={5}
-        className="textarea"
-      />
+      <textarea name="message" placeholder="요청 내용 (위치 좌표, 기간, 예산 등)" rows={5} className="textarea" />
 
-      {/* 허니팟(봇 방지) — 화면에는 보이지 않음 */}
+      {/* Turnstile 위젯 */}
+      <div
+        className="cf-turnstile mt-1"
+        data-sitekey={process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY}
+        data-theme="light"
+      ></div>
+
+      {/* 허니팟(봇 방지) */}
       <input type="text" name="homepage" className="hidden" tabIndex={-1} autoComplete="off" />
 
       <button disabled={loading} className="btn">
         {loading ? '전송 중…' : '문의 보내기'}
       </button>
 
-      {/* 운영용 간단 메시지 */}
-      {ok === true && (
-        <p className="text-sm text-green-600">접수되었습니다. 빠르게 연락드릴게요!</p>
-      )}
-      {ok === false && (
-        <p className="text-sm text-red-600">전송 실패. 이메일로 연락 부탁드립니다.</p>
-      )}
+      {ok === true && <p className="text-sm text-green-600">접수되었습니다. 빠르게 연락드릴게요!</p>}
+      {ok === false && <p className="text-sm text-red-600">전송 실패. 이메일로 연락 부탁드립니다.</p>}
     </form>
   );
 }

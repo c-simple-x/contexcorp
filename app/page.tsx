@@ -255,7 +255,7 @@ export default function Page() {
             <div className="text-sm">
               <div className="font-semibold mb-2">정책</div>
               <a href="#" className="block hover:underline">서비스 이용 계약서(요청 시 제공)</a>
-              <a href="#" className="block hover:underline">개인정보 처리방침(작성 예정)</a>
+              <a href="/privacy" className="block hover:underline">개인정보 처리방침</a>
             </div>
           </div>
           <div className="container text-xs text-slate-500">© {new Date().getFullYear()} CONTEX. All rights reserved.</div>
