@@ -63,15 +63,15 @@ export default function Page() {
               </div>
             </div>
 
+            {/* 미리보기 카드 - 이미지 삽입 */}
             <div className="card p-6">
-              <div className="rounded-xl h-64 grid place-items-center border bg-white">
-                <div className="text-center">
-                  <div className="inline-flex items-center gap-2 rounded-full bg-white px-3 py-1 border text-xs mb-3">
-                    <MapPin className="h-3.5 w-3.5" /> GPS 정밀 노출
-                  </div>
-                  <h3 className="text-xl font-semibold">AR 배너 미리보기</h3>
-                  <p className="text-sm text-slate-600 mt-1">지정 좌표에 정확히 고정되는 브랜드 배너</p>
-                </div>
+              <div className="rounded-xl h-64 grid place-items-center border bg-white overflow-hidden">
+                {/* 배너 이미지 */}
+                <img
+                  src="/banner-preview.png"
+                  alt="AR 배너 미리보기"
+                  className="w-full h-full object-cover"
+                />
               </div>
               <ul className="mt-4 grid grid-cols-2 gap-3 text-sm">
                 <li className="bullet"><CheckCircle2 className="icon" /> 최초 1회 무료 세팅</li>
@@ -79,6 +79,14 @@ export default function Page() {
                 <li className="bullet"><CheckCircle2 className="icon" /> 서면 변경 반영</li>
                 <li className="bullet"><CheckCircle2 className="icon" /> 운영 모니터링</li>
               </ul>
+              {/* 텍스트 설명은 유지 */}
+              <div className="mt-3 text-center">
+                <div className="inline-flex items-center gap-2 rounded-full bg-white px-3 py-1 border text-xs">
+                  <MapPin className="h-3.5 w-3.5" /> GPS 정밀 노출
+                </div>
+                <h3 className="text-lg font-semibold mt-2">AR 배너 미리보기</h3>
+                <p className="text-sm text-slate-600 mt-1">지정 좌표에 정확히 고정되는 브랜드 배너</p>
+              </div>
             </div>
           </div>
         </Section>
@@ -114,23 +122,18 @@ export default function Page() {
         <div className="card p-6">
           <div className="grid lg:grid-cols-3 gap-6 items-center">
             <div className="lg:col-span-2">
-            <div className="rounded-xl h-72 md:h-80 border bg-black overflow-hidden">
-              <video
-                className="w-full h-full object-cover"
-                controls
-                autoPlay
-                muted
-                loop
-                playsInline
-                preload="metadata"
-              >
-                <source src="/ar-preview.mp4" type="video/mp4" />
-                죄송합니다. 브라우저가 비디오 재생을 지원하지 않습니다.
-              </video>
-
-            </div>
-
-
+              <div className="rounded-xl h-72 md:h-80 border bg-black overflow-hidden">
+                <video
+                  className="w-full h-full object-cover"
+                  src="/ar-preview.mp4"
+                  controls
+                  autoPlay
+                  muted
+                  loop
+                  playsInline
+                  preload="metadata"
+                />
+              </div>
             </div>
             <ul className="space-y-3 text-sm text-slate-700">
               <li className="bullet"><CheckCircle2 className="icon" /> 좌표 고정: 상권·랜드마크 지정</li>
