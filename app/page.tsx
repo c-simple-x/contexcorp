@@ -127,6 +127,7 @@ export default function Page() {
                 <source src="/ar-preview.mp4" type="video/mp4" />
                 죄송합니다. 브라우저가 비디오 재생을 지원하지 않습니다.
               </video>
+
             </div>
 
 
