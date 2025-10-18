@@ -157,7 +157,7 @@ export default function Page() {
           <div className="card hover-card">
             <div className="p-5 border-b text-lg font-semibold">AR 위치형 배너 (5년)</div>
             <div className="p-5">
-              <div className="text-3xl font-extrabold">₩550,000</div>
+              <div className="text-3xl font-extrabold">₩500,000</div>
               <ul className="mt-4 space-y-2 text-sm text-slate-600">
                 {["최초 1회 무료 세팅","좌표 독점 운영권","GPS 오차 ±2m"].map(x=>(
                   <li key={x} className="bullet"><CheckCircle2 className="icon" /> {x}</li>
@@ -170,7 +170,7 @@ export default function Page() {
           <div className="card hover-card">
             <div className="p-5 border-b text-lg font-semibold">디자인/문구 변경</div>
             <div className="p-5">
-              <div className="text-3xl font-extrabold">₩22,000 <span className="text-base font-medium">/ 회</span></div>
+              <div className="text-3xl font-extrabold">₩20,000 <span className="text-base font-medium">/ 회</span></div>
               <p className="mt-2 text-sm text-slate-600">고객이 변경 내용을 서면으로 직접 전달</p>
               <a href="#contact" className="btn mt-6 w-full">변경 요청</a>
             </div>
@@ -179,7 +179,7 @@ export default function Page() {
           <div className="card hover-card">
             <div className="p-5 border-b text-lg font-semibold">디자인 제작 의뢰</div>
             <div className="p-5">
-              <div className="text-3xl font-extrabold">₩110,000 <span className="text-base font-medium">/ 회</span></div>
+              <div className="text-3xl font-extrabold">₩100,000 <span className="text-base font-medium">/ 회</span></div>
               <p className="mt-2 text-sm text-slate-600">콘텐츠 기획/디자인 포함 맞춤 제작</p>
               <a href="#contact" className="btn mt-6 w-full">제작 의뢰</a>
             </div>
@@ -189,7 +189,7 @@ export default function Page() {
             <div className="card hover-card">
               <div className="p-5 border-b text-lg font-semibold">3D 이동형 배너 제작</div>
               <div className="p-5">
-                <div className="text-3xl font-extrabold">₩330,000 <span className="text-base font-medium">/ 회</span></div>
+                <div className="text-3xl font-extrabold">₩300,000 <span className="text-base font-medium">/ 회</span></div>
                 <p className="mt-2 text-sm text-slate-600">AR 공간 이동/회전/효과 구현</p>
                 <a href="#contact" className="btn mt-6 w-full">3D 제작 문의</a>
               </div>
@@ -197,7 +197,7 @@ export default function Page() {
             <div className="card hover-card">
               <div className="p-5 border-b text-lg font-semibold">3D 배너 교체</div>
               <div className="p-5">
-                <div className="text-3xl font-extrabold">₩55,000 <span className="text-base font-medium">/ 회</span></div>
+                <div className="text-3xl font-extrabold">₩60,000 <span className="text-base font-medium">/ 회</span></div>
                 <p className="mt-2 text-sm text-slate-600">기존 3D 소재 교체</p>
                 <a href="#contact" className="btn mt-6 w-full">교체 요청</a>
               </div>
@@ -251,7 +251,7 @@ export default function Page() {
             <div className="p-5 border-b text-lg font-semibold">프로젝트 문의하기</div>
             <div className="p-5">
               <ContactForm />
-              <p className="text-xs text-slate-500 mt-3">* 모든 금액은 부가세 포함. 작업은 비용 선납 확인 후 진행됩니다.</p>
+              <p className="text-xs text-slate-500 mt-3">* 모든 금액은 부가세 별도. 작업은 비용 선납 확인 후 진행됩니다.</p>
             </div>
           </div>
         </div>
