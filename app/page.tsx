@@ -114,18 +114,21 @@ export default function Page() {
         <div className="card p-6">
           <div className="grid lg:grid-cols-3 gap-6 items-center">
             <div className="lg:col-span-2">
-              <div className="rounded-xl h-72 md:h-80 border bg-black overflow-hidden">
-                <video
-                  className="w-full h-full object-cover"
-                  src="/ar-preview.mp4"
-                  poster="/ar-poster.jpg"
-                  controls
-                  autoPlay
-                  muted
-                  loop
-                  playsInline
-                />
-              </div>
+            <div className="rounded-xl h-72 md:h-80 border bg-black overflow-hidden">
+              <video
+                className="w-full h-full object-cover"
+                controls
+                autoPlay
+                muted
+                loop
+                playsInline
+                preload="metadata"
+              >
+                <source src="/ar-preview.mp4" type="video/mp4" />
+                죄송합니다. 브라우저가 비디오 재생을 지원하지 않습니다.
+              </video>
+            </div>
+
 
             </div>
             <ul className="space-y-3 text-sm text-slate-700">
