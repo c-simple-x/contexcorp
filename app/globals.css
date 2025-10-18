@@ -20,11 +20,14 @@
   @apply inline-flex items-center justify-center gap-2
          rounded-full border border-slate-300 bg-white
          px-3.5 py-1.5 text-sm font-medium text-slate-800
-         whitespace-nowrap leading-none;
+         whitespace-nowrap leading-none
+         transition hover:bg-blue-50 hover:border-blue-200 hover:text-blue-700;
 }
+
 .feature-chip svg {
   @apply h-4 w-4 text-blue-600 flex-shrink-0;
 }
+
 
 .hover-card { @apply transition hover:shadow-md hover:-translate-y-0.5; }
 
