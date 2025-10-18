@@ -7,7 +7,7 @@
 
 .container { @apply w-full max-w-6xl mx-auto px-4 sm:px-6 lg:px-8; }
 
-/* UI ±âº» */
+/* UI ï¿½âº» */
 .card { @apply rounded-2xl border border-slate-200 bg-white shadow-sm; }
 .btn { @apply inline-flex items-center justify-center rounded-full px-4 py-2 border border-slate-300 bg-white font-medium hover:bg-slate-50 transition; }
 .input { @apply w-full rounded-lg border border-slate-300 px-3 py-2 outline-none focus:ring-2 focus:ring-blue-500/30; }
@@ -16,10 +16,19 @@
 .navlink { @apply hover:text-blue-600 transition; }
 .bullet { @apply flex items-center gap-2 text-slate-700; }
 .bullet .icon { @apply h-4 w-4 text-blue-600; }
-.feature-chip { @apply flex items-center gap-2 rounded-full border border-slate-300 bg-white px-3 py-1 text-sm; }
+.feature-chip {
+  @apply inline-flex items-center justify-center gap-2
+         rounded-full border border-slate-300 bg-white
+         px-3.5 py-1.5 text-sm font-medium text-slate-800
+         whitespace-nowrap leading-none;
+}
+.feature-chip svg {
+  @apply h-4 w-4 text-blue-600 flex-shrink-0;
+}
+
 .hover-card { @apply transition hover:shadow-md hover:-translate-y-0.5; }
 
-/* Hero ¹è°æ(ÀºÀºÇÏ°Ô) */
+/* Hero ï¿½ï¿½ï¿½(ï¿½ï¿½ï¿½ï¿½ï¿½Ï°ï¿½) */
 .hero-bg {
   background:
     radial-gradient(600px 200px at 20% 0%, rgba(59,130,246,0.07), transparent),
