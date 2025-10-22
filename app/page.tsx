@@ -5,11 +5,185 @@ import {
   Phone, Mail, Link as LinkIcon, CheckCircle2, ArrowRight
 } from "lucide-react";
 import ContactForm from "./components/ContactForm";
+import { useState } from "react";
 
 function Section({ id, className = "", children }:{
   id?: string; className?: string; children: React.ReactNode;
 }) {
   return <section id={id} className={`container ${className}`}>{children}</section>;
+}
+
+/** ─────────────────────────────────────────────────────────
+ * 온라인 계약 시작 폼 (프론트 섹션용)
+ * /api/contracts (서버 라우트)로 POST 전송
+ *  - 필수: 회사명, 담당자명, 이메일(영문만), 연락처(자동 010-0000-0000 포맷), 프로젝트명
+ *  - 선택: 범위(체크박스), 예산, 시작일, 비고
+ *  - 약관 동의 체크
+ * 서버 응답이 { ok:true, sign_url, id } 형태라면 링크 버튼 노출
+ * ───────────────────────────────────────────────────────── */
+function ContractStartForm() {
+  const [loading, setLoading] = useState(false);
+  const [ok, setOk] = useState<boolean | null>(null);
+  const [error, setError] = useState<string | null>(null);
+  const [signUrl, setSignUrl] = useState<string | null>(null);
+
+  function formatPhone(raw: string) {
+    // 숫자만
+    const d = raw.replace(/\D/g, "");
+    if (d.startsWith("02")) {
+      // 02-xxxx-xxxx
+      if (d.length <= 2) return d;
+      if (d.length <= 5) return d.replace(/(\d{2})(\d{0,3})/, "$1-$2");
+      if (d.length <= 9) return d.replace(/(\d{2})(\d{0,4})(\d{0,4})/, "$1-$2-$3");
+      return d.slice(0,10).replace(/(\d{2})(\d{4})(\d{4})/, "$1-$2-$3");
+    }
+    // 휴대폰 010-xxxx-xxxx
+    if (d.length <= 3) return d;
+    if (d.length <= 7) return d.replace(/(\d{3})(\d{0,4})/, "$1-$2");
+    return d.slice(0,11).replace(/(\d{3})(\d{4})(\d{0,4})/, "$1-$2-$3");
+  }
+
+  async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
+    e.preventDefault();
+    setLoading(true);
+    setOk(null);
+    setError(null);
+    setSignUrl(null);
+
+    const form = e.currentTarget;
+    const fd = new FormData(form);
+
+    const payload = {
+      company: String(fd.get("company") || "").trim(),
+      name: String(fd.get("name") || "").trim(),
+      email: String(fd.get("email") || "").trim(),
+      phone: String(fd.get("phone") || "").trim(),
+      project_title: String(fd.get("project_title") || "").trim(),
+      scope: (fd.getAll("scope") as string[]), // 체크박스 배열
+      budget: String(fd.get("budget") || "").trim(),
+      start_date: String(fd.get("start_date") || "").trim(),
+      notes: String(fd.get("notes") || "").trim(),
+      accept: fd.get("accept") === "on",
+      source: "contract_form"
+    };
+
+    // 클라이언트 유효성 검사
+    if (!payload.company || !payload.name || !payload.project_title) {
+      setLoading(false); setOk(false); setError("필수 항목을 입력해 주세요."); return;
+    }
+    // 이메일: 영문/숫자/기호만 허용 (국문/특수유니코드 불가)
+    const emailAscii = /^[A-Za-z0-9._%+\-]+@[A-Za-z0-9.\-]+\.[A-Za-z]{2,}$/.test(payload.email);
+    if (!emailAscii) {
+      setLoading(false); setOk(false); setError("이메일은 영문 기반 주소만 입력해 주세요."); return;
+    }
+    // 연락처 포맷: 숫자와 하이픈만 허용
+    if (!/^[0-9-]+$/.test(payload.phone) || payload.phone.length < 9) {
+      setLoading(false); setOk(false); setError("연락처를 올바른 형식(예: 010-1234-5678)으로 입력해 주세요."); return;
+    }
+    if (!payload.accept) {
+      setLoading(false); setOk(false); setError("계약 진행을 위해 약관 동의가 필요합니다."); return;
+    }
+
+    try {
+      const res = await fetch("/api/contracts", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload)
+      });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok || !data?.ok) {
+        setOk(false);
+        setError(data?.error || "서버 처리에 실패했습니다.");
+      } else {
+        setOk(true);
+        if (data.sign_url) setSignUrl(String(data.sign_url));
+        form.reset();
+      }
+    } catch (err) {
+      setOk(false);
+      setError("네트워크 오류가 발생했습니다.");
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  return (
+    <form onSubmit={onSubmit} className="grid gap-3">
+      <div className="grid md:grid-cols-2 gap-3">
+        <input name="company" className="input" placeholder="회사명 *" required />
+        <input name="name" className="input" placeholder="담당자명 *" required />
+      </div>
+
+      <div className="grid md:grid-cols-2 gap-3">
+        {/* 이메일: 영문만 */}
+        <input
+          name="email"
+          type="email"
+          className="input"
+          placeholder="이메일 (영문만) *"
+          required
+          pattern="[A-Za-z0-9._%+\-]+@[A-Za-z0-9.\-]+\.[A-Za-z]{2,}"
+          title="영문 기반 이메일만 입력해 주세요 (예: user@example.com)"
+        />
+        {/* 연락처: 자동 하이픈 */}
+        <input
+          name="phone"
+          className="input"
+          placeholder="연락처 (예: 010-1234-5678) *"
+          required
+          onChange={(e)=>{ e.currentTarget.value = formatPhone(e.currentTarget.value); }}
+          inputMode="numeric"
+        />
+      </div>
+
+      <input name="project_title" className="input" placeholder="프로젝트명/계약명 *" required />
+
+      {/* 범위(체크박스) */}
+      <div className="card p-4">
+        <div className="text-sm font-semibold mb-2">진행 범위(복수 선택 가능)</div>
+        <div className="grid sm:grid-cols-2 gap-2 text-sm text-slate-700">
+          <label className="flex items-center gap-2">
+            <input type="checkbox" name="scope" value="AR 위치형 배너" /> AR 위치형 배너
+          </label>
+          <label className="flex items-center gap-2">
+            <input type="checkbox" name="scope" value="3D 이동형 배너" /> 3D 이동형 배너
+          </label>
+          <label className="flex items-center gap-2">
+            <input type="checkbox" name="scope" value="콘텐츠 제작" /> 콘텐츠 제작
+          </label>
+          <label className="flex items-center gap-2">
+            <input type="checkbox" name="scope" value="광고·마케팅 집행" /> 광고·마케팅 집행
+          </label>
+          <label className="flex items-center gap-2">
+            <input type="checkbox" name="scope" value="판매·유통 지원" /> 판매·유통 지원
+          </label>
+        </div>
+      </div>
+
+      <div className="grid md:grid-cols-3 gap-3">
+        <input name="budget" className="input" placeholder="예산(선택, 숫자/문자 자유 입력)" />
+        <input name="start_date" type="date" className="input" placeholder="희망 시작일(선택)" />
+        <input name="notes" className="input" placeholder="비고(선택)" />
+      </div>
+
+      <label className="flex items-center gap-2 text-sm">
+        <input type="checkbox" name="accept" /> 상기 내용으로 온라인 계약 생성을 진행하는 데 동의합니다.
+      </label>
+
+      <button className="btn" disabled={loading}>
+        {loading ? "계약 생성 중…" : "온라인 계약 생성"}
+      </button>
+
+      {ok === true && (
+        <div className="text-sm text-green-600">
+          계약 생성 완료! {signUrl ? (
+            <a href={signUrl} className="underline ml-1" target="_blank" rel="noopener noreferrer">계약서 작성/서명 열기</a>
+          ) : "서버에서 계약 링크를 반환하지 않았습니다."}
+        </div>
+      )}
+      {ok === false && <div className="text-sm text-red-600">{error || "계약 생성에 실패했습니다."}</div>}
+    </form>
+  );
 }
 
 export default function Page() {
@@ -23,6 +197,7 @@ export default function Page() {
             <a className="navlink" href="#solutions">솔루션</a>
             <a className="navlink" href="#showcase">AR 프리뷰</a>
             <a className="navlink" href="#pricing">요금</a>
+            <a className="navlink" href="#contract-start">계약</a>
             <a className="navlink" href="#process">프로세스</a>
             <a className="navlink" href="#contact">문의</a>
           </nav>
@@ -66,7 +241,6 @@ export default function Page() {
             {/* 미리보기 카드 - 이미지 삽입 */}
             <div className="card p-6">
               <div className="rounded-xl h-64 grid place-items-center border bg-white overflow-hidden">
-                {/* 배너 이미지 */}
                 <img
                   src="/banner-preview.png"
                   alt="AR 배너 미리보기"
@@ -79,7 +253,6 @@ export default function Page() {
                 <li className="bullet"><CheckCircle2 className="icon" /> 서면 변경 반영</li>
                 <li className="bullet"><CheckCircle2 className="icon" /> 운영 모니터링</li>
               </ul>
-              {/* 텍스트 설명은 유지 */}
               <div className="mt-3 text-center">
                 <div className="inline-flex items-center gap-2 rounded-full bg-white px-3 py-1 border text-xs">
                   <MapPin className="h-3.5 w-3.5" /> GPS 정밀 노출
@@ -203,6 +376,19 @@ export default function Page() {
               </div>
             </div>
           </div>
+        </div>
+      </Section>
+
+      {/* CONTRACT START (신규 섹션) */}
+      <Section id="contract-start" className="py-16">
+        <div className="text-center max-w-2xl mx-auto">
+          <span className="pill">Contract</span>
+          <h3 className="mt-3 text-3xl font-extrabold">온라인 계약 시작</h3>
+          <p className="mt-2 text-slate-600">아래 정보를 작성하면 전자계약 링크를 생성해 드립니다.</p>
+        </div>
+        <div className="mt-8 card p-6">
+          <ContractStartForm />
+          <p className="text-xs text-slate-500 mt-3">* 제출 후 생성된 링크에서 계약서 내용을 검토·서명하실 수 있습니다.</p>
         </div>
       </Section>
 
