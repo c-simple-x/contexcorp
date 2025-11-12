@@ -1,68 +1,81 @@
+// app/api/contracts/[id]/sign/route.ts
+export const runtime = "nodejs";
+
 import { NextResponse } from "next/server";
 import { supabaseAdmin } from "@/lib/supabase-admin";
-import { Resend } from "resend";
 
-const resendKey = process.env.RESEND_API_KEY;
-const mailTo = process.env.ALERT_EMAIL_TO;
-const mailFrom = process.env.ALERT_EMAIL_FROM;
-
-export async function POST(req: Request, ctx: { params: { id: string } }) {
+/** 알림 메일(옵션) */
+async function sendEmail(subject: string, html: string) {
   try {
-    const contractId = ctx.params?.id;
-    if (!contractId) return NextResponse.json({ ok: false, error: "missing_id" }, { status: 400 });
+    const key = process.env.RESEND_API_KEY;
+    const to = process.env.ALERT_EMAIL_TO;
+    const from = process.env.ALERT_EMAIL_FROM;
+    if (!key || !to || !from) return;
 
-    const { signer_name, signer_email } = await req.json().catch(() => ({}));
+    await fetch("https://api.resend.com/emails", {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${key}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ from, to: [to], subject, html }),
+    }).catch(() => {});
+  } catch {}
+}
+
+type Params = { params: { id: string } };
+
+export async function POST(req: Request, { params }: Params) {
+  try {
+    const contractId = params.id;
+    const { signer_name, signer_email } = await req.json();
+
     if (!signer_name || !signer_email) {
-      return NextResponse.json({ ok: false, error: "missing_fields" }, { status: 400 });
+      return NextResponse.json(
+        { ok: false, error: "signer_name, signer_email required" },
+        { status: 400 }
+      );
     }
 
     // 계약 존재 확인
     const { data: contract, error: cErr } = await supabaseAdmin
       .from("contracts")
-      .select("id, title, status")
+      .select("id,title")
       .eq("id", contractId)
       .single();
-
-    if (cErr || !contract) {
-      return NextResponse.json({ ok: false, error: "contract_not_found" }, { status: 404 });
-    }
+    if (cErr) throw cErr;
 
     // 서명 저장
-    const ip = (req.headers.get("x-forwarded-for") || "").split(",")[0] || "";
-    const ua = req.headers.get("user-agent") || "";
+    const ip = (req.headers.get("x-forwarded-for") ?? "").split(",")[0] || undefined;
+    const ua = req.headers.get("user-agent") ?? undefined;
 
-    const { error: sErr } = await supabaseAdmin.from("signatures").insert({
-      contract_id: contractId,
-      signer_name,
-      signer_email,
-      ip,
-      user_agent: ua,
-    });
+    const { error: sErr } = await supabaseAdmin.from("signatures").insert([
+      {
+        contract_id: contractId,
+        signer_name,
+        signer_email,
+        ip,
+        user_agent: ua,
+      },
+    ]);
+    if (sErr) throw sErr;
 
-    if (sErr) {
-      return NextResponse.json({ ok: false, error: "sign_insert_failed" }, { status: 500 });
-    }
-
-    // 상태 signed 업데이트
+    // 상태 갱신: signed
     await supabaseAdmin.from("contracts").update({ status: "signed" }).eq("id", contractId);
 
-    // 이메일 알림(선택)
-    if (resendKey && mailTo && mailFrom) {
-      const resend = new Resend(resendKey);
-      await resend.emails.send({
-        from: mailFrom,
-        to: mailTo,
-        subject: `계약서 서명 완료: ${signer_name}`,
-        html: `
-          <h2>서명 완료 알림</h2>
-          <p><b>${signer_name}</b> (${signer_email}) 님이 계약서에 서명했습니다.</p>
-          <p>계약 ID: ${contractId}</p>
-        `,
-      });
-    }
+    // 알림 메일
+    await sendEmail(
+      `계약서 서명 완료: ${signer_name}`,
+      `
+        <h2>서명 완료 알림</h2>
+        <p><b>${signer_name}</b> (${signer_email}) 님이 계약서에 서명했습니다.</p>
+        <p>계약 ID: ${contractId}</p>
+        <p>제목: ${contract?.title ?? "-"}</p>
+      `
+    );
 
     return NextResponse.json({ ok: true });
-  } catch (e) {
-    return NextResponse.json({ ok: false, error: "sign_exception" }, { status: 500 });
+  } catch (e: any) {
+    return NextResponse.json({ ok: false, error: e.message ?? "sign failed" }, { status: 500 });
   }
 }

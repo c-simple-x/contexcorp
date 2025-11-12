@@ -1,25 +1,31 @@
+// app/api/contracts/[id]/route.ts
+export const runtime = "nodejs";
+
 import { NextResponse } from "next/server";
 import { supabaseAdmin } from "@/lib/supabase-admin";
 
-export async function GET(_req: Request, ctx: { params: { id: string } }) {
-  const id = ctx.params?.id;
-  if (!id) return NextResponse.json({ ok: false, error: "missing_id" }, { status: 400 });
+type Params = { params: { id: string } };
 
-  // 계약 + 클라이언트 조인해서 반환
-  const { data: contract, error } = await supabaseAdmin
-    .from("contracts")
-    .select(
-      `
-      id, title, terms, price, status, created_at, client_id,
-      client:clients(id, company, name, email, phone)
-      `
-    )
-    .eq("id", id)
-    .single();
+export async function GET(_req: Request, { params }: Params) {
+  try {
+    const id = params.id;
 
-  if (error || !contract) {
-    return NextResponse.json({ ok: false, error: "not_found" }, { status: 404 });
+    const { data: contract, error } = await supabaseAdmin
+      .from("contracts")
+      .select("id,title,terms,price,status,created_at,client_id")
+      .eq("id", id)
+      .single();
+    if (error) throw error;
+
+    const { data: client, error: cErr } = await supabaseAdmin
+      .from("clients")
+      .select("id,company,name,email,phone")
+      .eq("id", contract.client_id)
+      .single();
+    if (cErr) throw cErr;
+
+    return NextResponse.json({ ok: true, contract: { ...contract, client } });
+  } catch (e: any) {
+    return NextResponse.json({ ok: false, error: e.message ?? "not found" }, { status: 404 });
   }
-
-  return NextResponse.json({ ok: true, contract });
 }
