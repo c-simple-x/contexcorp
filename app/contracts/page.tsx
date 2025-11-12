@@ -13,14 +13,20 @@ type ContractRow = {
 };
 
 function getBaseUrl() {
+  // 1) 명시적 환경변수(프로덕션 권장)
+  if (process.env.NEXT_PUBLIC_SITE_URL) {
+    return process.env.NEXT_PUBLIC_SITE_URL.replace(/\/+$/, "");
+  }
+  // 2) Vercel이 자동 주입하는 도메인 (preview/prod 모두 동작)
+  if (process.env.VERCEL_URL) {
+    return `https://${process.env.VERCEL_URL}`.replace(/\/+$/, "");
+  }
+  // 3) 헤더 기반(로컬/서버 사이드 렌더)
   const h = headers();
   const host = h.get("x-forwarded-host") ?? h.get("host");
   const proto = h.get("x-forwarded-proto") ?? (host?.includes("localhost") ? "http" : "https");
-  // 배포 시 호스트가 없을 가능성에 대비한 환경변수 폴백
-  const envBase = process.env.NEXT_PUBLIC_SITE_URL;
-  if (envBase) return envBase.replace(/\/+$/, "");
   if (host) return `${proto}://${host}`;
-  // 최후 폴백 (로컬)
+  // 4) 최후 폴백(진짜 로컬)
   return "http://localhost:3000";
 }
 
