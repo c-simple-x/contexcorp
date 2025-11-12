@@ -1,7 +1,18 @@
 // app/contracts/[id]/page.tsx
+import { headers } from "next/headers";
+import SignForm from "./SignForm";
+
 export const dynamic = "force-dynamic";
 
-import SignForm from "./SignForm";
+function getBaseUrl() {
+  const h = headers();
+  const host = h.get("x-forwarded-host") ?? h.get("host");
+  const proto = h.get("x-forwarded-proto") ?? (host?.includes("localhost") ? "http" : "https");
+  const envBase = process.env.NEXT_PUBLIC_SITE_URL;
+  if (envBase) return envBase.replace(/\/+$/, "");
+  if (host) return `${proto}://${host}`;
+  return "http://localhost:3000";
+}
 
 function formatPrice(n: number) {
   try { return new Intl.NumberFormat("ko-KR").format(n); } catch { return String(n); }
@@ -9,9 +20,9 @@ function formatPrice(n: number) {
 
 export default async function ContractPage({ params }: { params: { id: string } }) {
   const id = params.id;
+  const base = getBaseUrl();
 
-  // ✅ 상대 경로로 자기 API 호출
-  const res = await fetch(`/api/contracts/${id}`, { cache: "no-store" }).catch(() => null);
+  const res = await fetch(`${base}/api/contracts/${id}`, { cache: "no-store" }).catch(() => null);
 
   if (!res || !res.ok) {
     return (
@@ -41,9 +52,7 @@ function ContractView({ id, data }: { id: string; data: any }) {
           <h1 className="text-2xl font-extrabold">{title ?? "무제 계약서"}</h1>
           <p className="text-slate-600 text-sm mt-1">
             상태: <b>{status}</b>
-            {typeof price === "number" && (
-              <> · 금액: <b>₩{formatPrice(price)}</b></>
-            )}
+            {typeof price === "number" && <> · 금액: <b>₩{formatPrice(price)}</b></>}
           </p>
           {client && (
             <p className="text-slate-600 text-sm mt-1">

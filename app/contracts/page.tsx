@@ -1,4 +1,6 @@
 // app/contracts/page.tsx
+import { headers } from "next/headers";
+
 export const dynamic = "force-dynamic";
 
 type ContractRow = {
@@ -10,9 +12,22 @@ type ContractRow = {
   client?: { company?: string | null; name?: string | null };
 };
 
+function getBaseUrl() {
+  const h = headers();
+  const host = h.get("x-forwarded-host") ?? h.get("host");
+  const proto = h.get("x-forwarded-proto") ?? (host?.includes("localhost") ? "http" : "https");
+  // 배포 시 호스트가 없을 가능성에 대비한 환경변수 폴백
+  const envBase = process.env.NEXT_PUBLIC_SITE_URL;
+  if (envBase) return envBase.replace(/\/+$/, "");
+  if (host) return `${proto}://${host}`;
+  // 최후 폴백 (로컬)
+  return "http://localhost:3000";
+}
+
 export default async function ContractsListPage() {
-  // ✅ 상대 경로로 자기 API 호출 (Vercel에서도 OK)
-  const res = await fetch(`/api/contracts`, { cache: "no-store" });
+  const base = getBaseUrl();
+  const res = await fetch(`${base}/api/contracts`, { cache: "no-store" });
+
   if (!res.ok) {
     return (
       <div className="container py-16">
@@ -21,8 +36,8 @@ export default async function ContractsListPage() {
       </div>
     );
   }
-  const json = await res.json();
 
+  const json = await res.json();
   const list: ContractRow[] = json?.contracts ?? [];
 
   return (
@@ -60,7 +75,9 @@ export default async function ContractsListPage() {
                   {c.client?.name ? `(${c.client.name})` : ""}
                 </td>
                 <td className="px-4 py-3">₩{new Intl.NumberFormat("ko-KR").format(c.price ?? 0)}</td>
-                <td className="px-4 py-3"><span className="rounded-full border px-2 py-0.5">{c.status}</span></td>
+                <td className="px-4 py-3">
+                  <span className="rounded-full border px-2 py-0.5">{c.status}</span>
+                </td>
                 <td className="px-4 py-3">{new Date(c.created_at).toLocaleString()}</td>
                 <td className="px-4 py-3">
                   <a className="navlink" href={`/contracts/${c.id}`}>열기 →</a>
@@ -71,9 +88,7 @@ export default async function ContractsListPage() {
         </table>
       </div>
 
-      <p className="text-xs text-slate-500 mt-3">
-        * 이 페이지는 내부 관리용입니다.
-      </p>
+      <p className="text-xs text-slate-500 mt-3">* 이 페이지는 내부 관리용입니다.</p>
     </div>
   );
 }
