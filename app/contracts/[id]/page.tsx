@@ -1,3 +1,6 @@
+// app/contracts/[id]/page.tsx
+export const dynamic = "force-dynamic";
+
 import SignForm from "./SignForm";
 
 function formatPrice(n: number) {
@@ -7,19 +10,15 @@ function formatPrice(n: number) {
 export default async function ContractPage({ params }: { params: { id: string } }) {
   const id = params.id;
 
-  // SSR에서 계약 데이터 가져오기
-  //const baseUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000";
-  // (디버그가 필요하면 아래 주석 해제)
-  // console.log("📄 Fetch URL:", `${baseUrl}/api/contracts/${id}`);
-
-  //const res = await fetch(`${baseUrl}/api/contracts/${id}`, { cache: "no-store" }).catch(() => null);
-    const res = await fetch(`/api/contracts/${id}`, { cache: "no-store" });
+  // ✅ 상대 경로로 자기 API 호출
+  const res = await fetch(`/api/contracts/${id}`, { cache: "no-store" }).catch(() => null);
 
   if (!res || !res.ok) {
     return (
       <div className="container py-16">
         <h1 className="text-2xl font-bold">계약서를 찾을 수 없습니다.</h1>
         <p className="mt-2 text-slate-600">유효한 계약 ID인지 확인해 주세요.</p>
+        <a href="/contracts" className="navlink mt-4 inline-block">← 목록으로</a>
       </div>
     );
   }
@@ -32,8 +31,9 @@ function ContractView({ id, data }: { id: string; data: any }) {
   const { title, terms, price, status, client } = data ?? {};
   return (
     <div className="container py-12">
-      <div className="mb-8">
-        <a href="/" className="navlink text-sm">&larr; 홈으로</a>
+      <div className="mb-8 flex items-center justify-between">
+        <a href="/contracts" className="navlink text-sm">&larr; 목록으로</a>
+        <a href="/" className="navlink text-sm">홈으로</a>
       </div>
 
       <div className="card p-6">
@@ -41,7 +41,9 @@ function ContractView({ id, data }: { id: string; data: any }) {
           <h1 className="text-2xl font-extrabold">{title ?? "무제 계약서"}</h1>
           <p className="text-slate-600 text-sm mt-1">
             상태: <b>{status}</b>
-            {typeof price === "number" && <> · 금액: <b>₩{formatPrice(price)}</b></>}
+            {typeof price === "number" && (
+              <> · 금액: <b>₩{formatPrice(price)}</b></>
+            )}
           </p>
           {client && (
             <p className="text-slate-600 text-sm mt-1">
