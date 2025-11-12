@@ -8,11 +8,12 @@ export default async function ContractPage({ params }: { params: { id: string } 
   const id = params.id;
 
   // SSR에서 계약 데이터 가져오기
-  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000";
+  //const baseUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000";
   // (디버그가 필요하면 아래 주석 해제)
   // console.log("📄 Fetch URL:", `${baseUrl}/api/contracts/${id}`);
 
-  const res = await fetch(`${baseUrl}/api/contracts/${id}`, { cache: "no-store" }).catch(() => null);
+  //const res = await fetch(`${baseUrl}/api/contracts/${id}`, { cache: "no-store" }).catch(() => null);
+    const res = await fetch(`/api/contracts/${id}`, { cache: "no-store" });
 
   if (!res || !res.ok) {
     return (
