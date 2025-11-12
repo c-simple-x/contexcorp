@@ -23,13 +23,12 @@ function formatPrice(n: number) {
   try { return new Intl.NumberFormat("ko-KR").format(n); } catch { return String(n); }
 }
 
-export const dynamic = "force-dynamic"; // 목록은 항상 최신으로
+export const dynamic = "force-dynamic";
 
 export default async function ContractsPage() {
-  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000";
-  const res = await fetch(`${baseUrl}/api/contracts`, { cache: "no-store" });
+  // ✅ 상대 경로로 자기 API 호출 (프로덕션/로컬 모두 동작)
+  const res = await fetch(`/api/contracts`, { cache: "no-store" });
   const json = await res.json().catch(() => null);
-
   const items: Contract[] = res.ok && json?.ok ? (json.contracts || []) : [];
 
   return (
@@ -40,28 +39,18 @@ export default async function ContractsPage() {
       </div>
 
       {(!items || items.length === 0) ? (
-        <div className="card p-6 text-slate-600">
-          아직 등록된 계약이 없습니다.
-        </div>
+        <div className="card p-6 text-slate-600">아직 등록된 계약이 없습니다.</div>
       ) : (
         <div className="grid gap-4">
           {items.map((c) => (
-            <Link
-              key={c.id}
-              href={`/contracts/${c.id}`}
-              className="card p-5 hover-card block"
-            >
+            <Link key={c.id} href={`/contracts/${c.id}`} className="card p-5 hover-card block">
               <div className="flex items-center justify-between gap-3">
                 <div>
                   <div className="text-lg font-semibold">{c.title}</div>
                   <div className="text-sm text-slate-600 mt-1">
                     상태: <b>{c.status}</b>
-                    {typeof c.price === "number" && (
-                      <> · 금액: <b>₩{formatPrice(c.price)}</b></>
-                    )}
-                    {c.client && (
-                      <> · 고객: {c.client.company ? `${c.client.company} / ` : ""}{c.client.name}</>
-                    )}
+                    {typeof c.price === "number" && <> · 금액: <b>₩{formatPrice(c.price)}</b></>}
+                    {c.client && <> · 고객: {c.client.company ? `${c.client.company} / ` : ""}{c.client.name}</>}
                   </div>
                 </div>
                 <div className="text-xs text-slate-500">
