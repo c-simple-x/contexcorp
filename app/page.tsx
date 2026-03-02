@@ -73,7 +73,7 @@ export default function Page() {
               </div>
               <ul className="mt-4 grid grid-cols-2 gap-3 text-sm">
                 <li className="bullet"><CheckCircle2 className="icon" /> GPS 오차 ±2m</li>
-                <li className="bullet"><CheckCircle2 className="icon" /> 5년 위치 독점</li>
+                <li className="bullet"><CheckCircle2 className="icon" /> 1년간 위치 독점</li>
                 <li className="bullet"><CheckCircle2 className="icon" /> 3D 모션 배너</li>
                 <li className="bullet"><CheckCircle2 className="icon" /> 간편 업데이트</li>
               </ul>
@@ -148,81 +148,93 @@ export default function Page() {
           <p className="mt-2 text-slate-600">위치 독점권을 확보하고, 필요할 때만 추가 비용을 쓰는 합리적인 구조.</p>
         </div>
 
-        {/* 기본 서비스 */}
-        <div className="mt-10 grid md:grid-cols-2 lg:grid-cols-4 gap-6">
-          <div className="card hover-card">
+        {/* 위치 독점권 */}
+        <div className="mt-10 flex justify-center">
+          <div className="card hover-card w-full max-w-sm">
             <div className="p-5 border-b text-lg font-semibold">위치 독점권 (연간)</div>
             <div className="p-5">
               <div className="text-3xl font-extrabold">₩200,000 <span className="text-base font-medium">/ 년</span></div>
               <p className="mt-2 text-sm text-slate-600">원하는 GPS 좌표에 연간 독점 AR 노출권을 확보합니다.</p>
               <ul className="mt-4 space-y-2 text-sm text-slate-600">
-                {["최초 1회 무료 세팅", "좌표 독점 운영권", "GPS 오차 ±2m"].map(x => (
+                {["좌표 독점 운영권", "GPS 오차 ±2m"].map(x => (
                   <li key={x} className="bullet"><CheckCircle2 className="icon" /> {x}</li>
                 ))}
               </ul>
               <a href="#contact" className="btn mt-6 w-full">상담 신청</a>
             </div>
           </div>
+        </div>
 
-          <div className="card hover-card">
-            <div className="p-5 border-b text-lg font-semibold">디자인 · 문구 변경</div>
-            <div className="p-5">
-              <div className="text-3xl font-extrabold">₩20,000 <span className="text-base font-medium">/ 회</span></div>
-              <p className="mt-2 text-sm text-slate-600">완성된 파일을 직접 전달 시 단순 교체. 별도 디자인 작업 없이 빠르게 업데이트.</p>
-              <a href="#contact" className="btn mt-6 w-full">변경 요청</a>
+        {/* 기본 배너 관련 요금 */}
+        <div className="mt-10">
+          <h4 className="text-xl font-extrabold mb-4">기본 배너 관련 요금</h4>
+          <div className="grid md:grid-cols-2 gap-6">
+            <div className="card hover-card">
+              <div className="p-5 border-b text-lg font-semibold">디자인 제작</div>
+              <div className="p-5">
+                <div className="text-3xl font-extrabold">₩150,000 <span className="text-base font-medium">/ 회</span></div>
+                <p className="mt-2 text-sm text-slate-600">브랜드 가이드에 맞는 AR 배너를 기획·디자인·최적화까지 맞춤 제작합니다.</p>
+                <a href="#contact" className="btn mt-6 w-full">제작 문의</a>
+              </div>
+            </div>
+            <div className="card hover-card">
+              <div className="p-5 border-b text-lg font-semibold">디자인 단순 변경</div>
+              <div className="p-5">
+                <div className="text-3xl font-extrabold">₩20,000 <span className="text-base font-medium">/ 회</span></div>
+                <p className="mt-2 text-sm text-slate-600">완성된 파일을 직접 전달 시 단순 교체. 별도 디자인 작업 없이 빠르게 업데이트.</p>
+                <a href="#contact" className="btn mt-6 w-full">변경 요청</a>
+              </div>
             </div>
           </div>
+        </div>
 
-          <div className="card hover-card">
-            <div className="p-5 border-b text-lg font-semibold">디자인 제작 의뢰</div>
-            <div className="p-5">
-              <div className="text-3xl font-extrabold">₩150,000 <span className="text-base font-medium">/ 회</span></div>
-              <p className="mt-2 text-sm text-slate-600">브랜드 가이드에 맞는 AR 배너를 기획·디자인·최적화까지 맞춤 제작합니다.</p>
-              <a href="#contact" className="btn mt-6 w-full">제작 의뢰</a>
-            </div>
-          </div>
+        {/* 3D 모션 배너 관련 요금 */}
+        <div className="mt-10">
+          <h4 className="text-xl font-extrabold mb-4">3D 모션 배너 관련 요금</h4>
 
-          <div className="card hover-card">
-            <div className="p-5 border-b text-lg font-semibold">3D 배너 소재 교체</div>
+          {/* 교체 */}
+          <div className="card hover-card max-w-sm mb-6">
+            <div className="p-5 border-b text-lg font-semibold">3D 모션 배너 교체</div>
             <div className="p-5">
               <div className="text-3xl font-extrabold">₩60,000 <span className="text-base font-medium">/ 회</span></div>
               <p className="mt-2 text-sm text-slate-600">완성된 3D 소재 파일을 전달하면 서버에 등록 후 기존 배너와 교체합니다.</p>
               <a href="#contact" className="btn mt-6 w-full">교체 요청</a>
             </div>
           </div>
-        </div>
 
-        {/* 3D 모션 배너 */}
-        <div className="mt-8">
-          <div className="text-center mb-6">
-            <h4 className="text-xl font-extrabold">3D 모션 배너 제작</h4>
-            <p className="text-sm text-slate-600 mt-1">공간을 이동·회전하는 몰입형 AR 배너. 초 단위로 제작되며 길이에 따라 금액이 결정됩니다.</p>
-          </div>
-          <div className="grid md:grid-cols-3 gap-6">
-            <div className="card hover-card">
-              <div className="p-5 border-b text-lg font-semibold">3초</div>
-              <div className="p-5">
-                <div className="text-3xl font-extrabold">₩300,000</div>
-                <p className="mt-2 text-sm text-slate-600">단순 모션에 적합. 짧은 루프로 반복 재생 시 다소 부자연스러울 수 있습니다.</p>
-                <a href="#contact" className="btn mt-6 w-full">문의하기</a>
+          {/* 제작 */}
+          <div>
+            <p className="text-sm font-semibold text-slate-700 mb-3">3D 모션 배너 제작 · 초당 ₩110,000 <span className="font-normal text-slate-500">(부가세 별도)</span></p>
+            <div className="grid md:grid-cols-3 gap-6">
+              <div className="card hover-card">
+                <div className="p-5 border-b text-lg font-semibold flex items-center gap-2">
+                  5초 <span className="text-xs font-normal text-slate-500 border border-slate-300 rounded-full px-2 py-0.5">기본</span>
+                </div>
+                <div className="p-5">
+                  <div className="text-3xl font-extrabold">₩550,000</div>
+                  <p className="mt-2 text-sm text-slate-600">자연스러운 모션과 루프가 가능한 기본 길이입니다.</p>
+                  <a href="#contact" className="btn mt-6 w-full">문의하기</a>
+                </div>
               </div>
-            </div>
-            <div className="card hover-card border-blue-200">
-              <div className="p-5 border-b text-lg font-semibold flex items-center gap-2">
-                5초 <span className="text-xs font-normal text-blue-600 border border-blue-200 rounded-full px-2 py-0.5">많이 선택</span>
+              <div className="card hover-card border-blue-200">
+                <div className="p-5 border-b text-lg font-semibold flex items-center gap-2">
+                  10초 <span className="text-xs font-normal text-blue-600 border border-blue-200 rounded-full px-2 py-0.5">Best</span>
+                </div>
+                <div className="p-5">
+                  <div className="text-3xl font-extrabold">₩1,067,000</div>
+                  <p className="mt-1 text-xs text-blue-600 font-medium">3% 할인 적용</p>
+                  <p className="mt-2 text-sm text-slate-600">풍부한 연출과 스토리텔링이 가능한 가장 많이 선택하는 길이입니다.</p>
+                  <a href="#contact" className="btn mt-6 w-full">문의하기</a>
+                </div>
               </div>
-              <div className="p-5">
-                <div className="text-3xl font-extrabold">₩500,000</div>
-                <p className="mt-2 text-sm text-slate-600">자연스러운 모션과 루프가 가능한 가장 많이 선택하는 길이입니다.</p>
-                <a href="#contact" className="btn mt-6 w-full">문의하기</a>
-              </div>
-            </div>
-            <div className="card hover-card">
-              <div className="p-5 border-b text-lg font-semibold">10초</div>
-              <div className="p-5">
-                <div className="text-3xl font-extrabold">₩1,000,000</div>
-                <p className="mt-2 text-sm text-slate-600">풍부한 연출과 스토리텔링이 가능한 프리미엄 모션 배너입니다.</p>
-                <a href="#contact" className="btn mt-6 w-full">문의하기</a>
+              <div className="card hover-card">
+                <div className="p-5 border-b text-lg font-semibold">15초</div>
+                <div className="p-5">
+                  <div className="text-3xl font-extrabold">₩1,567,500</div>
+                  <p className="mt-1 text-xs text-slate-500 font-medium">5% 할인 적용</p>
+                  <p className="mt-2 text-sm text-slate-600">긴 스토리와 다양한 씬 전환이 가능한 프리미엄 모션 배너입니다.</p>
+                  <a href="#contact" className="btn mt-6 w-full">문의하기</a>
+                </div>
               </div>
             </div>
           </div>
