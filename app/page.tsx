@@ -20,14 +20,14 @@ export default function Page() {
         <div className="container h-16 flex items-center justify-between">
           <a href="#hero" className="font-extrabold tracking-tight">CONTEX <span className="font-semibold opacity-70">Corp.</span></a>
           <nav className="hidden md:flex items-center gap-7 text-sm">
-            <a className="navlink" href="#solutions">활용 사례</a>
+            <a className="navlink" href="#solutions">활용 대상</a>
             <a className="navlink" href="#showcase">AR 미리보기</a>
             <a className="navlink" href="#pricing">요금</a>
             <a className="navlink" href="#process">진행 절차</a>
             <a className="navlink" href="#contact">문의</a>
           </nav>
           <a href="#contact" className="btn hidden sm:inline-flex">
-            무료 상담 <ArrowRight className="ml-2 h-4 w-4" />
+            문의하기 <ArrowRight className="ml-2 h-4 w-4" />
           </a>
         </div>
       </header>
@@ -47,7 +47,7 @@ export default function Page() {
               </p>
               <div className="mt-6 flex flex-wrap gap-3">
                 <a href="#showcase" className="btn">AR 미리보기</a>
-                <a href="#contact" className="btn">무료 상담</a>
+                <a href="#contact" className="btn">문의하기</a>
               </div>
               <div className="mt-8 grid grid-cols-2 sm:grid-cols-4 gap-4 text-sm">
                 {[
@@ -90,7 +90,7 @@ export default function Page() {
       {/* SOLUTIONS */}
       <Section id="solutions" className="py-16">
         <div className="text-center max-w-2xl mx-auto">
-          <span className="pill">활용 사례</span>
+          <span className="pill">활용 대상</span>
           <h2 className="mt-3 text-3xl md:text-4xl font-extrabold">누구에게 필요할까요?</h2>
           <p className="mt-2 text-slate-600">온라인에서 오프라인으로, 공간 마케팅의 새로운 기준을 제시합니다.</p>
         </div>
@@ -251,7 +251,7 @@ export default function Page() {
         <div className="mt-10 grid md:grid-cols-5 gap-4">
           {[
             { n: 1, t: "위치 · 목적 상담",   d: "원하는 위치, 활용 목적, 예산을 편하게 공유해주세요." },
-            { n: 2, t: "위치 확정 및 계약",   d: "GPS 좌표를 확정하고 5년 독점 운영 계약을 체결합니다." },
+            { n: 2, t: "위치 확정 및 계약",   d: "GPS 좌표를 확정하고 1년 위치 독점 운영 계약을 체결합니다." },
             { n: 3, t: "콘텐츠 제작",         d: "브랜드에 맞는 AR 배너 또는 3D 모션 배너를 제작합니다." },
             { n: 4, t: "AR 배포 · 세팅",      d: "지정 좌표에 AR 콘텐츠를 등록하고 노출을 시작합니다." },
             { n: 5, t: "운영 · 업데이트",     d: "서면 요청 한 번으로 내용 변경, 지속적인 운영 관리를 제공합니다." },
@@ -269,7 +269,7 @@ export default function Page() {
         <div className="grid lg:grid-cols-2 gap-8">
           <div>
             <span className="pill">Contact</span>
-            <h3 className="mt-3 text-3xl font-extrabold">무료 상담 문의</h3>
+            <h3 className="mt-3 text-3xl font-extrabold">문의하기</h3>
             <p className="mt-2 text-slate-600">어떤 위치에, 어떤 목적으로 활용하고 싶은지 편하게 알려주세요. 빠르게 연락드립니다.</p>
             <div className="mt-6 space-y-3 text-sm">
               <div className="flex items-center gap-2"><Phone className="h-4 w-4" /> +82-10-3653-1987</div>
