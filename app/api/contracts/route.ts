@@ -24,11 +24,15 @@ async function sendEmail(subject: string, html: string) {
 }
 
 /** GET /api/contracts — 계약 목록 */
-export async function GET() {
+export async function GET(req: Request) {
+  const adminSecret = process.env.ADMIN_SECRET;
+  if (adminSecret && req.headers.get("x-admin-secret") !== adminSecret) {
+    return NextResponse.json({ ok: false, error: "unauthorized" }, { status: 401 });
+  }
   try {
     const { data: contracts, error } = await supabaseAdmin
       .from("contracts")
-      .select("id,title,price,status,created_at,client_id")
+      .select("id,title,price,status,payment_confirmed,created_at,client_id")
       .order("created_at", { ascending: false });
 
     if (error) throw error;

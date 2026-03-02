@@ -25,12 +25,6 @@ function formatKrPhone(raw: string) {
   return `${digits.slice(0, 3)}-${digits.slice(3, 7)}-${digits.slice(7, 11)}`;
 }
 
-function formatResidentId(raw: string) {
-  const digits = raw.replace(/\D/g, "");
-  if (digits.length <= 6) return digits;
-  return digits.slice(0, 6) + "-" + digits.slice(6, 13);
-}
-
 function formatBizNumber(raw: string) {
   const digits = raw.replace(/\D/g, "");
   if (digits.length <= 3) return digits;
@@ -42,7 +36,9 @@ export default function StepInfo({ onNext }: Props) {
   const [type, setType] = useState<"individual" | "business">("business");
   const [name, setName] = useState("");
   const [company, setCompany] = useState("");
-  const [idNumber, setIdNumber] = useState("");
+  const [idFront, setIdFront] = useState("");
+  const [idBack, setIdBack] = useState("");
+  const [bizNumber, setBizNumber] = useState("");
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
   const [address, setAddress] = useState("");
@@ -55,13 +51,18 @@ export default function StepInfo({ onNext }: Props) {
 
     if (!name.trim()) return setError("이름을 입력해주세요.");
     if (type === "business" && !company.trim()) return setError("상호를 입력해주세요.");
-    if (!idNumber.trim()) return setError(type === "individual" ? "주민등록번호를 입력해주세요." : "사업자등록번호를 입력해주세요.");
+    if (type === "individual") {
+      if (idFront.length !== 6 || idBack.length !== 7) return setError("주민등록번호를 올바르게 입력해주세요.");
+    } else {
+      if (!bizNumber.trim()) return setError("사업자등록번호를 입력해주세요.");
+    }
     if (!/^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/.test(email)) return setError("이메일 형식을 확인해주세요.");
     if (!phone.trim()) return setError("전화번호를 입력해주세요.");
     if (!address.trim()) return setError("주소를 입력해주세요.");
     if (!agree) return setError("개인정보 수집에 동의해주세요.");
 
-    onNext({ client_type: type, name, company, id_number: idNumber, email, phone, address, agree });
+    const id_number = type === "individual" ? `${idFront}-${idBack}` : bizNumber;
+    onNext({ client_type: type, name, company, id_number, email, phone, address, agree });
   }
 
   return (
@@ -98,15 +99,40 @@ export default function StepInfo({ onNext }: Props) {
       />
 
       <div>
-        <input
-          className="input"
-          placeholder={type === "individual" ? "주민등록번호 * (예: 000000-0000000)" : "사업자등록번호 * (예: 000-00-00000)"}
-          value={idNumber}
-          inputMode="numeric"
-          onChange={(e) => setIdNumber(type === "individual" ? formatResidentId(e.target.value) : formatBizNumber(e.target.value))}
-          maxLength={type === "individual" ? 14 : 12}
-          required
-        />
+        {type === "individual" ? (
+          <div className="flex items-center gap-2">
+            <input
+              className="input flex-1"
+              placeholder="앞 6자리 *"
+              inputMode="numeric"
+              maxLength={6}
+              value={idFront}
+              onChange={(e) => setIdFront(e.target.value.replace(/\D/g, "").slice(0, 6))}
+              required
+            />
+            <span className="text-slate-400 font-bold">-</span>
+            <input
+              className="input flex-1"
+              placeholder="뒤 7자리 *"
+              type="password"
+              inputMode="numeric"
+              maxLength={7}
+              value={idBack}
+              onChange={(e) => setIdBack(e.target.value.replace(/\D/g, "").slice(0, 7))}
+              required
+            />
+          </div>
+        ) : (
+          <input
+            className="input"
+            placeholder="사업자등록번호 * (예: 000-00-00000)"
+            inputMode="numeric"
+            value={bizNumber}
+            onChange={(e) => setBizNumber(formatBizNumber(e.target.value))}
+            maxLength={12}
+            required
+          />
+        )}
         <p className="text-xs text-slate-500 mt-1">
           {type === "individual"
             ? "주민등록번호는 AES-256으로 암호화되어 저장됩니다."

@@ -13,11 +13,22 @@ type TokenRow = {
   contract_id: string | null;
 };
 
+type ContractRow = {
+  id: string;
+  title: string;
+  price: number;
+  status: string;
+  payment_confirmed: boolean;
+  created_at: string;
+  client?: { company?: string | null; name?: string | null };
+};
+
 export default function AdminPage() {
   const [secret, setSecret] = useState("");
   const [authed, setAuthed] = useState(false);
   const [authError, setAuthError] = useState("");
   const [tokens, setTokens] = useState<TokenRow[]>([]);
+  const [contracts, setContracts] = useState<ContractRow[]>([]);
   const [label, setLabel] = useState("");
   const [creating, setCreating] = useState(false);
   const [newUrl, setNewUrl] = useState("");
@@ -43,6 +54,29 @@ export default function AdminPage() {
       setTokens(data.tokens);
       setAuthed(true);
       setAuthError("");
+      loadContracts(s);
+    }
+  }
+
+  async function loadContracts(s: string) {
+    const res = await fetch("/api/contracts", {
+      headers: { "x-admin-secret": s },
+    });
+    const data = await res.json().catch(() => ({}));
+    if (data.ok) setContracts(data.contracts ?? []);
+  }
+
+  async function togglePayment(contractId: string, current: boolean) {
+    const s = sessionStorage.getItem("admin_secret") || secret;
+    const res = await fetch(`/api/admin/contracts/${contractId}`, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json", "x-admin-secret": s },
+      body: JSON.stringify({ payment_confirmed: !current }),
+    });
+    if (res.ok) {
+      setContracts((prev) =>
+        prev.map((c) => c.id === contractId ? { ...c, payment_confirmed: !current } : c)
+      );
     }
   }
 
@@ -108,15 +142,12 @@ export default function AdminPage() {
     <div className="container py-12">
       <div className="mb-8 flex items-center justify-between">
         <h1 className="text-2xl font-extrabold">관리자 패널</h1>
-        <div className="flex gap-3">
-          <a href="/contracts" className="navlink text-sm">계약 목록</a>
-          <button
-            className="navlink text-sm"
-            onClick={() => { sessionStorage.removeItem("admin_secret"); setAuthed(false); }}
-          >
-            로그아웃
-          </button>
-        </div>
+        <button
+          className="navlink text-sm"
+          onClick={() => { sessionStorage.removeItem("admin_secret"); setAuthed(false); }}
+        >
+          로그아웃
+        </button>
       </div>
 
       {/* 토큰 생성 */}
@@ -159,6 +190,60 @@ export default function AdminPage() {
             </div>
           )}
         </div>
+      </div>
+
+      {/* 계약 목록 */}
+      <div className="card overflow-hidden mb-8">
+        <div className="p-5 border-b text-lg font-semibold">계약 목록 (입금 확인)</div>
+        <table className="w-full text-sm">
+          <thead className="bg-slate-50">
+            <tr>
+              <th className="text-left px-4 py-3">고객</th>
+              <th className="text-left px-4 py-3">금액</th>
+              <th className="text-left px-4 py-3">상태</th>
+              <th className="text-left px-4 py-3">입금 확인</th>
+              <th className="text-left px-4 py-3">생성일</th>
+              <th className="text-left px-4 py-3">보기</th>
+            </tr>
+          </thead>
+          <tbody>
+            {contracts.length === 0 && (
+              <tr>
+                <td colSpan={6} className="px-4 py-6 text-center text-slate-500">계약 없음</td>
+              </tr>
+            )}
+            {contracts.map((c) => (
+              <tr key={c.id} className="border-t">
+                <td className="px-4 py-3">
+                  {c.client?.company ? `${c.client.company} ` : ""}
+                  {c.client?.name ? `(${c.client.name})` : c.title}
+                </td>
+                <td className="px-4 py-3">₩{new Intl.NumberFormat("ko-KR").format(c.price ?? 0)}</td>
+                <td className="px-4 py-3">
+                  <span className={`rounded-full border px-2 py-0.5 text-xs ${c.status === "signed" ? "border-green-300 text-green-700" : "border-slate-300"}`}>
+                    {c.status === "signed" ? "서명 완료" : c.status}
+                  </span>
+                </td>
+                <td className="px-4 py-3">
+                  <label className="flex items-center gap-2 cursor-pointer">
+                    <input
+                      type="checkbox"
+                      checked={!!c.payment_confirmed}
+                      onChange={() => togglePayment(c.id, !!c.payment_confirmed)}
+                    />
+                    <span className={c.payment_confirmed ? "text-green-700 font-semibold" : "text-slate-400"}>
+                      {c.payment_confirmed ? "입금 확인" : "미확인"}
+                    </span>
+                  </label>
+                </td>
+                <td className="px-4 py-3">{new Date(c.created_at).toLocaleString("ko-KR")}</td>
+                <td className="px-4 py-3">
+                  <a href={`/contracts/${c.id}`} className="navlink text-xs">열기 →</a>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
       </div>
 
       {/* 토큰 목록 */}
