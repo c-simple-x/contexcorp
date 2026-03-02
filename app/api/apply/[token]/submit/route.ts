@@ -44,8 +44,10 @@ export async function POST(req: Request, { params }: Params) {
     const id_number_encrypted = id_number ? encrypt(id_number) : null;
 
     // 4) 상품 선택 파싱 및 금액 계산
-    const PRICES: Record<string, number> = {
-      location: 200000,
+    const location_type: "annual" | "daily" = body.location_type === "daily" ? "daily" : "annual";
+    const location_days = Math.max(1, Math.min(365, Number(body.location_days) || 1));
+
+    const CONTENT_PRICES: Record<string, number> = {
       design_change: 20000,
       design_create: 150000,
       banner_3d_replace: 60000,
@@ -53,8 +55,7 @@ export async function POST(req: Request, { params }: Params) {
       banner_3d_10s: 1067000,
       banner_3d_15s: 1567500,
     };
-    const LABELS: Record<string, string> = {
-      location: "위치 사용권 (연간)",
+    const CONTENT_LABELS: Record<string, string> = {
       design_change: "디자인 단순 변경",
       design_create: "디자인 제작",
       banner_3d_replace: "3D 모션 배너 교체",
@@ -63,13 +64,18 @@ export async function POST(req: Request, { params }: Params) {
       banner_3d_15s: "3D 모션 배너 제작 (15초)",
     };
 
-    const selectedKeys: string[] = Array.isArray(body.selected) ? body.selected : ["location"];
-    if (!selectedKeys.includes("location")) selectedKeys.unshift("location");
+    // 위치 항목 (유형에 따라 서버에서 계산)
+    const locationItem = location_type === "annual"
+      ? { key: "location", label: "위치 사용권 (연간)", price: 200000 }
+      : { key: "location_daily", label: `대중집합공간 위치 사용권 (${location_days}일)`, price: location_days * 150000 };
 
-    const selectedItems = selectedKeys
-      .filter((k) => PRICES[k])
-      .map((k) => ({ key: k, label: LABELS[k] || k, price: PRICES[k] }));
+    // 콘텐츠 항목
+    const selectedKeys: string[] = Array.isArray(body.selected) ? body.selected : [];
+    const contentItems = selectedKeys
+      .filter((k) => CONTENT_PRICES[k])
+      .map((k) => ({ key: k, label: CONTENT_LABELS[k] || k, price: CONTENT_PRICES[k] }));
 
+    const selectedItems = [locationItem, ...contentItems];
     const total = selectedItems.reduce((s, i) => s + i.price, 0);
 
     // 5) client 생성
