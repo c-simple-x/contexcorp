@@ -22,6 +22,7 @@ export default function Page() {
           <nav className="hidden md:flex items-center gap-7 text-sm">
             <a className="navlink" href="#solutions">활용 대상</a>
             <a className="navlink" href="#showcase">AR 미리보기</a>
+            <a className="navlink" href="#cases">실제 사례</a>
             <a className="navlink" href="#pricing">요금</a>
             <a className="navlink" href="#process">진행 절차</a>
             <a className="navlink" href="#contact">문의</a>
@@ -134,6 +135,32 @@ export default function Page() {
               <li className="bullet"><CheckCircle2 className="icon" /> 가벼운 리소스, 빠른 로딩</li>
             </ul>
           </div>
+        </div>
+      </Section>
+
+      {/* CASES */}
+      <Section id="cases" className="py-16">
+        <div className="text-center max-w-2xl mx-auto">
+          <span className="pill">실제 활용 사례</span>
+          <h3 className="mt-3 text-3xl font-extrabold">현장에서 만나는 AR</h3>
+          <p className="mt-2 text-slate-600">실제 거리와 공간에서 촬영한 AR 광고 운영 영상입니다.</p>
+        </div>
+        <div className="mt-10 grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
+          {["ex1", "ex2", "ex3", "ex4", "ex5"].map((name) => (
+            <div key={name} className="card overflow-hidden">
+              <div className="aspect-[9/16] bg-black">
+                <video
+                  className="w-full h-full object-cover"
+                  src={`/${name}.MP4`}
+                  autoPlay
+                  muted
+                  loop
+                  playsInline
+                  preload="metadata"
+                />
+              </div>
+            </div>
+          ))}
         </div>
       </Section>
 
