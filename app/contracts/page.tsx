@@ -1,5 +1,5 @@
 // app/contracts/page.tsx
-import { headers } from "next/headers";
+import { getBaseUrl } from "@/lib/get-base-url";
 
 export const dynamic = "force-dynamic";
 
@@ -11,24 +11,6 @@ type ContractRow = {
   created_at: string;
   client?: { company?: string | null; name?: string | null };
 };
-
-function getBaseUrl() {
-  // 1) 명시적 환경변수(프로덕션 권장)
-  if (process.env.NEXT_PUBLIC_SITE_URL) {
-    return process.env.NEXT_PUBLIC_SITE_URL.replace(/\/+$/, "");
-  }
-  // 2) Vercel이 자동 주입하는 도메인 (preview/prod 모두 동작)
-  if (process.env.VERCEL_URL) {
-    return `https://${process.env.VERCEL_URL}`.replace(/\/+$/, "");
-  }
-  // 3) 헤더 기반(로컬/서버 사이드 렌더)
-  const h = headers();
-  const host = h.get("x-forwarded-host") ?? h.get("host");
-  const proto = h.get("x-forwarded-proto") ?? (host?.includes("localhost") ? "http" : "https");
-  if (host) return `${proto}://${host}`;
-  // 4) 최후 폴백(진짜 로컬)
-  return "http://localhost:3000";
-}
 
 export default async function ContractsListPage() {
   const base = getBaseUrl();

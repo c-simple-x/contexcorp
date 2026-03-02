@@ -5,7 +5,7 @@ out/
 npm-debug.log*
 yarn-error.log*
 .DS_Store
-.DS_Store
 app/.DS_Store
-.DS_Store
-app/.DS_Store
+.venv/
+__pycache__/
+*.py[cod]
