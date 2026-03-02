@@ -22,6 +22,7 @@ export default function ContactForm() {
   const [ok, setOk] = useState<boolean | null>(null);
   const [open, setOpen] = useState(false);
   const [phone, setPhone] = useState('');
+  const [privacyAgreed, setPrivacyAgreed] = useState(false);
 
   async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -119,9 +120,22 @@ export default function ContactForm() {
           <div className="cf-turnstile mt-1" data-sitekey={process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY} data-theme="light" />
         )}
 
+        <label className="flex items-start gap-2 cursor-pointer text-sm text-slate-700">
+          <input
+            type="checkbox"
+            className="mt-0.5 shrink-0"
+            checked={privacyAgreed}
+            onChange={(e) => setPrivacyAgreed(e.target.checked)}
+            required
+          />
+          <span>
+            <a href="/privacy" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">개인정보 처리방침</a>에 따라 개인정보 수집·이용에 동의합니다. (필수)
+          </span>
+        </label>
+
         <input type="text" name="homepage" className="hidden" tabIndex={-1} autoComplete="off" />
 
-        <button disabled={loading} className="btn">
+        <button disabled={loading || !privacyAgreed} className="btn">
           {loading ? '전송 중…' : '문의 보내기'}
         </button>
 
