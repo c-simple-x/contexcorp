@@ -1,7 +1,7 @@
 "use client";
 
 import {
-  MapPin, Phone, Mail, Link as LinkIcon, CheckCircle2, ArrowRight,
+  MapPin, Phone, Mail, CheckCircle2, ArrowRight,
   Store, Building2, Calendar, Smartphone, Zap, Users
 } from "lucide-react";
 import ContactForm from "./components/ContactForm";
@@ -272,14 +272,8 @@ export default function Page() {
             <h3 className="mt-3 text-3xl font-extrabold">무료 상담 문의</h3>
             <p className="mt-2 text-slate-600">어떤 위치에, 어떤 목적으로 활용하고 싶은지 편하게 알려주세요. 빠르게 연락드립니다.</p>
             <div className="mt-6 space-y-3 text-sm">
-              <div className="flex items-center gap-2"><Phone className="h-4 w-4" /> 010-3653-1987</div>
+              <div className="flex items-center gap-2"><Phone className="h-4 w-4" /> +82-10-3653-1987</div>
               <div className="flex items-center gap-2"><Mail className="h-4 w-4" /> contexcorp@gmail.com</div>
-              <div className="flex items-center gap-2">
-                <LinkIcon className="h-4 w-4" />
-                <a href="https://contexcorp.com" target="_blank" rel="noopener noreferrer" className="hover:underline">
-                  https://contexcorp.com
-                </a>
-              </div>
             </div>
           </div>
           <div className="card">
@@ -298,7 +292,7 @@ export default function Page() {
           <div className="grid md:grid-cols-3 gap-6 items-start">
             <div>
               <div className="font-bold text-lg">CONTEX Corp.</div>
-              <p className="text-sm text-slate-600 mt-2">콘텐츠 테크 익스피리언스<br/>위치 기반 AR 광고 대행</p>
+              <p className="text-sm text-slate-600 mt-2">Contents Tech Experience<br/>위치 기반 AR 광고 대행</p>
             </div>
             <div className="text-sm">
               <div className="font-semibold mb-2">사업자 정보</div>

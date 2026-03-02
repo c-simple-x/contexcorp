@@ -113,7 +113,7 @@ export default function ContactForm() {
           pattern="[\d\-]{9,13}"
         />
 
-        <textarea name="message" placeholder="요청 내용 (위치 좌표, 기간, 예산 등)" rows={5} className="textarea" />
+        <textarea name="message" placeholder="요청 내용 (위치 좌표, 기간, 예산 등)" rows={5} className="textarea" minLength={10} required title="요청 내용은 10자 이상 입력해주세요." />
 
         {process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY && (
           <div className="cf-turnstile mt-1" data-sitekey={process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY} data-theme="light" />
