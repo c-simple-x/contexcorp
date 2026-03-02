@@ -151,7 +151,7 @@ export default function Page() {
               <div className="aspect-[9/16] bg-black">
                 <video
                   className="w-full h-full object-cover"
-                  src={`/${name}.MP4`}
+                  src={`https://pub-4d204982c58e47eeb7eef39ac8c94010.r2.dev/${name}.MP4`}
                   autoPlay
                   muted
                   loop
