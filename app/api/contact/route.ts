@@ -79,6 +79,33 @@ export async function POST(req: Request) {
     }
 
     const text = await gasRes.text();
+
+    // Resend로 관리자 알림 발송 (hello@contexcorp.com 통일)
+    const resendKey = process.env.RESEND_API_KEY;
+    const resendFrom = process.env.RESEND_FROM_EMAIL;
+    const adminTo = process.env.ALERT_EMAIL_TO;
+    if (resendKey && resendFrom && adminTo) {
+      await fetch("https://api.resend.com/emails", {
+        method: "POST",
+        headers: { Authorization: `Bearer ${resendKey}`, "Content-Type": "application/json" },
+        body: JSON.stringify({
+          from: resendFrom,
+          to: [adminTo],
+          subject: `[CONTEX 문의] ${body.company || body.name}`,
+          html: `
+            <h2>새 문의가 접수되었습니다.</h2>
+            <p><b>회사/이름:</b> ${body.company || "-"}</p>
+            <p><b>담당자:</b> ${body.name || "-"}</p>
+            <p><b>이메일:</b> ${email}</p>
+            <p><b>연락처:</b> ${formattedPhone || "-"}</p>
+            <hr/>
+            <p><b>내용:</b></p>
+            <p>${(body.message || "").replace(/\n/g, "<br/>")}</p>
+          `,
+        }),
+      }).catch(() => {}); // 알림 실패해도 폼 제출은 성공 처리
+    }
+
     return NextResponse.json({ ok: true, gasRaw: text });
   } catch {
     return NextResponse.json({ ok: false, error: "route_exception" }, { status: 500 });

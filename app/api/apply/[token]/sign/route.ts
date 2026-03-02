@@ -145,7 +145,7 @@ export async function POST(req: Request, { params }: Params) {
           <h3>입금 안내</h3>
           <p><b>금액:</b> ₩${contract.price.toLocaleString("ko-KR")} (부가세 별도)</p>
           <p>입금 안내는 담당자가 별도로 연락드립니다.</p>
-          <p>📞 +82-10-3653-1987 | ✉️ contexcorp@gmail.com</p>
+          <p>📞 +82-10-3653-1987 | ✉️ hello@contexcorp.com</p>
         `,
         pdfBuffer,
         pdfFilename: filename,

@@ -5,22 +5,32 @@ import {
   View,
   StyleSheet,
   Image,
+  Font,
   renderToBuffer,
 } from "@react-pdf/renderer";
+import path from "path";
+
+Font.register({
+  family: "NanumGothic",
+  fonts: [
+    { src: path.join(process.cwd(), "public/fonts/NanumGothic-Regular.ttf"), fontWeight: "normal" },
+    { src: path.join(process.cwd(), "public/fonts/NanumGothic-Bold.ttf"), fontWeight: "bold" },
+  ],
+});
 
 const styles = StyleSheet.create({
-  page: { fontFamily: "Helvetica", fontSize: 10, padding: 48, color: "#1e293b" },
-  title: { fontSize: 16, fontFamily: "Helvetica-Bold", textAlign: "center", marginBottom: 20 },
+  page: { fontFamily: "NanumGothic", fontSize: 10, padding: 48, color: "#1e293b" },
+  title: { fontSize: 16, fontFamily: "NanumGothic", fontWeight: "bold", textAlign: "center", marginBottom: 20 },
   section: { marginBottom: 10 },
-  heading: { fontSize: 11, fontFamily: "Helvetica-Bold", marginBottom: 4 },
+  heading: { fontSize: 11, fontFamily: "NanumGothic", fontWeight: "bold", marginBottom: 4 },
   row: { flexDirection: "row", marginBottom: 3 },
   label: { width: 110, color: "#64748b" },
   value: { flex: 1 },
   divider: { borderBottom: "1px solid #e2e8f0", marginVertical: 10 },
   clause: { marginBottom: 5, lineHeight: 1.5 },
-  clauseTitle: { fontFamily: "Helvetica-Bold" },
+  clauseTitle: { fontFamily: "NanumGothic", fontWeight: "bold" },
   totalBox: { border: "1px solid #3b82f6", borderRadius: 4, padding: 10, marginBottom: 12, backgroundColor: "#eff6ff" },
-  totalText: { fontSize: 13, fontFamily: "Helvetica-Bold", color: "#1d4ed8" },
+  totalText: { fontSize: 13, fontFamily: "NanumGothic", fontWeight: "bold", color: "#1d4ed8" },
   signBox: { marginTop: 16, border: "1px solid #e2e8f0", padding: 10, borderRadius: 4 },
   sigImg: { width: 160, height: 60, marginTop: 6 },
   small: { fontSize: 8, color: "#94a3b8" },
@@ -122,7 +132,7 @@ function ContractPdfDoc(props: ContractPdfProps) {
 
         {/* 페이지 하단 */}
         <Text style={styles.footer}>
-          CONTEX Corp. | contexcorp@gmail.com | +82-10-3653-1987 | {new Date().getFullYear()}
+          CONTEX Corp. | hello@contexcorp.com | +82-10-3653-1987 | {new Date().getFullYear()}
         </Text>
       </Page>
     </Document>
