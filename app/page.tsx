@@ -1,7 +1,7 @@
 "use client";
 
 import {
-  MapPin, Phone, Mail, CheckCircle2, ArrowRight,
+  MapPin, Phone, Mail, CheckCircle2,
   Store, Building2, Calendar, Smartphone, Zap, Users
 } from "lucide-react";
 import ContactForm from "./components/ContactForm";
@@ -26,9 +26,6 @@ export default function Page() {
             <a className="navlink" href="#process">진행 절차</a>
             <a className="navlink" href="#contact">문의</a>
           </nav>
-          <a href="#contact" className="btn hidden sm:inline-flex">
-            문의하기 <ArrowRight className="ml-2 h-4 w-4" />
-          </a>
         </div>
       </header>
 
@@ -148,19 +145,35 @@ export default function Page() {
           <p className="mt-2 text-slate-600">위치 독점권을 확보하고, 필요할 때만 추가 비용을 쓰는 합리적인 구조.</p>
         </div>
 
-        {/* 위치 독점권 */}
-        <div className="mt-10 flex justify-center">
-          <div className="card hover-card w-full max-w-sm">
-            <div className="p-5 border-b text-lg font-semibold">위치 독점권 (연간)</div>
+        {/* 위치 사용권 */}
+        <div className="mt-10 grid md:grid-cols-2 gap-6">
+          <div className="card hover-card">
+            <div className="p-5 border-b text-lg font-semibold flex items-center gap-2">
+              일반 GPS 위치 사용권
+              <span className="text-xs font-normal text-slate-500 border border-slate-300 rounded-full px-2 py-0.5">연간</span>
+            </div>
             <div className="p-5">
               <div className="text-3xl font-extrabold">₩200,000 <span className="text-base font-medium">/ 년</span></div>
               <p className="mt-2 text-sm text-slate-600">원하는 GPS 좌표에 연간 독점 AR 노출권을 확보합니다.</p>
               <ul className="mt-4 space-y-2 text-sm text-slate-600">
-                {["좌표 독점 운영권", "GPS 오차 ±2m"].map(x => (
-                  <li key={x} className="bullet"><CheckCircle2 className="icon" /> {x}</li>
-                ))}
+                <li className="bullet"><CheckCircle2 className="icon" /> 좌표 독점 운영권</li>
+                <li className="bullet"><CheckCircle2 className="icon" /> GPS 오차 ±2m</li>
               </ul>
-              <a href="#contact" className="btn mt-6 w-full">상담 신청</a>
+            </div>
+          </div>
+          <div className="card hover-card">
+            <div className="p-5 border-b text-lg font-semibold flex items-center gap-2">
+              대중집합공간 위치 사용권
+              <span className="text-xs font-normal text-orange-700 border border-orange-200 rounded-full px-2 py-0.5 bg-orange-50">일 단위</span>
+            </div>
+            <div className="p-5">
+              <div className="text-3xl font-extrabold">₩150,000 <span className="text-base font-medium">/ 일</span></div>
+              <p className="mt-2 text-sm text-slate-600">CONTEX가 보유한 대중집합공간에 AR 광고를 집행합니다. 원하는 일수만큼 유연하게 운영하세요.</p>
+              <ul className="mt-4 space-y-2 text-sm text-slate-600">
+                <li className="bullet"><CheckCircle2 className="icon" /> 유동 인구 밀집 공간</li>
+                <li className="bullet"><CheckCircle2 className="icon" /> 일 단위 자유로운 기간 설정</li>
+                <li className="bullet"><CheckCircle2 className="icon" /> 콘텐츠 별도 선택 가능</li>
+              </ul>
             </div>
           </div>
         </div>
@@ -174,7 +187,6 @@ export default function Page() {
               <div className="p-5">
                 <div className="text-3xl font-extrabold">₩150,000 <span className="text-base font-medium">/ 회</span></div>
                 <p className="mt-2 text-sm text-slate-600">브랜드 가이드에 맞는 AR 배너를 기획·디자인·최적화까지 맞춤 제작합니다.</p>
-                <a href="#contact" className="btn mt-6 w-full">제작 문의</a>
               </div>
             </div>
             <div className="card hover-card">
@@ -182,7 +194,6 @@ export default function Page() {
               <div className="p-5">
                 <div className="text-3xl font-extrabold">₩20,000 <span className="text-base font-medium">/ 회</span></div>
                 <p className="mt-2 text-sm text-slate-600">완성된 파일을 직접 전달 시 단순 교체. 별도 디자인 작업 없이 빠르게 업데이트.</p>
-                <a href="#contact" className="btn mt-6 w-full">변경 요청</a>
               </div>
             </div>
           </div>
@@ -198,7 +209,6 @@ export default function Page() {
             <div className="p-5">
               <div className="text-3xl font-extrabold">₩60,000 <span className="text-base font-medium">/ 회</span></div>
               <p className="mt-2 text-sm text-slate-600">완성된 3D 소재 파일을 전달하면 서버에 등록 후 기존 배너와 교체합니다.</p>
-              <a href="#contact" className="btn mt-6 w-full">교체 요청</a>
             </div>
           </div>
 
@@ -213,7 +223,6 @@ export default function Page() {
                 <div className="p-5">
                   <div className="text-3xl font-extrabold">₩550,000</div>
                   <p className="mt-2 text-sm text-slate-600">자연스러운 모션과 루프가 가능한 기본 길이입니다.</p>
-                  <a href="#contact" className="btn mt-6 w-full">문의하기</a>
                 </div>
               </div>
               <div className="card hover-card border-blue-200">
@@ -224,7 +233,6 @@ export default function Page() {
                   <div className="text-3xl font-extrabold">₩1,067,000</div>
                   <p className="mt-1 text-xs text-blue-600 font-medium">3% 할인 적용</p>
                   <p className="mt-2 text-sm text-slate-600">풍부한 연출과 스토리텔링이 가능한 가장 많이 선택하는 길이입니다.</p>
-                  <a href="#contact" className="btn mt-6 w-full">문의하기</a>
                 </div>
               </div>
               <div className="card hover-card">
@@ -233,7 +241,6 @@ export default function Page() {
                   <div className="text-3xl font-extrabold">₩1,567,500</div>
                   <p className="mt-1 text-xs text-slate-500 font-medium">5% 할인 적용</p>
                   <p className="mt-2 text-sm text-slate-600">긴 스토리와 다양한 씬 전환이 가능한 프리미엄 모션 배너입니다.</p>
-                  <a href="#contact" className="btn mt-6 w-full">문의하기</a>
                 </div>
               </div>
             </div>
@@ -273,7 +280,7 @@ export default function Page() {
             <p className="mt-2 text-slate-600">어떤 위치에, 어떤 목적으로 활용하고 싶은지 편하게 알려주세요. 빠르게 연락드립니다.</p>
             <div className="mt-6 space-y-3 text-sm">
               <div className="flex items-center gap-2"><Phone className="h-4 w-4" /> +82-10-3653-1987</div>
-              <div className="flex items-center gap-2"><Mail className="h-4 w-4" /> contexcorp@gmail.com</div>
+              <div className="flex items-center gap-2"><Mail className="h-4 w-4" /> contact@contexcorp.com</div>
             </div>
           </div>
           <div className="card">
