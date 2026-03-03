@@ -24,13 +24,27 @@ export async function GET(_req: Request, { params }: Params) {
       .single();
     if (cErr) throw cErr;
 
-    const { data: signature } = await supabaseAdmin
+    // maybeSingle(): 행이 없으면 data=null, 에러 없음 (single()은 행 없을 때 에러)
+    const { data: signature, error: sigErr } = await supabaseAdmin
       .from("signatures")
       .select("signer_name,signer_email,signature_image,created_at")
       .eq("contract_id", id)
       .order("created_at", { ascending: false })
       .limit(1)
-      .single();
+      .maybeSingle();
+
+    if (sigErr) {
+      // signature_image 컬럼이 DB에 없는 경우 fallback
+      console.error("[contracts/id] sig query error:", sigErr.message);
+      const { data: sigFallback } = await supabaseAdmin
+        .from("signatures")
+        .select("signer_name,signer_email,created_at")
+        .eq("contract_id", id)
+        .order("created_at", { ascending: false })
+        .limit(1)
+        .maybeSingle();
+      return NextResponse.json({ ok: true, contract: { ...contract, client, signature: sigFallback } });
+    }
 
     return NextResponse.json({ ok: true, contract: { ...contract, client, signature } });
   } catch (e: any) {
