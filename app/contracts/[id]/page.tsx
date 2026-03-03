@@ -1,6 +1,5 @@
 // app/contracts/[id]/page.tsx
 import { getBaseUrl } from "@/lib/get-base-url";
-import SignForm from "./SignForm";
 
 export const dynamic = "force-dynamic";
 
@@ -32,9 +31,8 @@ function ContractView({ id, data }: { id: string; data: any }) {
   const { title, terms, price, status, client } = data ?? {};
   return (
     <div className="container py-12">
-      <div className="mb-8 flex items-center justify-between">
+      <div className="mb-8">
         <a href="/contracts" className="navlink text-sm">&larr; 목록으로</a>
-        <a href="/" className="navlink text-sm">홈으로</a>
       </div>
 
       <div className="card p-6">
@@ -55,7 +53,6 @@ function ContractView({ id, data }: { id: string; data: any }) {
           {terms}
         </div>
 
-        {status !== "signed" && <SignForm id={id} />}
       </div>
     </div>
   );

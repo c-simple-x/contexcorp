@@ -5,8 +5,8 @@ export default function AdminHeader() {
         <a href="/admin" className="font-extrabold tracking-tight text-white">
           CONTEX <span className="font-semibold opacity-50">Admin</span>
         </a>
-        <a href="/" className="text-sm text-slate-400 hover:text-white transition-colors">
-          ← 홈페이지
+        <a href="/" className="text-slate-400 hover:text-white transition-colors" title="홈으로">
+          🏠
         </a>
       </div>
     </header>
