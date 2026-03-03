@@ -25,17 +25,17 @@ export default function ContractActions({ contractId, status, clientEmail }: Pro
     setResending(false);
   }
 
+  if (!clientEmail) return null;
+
   return (
     <div className="flex items-center gap-2 flex-wrap justify-end">
-      {status === "signed" && clientEmail && (
-        <button
-          className="text-xs px-3 py-1.5 rounded border border-blue-300 text-blue-700 hover:bg-blue-50 whitespace-nowrap"
-          onClick={resendEmail}
-          disabled={resending}
-        >
-          {resending ? "발송 중…" : "이메일 재발송"}
-        </button>
-      )}
+      <button
+        className="text-xs px-3 py-1.5 rounded border border-blue-300 text-blue-700 hover:bg-blue-50 whitespace-nowrap"
+        onClick={resendEmail}
+        disabled={resending}
+      >
+        {resending ? "발송 중…" : "계약서 이메일 재발송"}
+      </button>
       {resendMsg && (
         <span className={`text-xs ${resendMsg.startsWith("발송") ? "text-green-600" : "text-red-600"}`}>
           {resendMsg}
