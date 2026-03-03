@@ -1,6 +1,7 @@
 // app/contracts/[id]/page.tsx
 import { getBaseUrl } from "@/lib/get-base-url";
 import ContractActions from "./ContractActions";
+import PrintButton from "./PrintButton";
 
 export const dynamic = "force-dynamic";
 
@@ -59,12 +60,7 @@ function ContractView({ id, data }: { id: string; data: any }) {
         <div className="mb-6 flex items-center justify-between print:hidden">
           <a href="/admin/contracts" className="navlink text-sm">← 목록으로</a>
           <div className="flex items-center gap-2">
-            <button
-              onClick={() => window.print()}
-              className="text-xs px-3 py-1.5 rounded border border-slate-300 text-slate-600 hover:bg-slate-50"
-            >
-              인쇄 / PDF 저장
-            </button>
+            <PrintButton />
             <ContractActions contractId={id} status={status} clientEmail={client?.email} />
           </div>
         </div>
