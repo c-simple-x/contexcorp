@@ -18,7 +18,6 @@ type ContractRow = {
   title: string;
   price: number;
   status: string;
-  payment_confirmed: boolean;
   created_at: string;
   client?: { company?: string | null; name?: string | null };
 };
@@ -64,20 +63,6 @@ export default function AdminPage() {
     });
     const data = await res.json().catch(() => ({}));
     if (data.ok) setContracts(data.contracts ?? []);
-  }
-
-  async function togglePayment(contractId: string, current: boolean) {
-    const s = sessionStorage.getItem("admin_secret") || secret;
-    const res = await fetch(`/api/admin/contracts/${contractId}`, {
-      method: "PATCH",
-      headers: { "Content-Type": "application/json", "x-admin-secret": s },
-      body: JSON.stringify({ payment_confirmed: !current }),
-    });
-    if (res.ok) {
-      setContracts((prev) =>
-        prev.map((c) => c.id === contractId ? { ...c, payment_confirmed: !current } : c)
-      );
-    }
   }
 
   useEffect(() => {
@@ -194,14 +179,13 @@ export default function AdminPage() {
 
       {/* 계약 목록 */}
       <div className="card overflow-hidden mb-8">
-        <div className="p-5 border-b text-lg font-semibold">계약 목록 (입금 확인)</div>
+        <div className="p-5 border-b text-lg font-semibold">계약 목록</div>
         <table className="w-full text-sm">
           <thead className="bg-slate-50">
             <tr>
               <th className="text-left px-4 py-3">고객</th>
               <th className="text-left px-4 py-3">금액</th>
               <th className="text-left px-4 py-3">상태</th>
-              <th className="text-left px-4 py-3">입금 확인</th>
               <th className="text-left px-4 py-3">생성일</th>
               <th className="text-left px-4 py-3">보기</th>
             </tr>
@@ -209,7 +193,7 @@ export default function AdminPage() {
           <tbody>
             {contracts.length === 0 && (
               <tr>
-                <td colSpan={6} className="px-4 py-6 text-center text-slate-500">계약 없음</td>
+                <td colSpan={5} className="px-4 py-6 text-center text-slate-500">계약 없음</td>
               </tr>
             )}
             {contracts.map((c) => (
@@ -223,18 +207,6 @@ export default function AdminPage() {
                   <span className={`rounded-full border px-2 py-0.5 text-xs ${c.status === "signed" ? "border-green-300 text-green-700" : "border-slate-300"}`}>
                     {c.status === "signed" ? "서명 완료" : c.status}
                   </span>
-                </td>
-                <td className="px-4 py-3">
-                  <label className="flex items-center gap-2 cursor-pointer">
-                    <input
-                      type="checkbox"
-                      checked={!!c.payment_confirmed}
-                      onChange={() => togglePayment(c.id, !!c.payment_confirmed)}
-                    />
-                    <span className={c.payment_confirmed ? "text-green-700 font-semibold" : "text-slate-400"}>
-                      {c.payment_confirmed ? "입금 확인" : "미확인"}
-                    </span>
-                  </label>
                 </td>
                 <td className="px-4 py-3">{new Date(c.created_at).toLocaleString("ko-KR")}</td>
                 <td className="px-4 py-3">
