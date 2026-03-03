@@ -277,12 +277,20 @@ export default function AdminPage() {
         maxItems={3}
         viewAllHref="/admin/prepayment"
         action={(c) => (
-          <button
-            className="text-xs px-2 py-1 rounded border border-orange-300 text-orange-700 hover:bg-orange-50 whitespace-nowrap"
-            onClick={() => confirmPayment(c.id)}
-          >
-            입금 확인
-          </button>
+          <div className="flex gap-1 flex-wrap">
+            <button
+              className="text-xs px-2 py-1 rounded border border-orange-300 text-orange-700 hover:bg-orange-50 whitespace-nowrap"
+              onClick={() => confirmPayment(c.id)}
+            >
+              입금 확인
+            </button>
+            <button
+              className="text-xs px-2 py-1 rounded border border-red-400 text-red-700 hover:bg-red-50 whitespace-nowrap"
+              onClick={() => cancelContract(c.id)}
+            >
+              계약 취소
+            </button>
+          </div>
         )}
       />
 
@@ -333,12 +341,20 @@ export default function AdminPage() {
         maxItems={3}
         viewAllHref="/admin/onhold"
         action={(c) => (
-          <button
-            className="text-xs px-2 py-1 rounded border border-yellow-300 text-yellow-700 hover:bg-yellow-50 whitespace-nowrap"
-            onClick={() => unhold(c.id)}
-          >
-            보류 해제
-          </button>
+          <div className="flex gap-1 flex-wrap">
+            <button
+              className="text-xs px-2 py-1 rounded border border-yellow-300 text-yellow-700 hover:bg-yellow-50 whitespace-nowrap"
+              onClick={() => unhold(c.id)}
+            >
+              보류 해제
+            </button>
+            <button
+              className="text-xs px-2 py-1 rounded border border-red-400 text-red-700 hover:bg-red-50 whitespace-nowrap"
+              onClick={() => cancelContract(c.id)}
+            >
+              계약 취소
+            </button>
+          </div>
         )}
       />
 

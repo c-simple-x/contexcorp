@@ -7,7 +7,7 @@ import { useAdminContracts } from "@/app/admin/_hooks";
 export default function PrepaymentPage() {
   const [authed, setAuthed] = useState(false);
 
-  const { load, prePayment, confirmPayment } = useAdminContracts();
+  const { load, prePayment, confirmPayment, cancelContract } = useAdminContracts();
 
   useEffect(() => {
     const s = sessionStorage.getItem("admin_secret");
@@ -36,12 +36,20 @@ export default function PrepaymentPage() {
         contracts={prePayment}
         emptyText="입금 대기 중인 계약이 없습니다."
         action={(c) => (
-          <button
-            className="text-xs px-2 py-1 rounded border border-orange-300 text-orange-700 hover:bg-orange-50 whitespace-nowrap"
-            onClick={() => confirmPayment(c.id)}
-          >
-            입금 확인
-          </button>
+          <div className="flex gap-1 flex-wrap">
+            <button
+              className="text-xs px-2 py-1 rounded border border-orange-300 text-orange-700 hover:bg-orange-50 whitespace-nowrap"
+              onClick={() => confirmPayment(c.id)}
+            >
+              입금 확인
+            </button>
+            <button
+              className="text-xs px-2 py-1 rounded border border-red-400 text-red-700 hover:bg-red-50 whitespace-nowrap"
+              onClick={() => cancelContract(c.id)}
+            >
+              계약 취소
+            </button>
+          </div>
         )}
       />
     </div>
