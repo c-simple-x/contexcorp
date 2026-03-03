@@ -1,10 +1,26 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import { useAdminContracts } from "@/app/admin/_hooks";
+
+const STATUS_LABEL: Record<string, string> = {
+  signed: "서명완료",
+  on_hold: "보류",
+  completed: "종료",
+  cancelled: "취소",
+};
+
+const STATUS_COLOR: Record<string, string> = {
+  signed: "border-blue-300 text-blue-700 bg-blue-50",
+  on_hold: "border-yellow-300 text-yellow-700 bg-yellow-50",
+  completed: "border-slate-300 text-slate-600 bg-slate-50",
+  cancelled: "border-red-200 text-red-600 bg-red-50",
+};
 
 export default function AdminContractsPage() {
   const [authed, setAuthed] = useState(false);
+  const [query, setQuery] = useState("");
+  const [statusFilter, setStatusFilter] = useState<string>("all");
   const { contracts, load } = useAdminContracts();
 
   useEffect(() => {
@@ -17,6 +33,20 @@ export default function AdminContractsPage() {
     }
   }, [load]);
 
+  const filtered = useMemo(() => {
+    return contracts.filter((c) => {
+      const q = query.trim().toLowerCase();
+      const matchQuery =
+        !q ||
+        c.title?.toLowerCase().includes(q) ||
+        c.client?.name?.toLowerCase().includes(q) ||
+        c.client?.company?.toLowerCase().includes(q);
+      const matchStatus =
+        statusFilter === "all" || c.status === statusFilter;
+      return matchQuery && matchStatus;
+    });
+  }, [contracts, query, statusFilter]);
+
   if (!authed) return null;
 
   return (
@@ -24,7 +54,28 @@ export default function AdminContractsPage() {
       <div className="mb-6">
         <a href="/admin" className="navlink text-sm">← 대시보드</a>
       </div>
-      <h1 className="text-2xl font-extrabold mb-8">전체 계약 목록</h1>
+      <h1 className="text-2xl font-extrabold mb-6">전체 계약 목록</h1>
+
+      {/* 검색 / 필터 */}
+      <div className="flex flex-col sm:flex-row gap-3 mb-4">
+        <input
+          className="input flex-1"
+          placeholder="고객명, 상호, 계약명 검색…"
+          value={query}
+          onChange={(e) => setQuery(e.target.value)}
+        />
+        <select
+          className="input w-full sm:w-40"
+          value={statusFilter}
+          onChange={(e) => setStatusFilter(e.target.value)}
+        >
+          <option value="all">전체 상태</option>
+          <option value="signed">서명완료</option>
+          <option value="on_hold">보류</option>
+          <option value="completed">종료</option>
+          <option value="cancelled">취소</option>
+        </select>
+      </div>
 
       <div className="card overflow-hidden">
         <table className="w-full text-sm">
@@ -38,30 +89,40 @@ export default function AdminContractsPage() {
             </tr>
           </thead>
           <tbody>
-            {contracts.length === 0 && (
+            {filtered.length === 0 && (
               <tr>
                 <td colSpan={5} className="px-4 py-6 text-center text-slate-500">
-                  등록된 계약이 없습니다.
+                  {query || statusFilter !== "all"
+                    ? "검색 결과가 없습니다."
+                    : "등록된 계약이 없습니다."}
                 </td>
               </tr>
             )}
-            {contracts.map((c) => (
+            {filtered.map((c) => (
               <tr key={c.id} className="border-t">
                 <td className="px-4 py-3">
                   {c.client?.company ? `${c.client.company} ` : ""}
                   {c.client?.name ? `(${c.client.name})` : c.title}
                 </td>
-                <td className="px-4 py-3">
+                <td className="px-4 py-3 tabular-nums">
                   ₩{new Intl.NumberFormat("ko-KR").format(c.price ?? 0)}
                 </td>
                 <td className="px-4 py-3">
-                  <span className="rounded-full border px-2 py-0.5 text-xs">{c.status}</span>
+                  <span
+                    className={`rounded-full border px-2 py-0.5 text-xs ${
+                      STATUS_COLOR[c.status] ?? "border-slate-300 text-slate-600"
+                    }`}
+                  >
+                    {STATUS_LABEL[c.status] ?? c.status}
+                  </span>
                 </td>
                 <td className="px-4 py-3">
                   {new Date(c.created_at).toLocaleString("ko-KR")}
                 </td>
                 <td className="px-4 py-3">
-                  <a href={`/contracts/${c.id}`} className="navlink text-xs">열기 →</a>
+                  <a href={`/contracts/${c.id}`} className="navlink text-xs">
+                    열기 →
+                  </a>
                 </td>
               </tr>
             ))}
@@ -69,7 +130,9 @@ export default function AdminContractsPage() {
         </table>
       </div>
 
-      <p className="text-xs text-slate-500 mt-3">* 이 페이지는 내부 관리용입니다.</p>
+      <p className="text-xs text-slate-500 mt-3">
+        * 이 페이지는 내부 관리용입니다.
+      </p>
     </div>
   );
 }

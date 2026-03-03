@@ -23,12 +23,15 @@ export default function AdminPage() {
     inProgress,
     onHold,
     completed,
+    cancelled,
     confirmPayment,
     revokePayment,
     markOnHold,
     unhold,
     markCompleted,
     reactivate,
+    cancelContract,
+    restoreContract,
   } = useAdminContracts();
 
   async function loadTokens(s: string) {
@@ -150,6 +153,33 @@ export default function AdminPage() {
     if (res.ok) setTokens((prev) => prev.filter((t) => t.id !== id));
   }
 
+  async function extendToken(id: string) {
+    const s = sessionStorage.getItem("admin_secret") || secret;
+    const res = await fetch(`/api/admin/tokens/${id}`, {
+      method: "PATCH",
+      headers: { "x-admin-secret": s },
+    });
+    if (res.ok) {
+      const data = await res.json();
+      setTokens((prev) =>
+        prev.map((t) => (t.id === id ? { ...t, expires_at: data.expires_at } : t))
+      );
+    }
+  }
+
+  // 통계 계산
+  const now2 = new Date();
+  const thisMonthContracts = contracts.filter((c) => {
+    const d = new Date(c.created_at);
+    return d.getMonth() === now2.getMonth() && d.getFullYear() === now2.getFullYear();
+  });
+  const totalRevenue = contracts
+    .filter((c) => c.payment_confirmed)
+    .reduce((sum, c) => sum + (c.price ?? 0), 0);
+  const thisMonthRevenue = thisMonthContracts
+    .filter((c) => c.payment_confirmed)
+    .reduce((sum, c) => sum + (c.price ?? 0), 0);
+
   return (
     <div className="container py-12">
       <div className="mb-8 flex items-center justify-between">
@@ -165,6 +195,21 @@ export default function AdminPage() {
         >
           로그아웃
         </button>
+      </div>
+
+      {/* 통계 카드 */}
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+        {[
+          { label: "이번달 신규", value: `${thisMonthContracts.length}건` },
+          { label: "진행중", value: `${inProgress.length}건` },
+          { label: "이번달 매출", value: `₩${new Intl.NumberFormat("ko-KR").format(thisMonthRevenue)}` },
+          { label: "누적 매출", value: `₩${new Intl.NumberFormat("ko-KR").format(totalRevenue)}` },
+        ].map((stat) => (
+          <div key={stat.label} className="card p-4">
+            <p className="text-xs text-slate-500">{stat.label}</p>
+            <p className="text-xl font-extrabold mt-1 tabular-nums">{stat.value}</p>
+          </div>
+        ))}
       </div>
 
       {/* 신규 계약 URL 생성 */}
@@ -269,6 +314,12 @@ export default function AdminPage() {
             >
               입금 취소
             </button>
+            <button
+              className="text-xs px-2 py-1 rounded border border-red-400 text-red-700 hover:bg-red-50 whitespace-nowrap"
+              onClick={() => cancelContract(c.id)}
+            >
+              계약 취소
+            </button>
           </div>
         )}
       />
@@ -305,6 +356,24 @@ export default function AdminPage() {
             onClick={() => reactivate(c.id)}
           >
             재확인
+          </button>
+        )}
+      />
+
+      {/* 취소됨 */}
+      <ContractTable
+        title="취소됨"
+        dotColor="bg-red-400"
+        contracts={cancelled}
+        emptyText="취소된 계약이 없습니다."
+        maxItems={3}
+        viewAllHref="/admin/cancelled"
+        action={(c) => (
+          <button
+            className="text-xs px-2 py-1 rounded border border-slate-300 text-slate-600 hover:bg-slate-50 whitespace-nowrap"
+            onClick={() => restoreContract(c.id)}
+          >
+            복원
           </button>
         )}
       />
@@ -349,7 +418,7 @@ export default function AdminPage() {
                   </span>
                 </td>
                 <td className="px-4 py-3">
-                  <div className="flex gap-2">
+                  <div className="flex gap-2 flex-wrap">
                     <button
                       className="navlink text-xs"
                       onClick={() =>
@@ -357,6 +426,12 @@ export default function AdminPage() {
                       }
                     >
                       복사
+                    </button>
+                    <button
+                      className="text-xs px-2 py-1 rounded border border-blue-200 text-blue-600 hover:bg-blue-50 whitespace-nowrap"
+                      onClick={() => extendToken(t.id)}
+                    >
+                      연장
                     </button>
                     <button
                       className="text-xs px-2 py-1 rounded border border-red-200 text-red-600 hover:bg-red-50 whitespace-nowrap"

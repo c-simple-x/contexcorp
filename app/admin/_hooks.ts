@@ -36,6 +36,7 @@ export function filterContracts(contracts: ContractRow[]) {
     ),
     onHold: contracts.filter((c) => c.status === "on_hold"),
     completed: contracts.filter((c) => c.status === "completed"),
+    cancelled: contracts.filter((c) => c.status === "cancelled"),
   };
 }
 
@@ -78,6 +79,9 @@ export function useAdminContracts() {
     unhold: (id: string) => patch(id, { status: "signed" }),
     markCompleted: (id: string) => patch(id, { status: "completed" }),
     reactivate: (id: string) => patch(id, { status: "signed" }),
+    cancelContract: (id: string) => patch(id, { status: "cancelled" }),
+    restoreContract: (id: string) =>
+      patch(id, { status: "signed", payment_confirmed: false }),
     setContracts,
     ...filterContracts(contracts),
   };

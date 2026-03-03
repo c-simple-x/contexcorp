@@ -7,7 +7,7 @@ import { useAdminContracts } from "@/app/admin/_hooks";
 export default function InProgressPage() {
   const [authed, setAuthed] = useState(false);
 
-  const { load, inProgress, markCompleted, markOnHold, revokePayment } =
+  const { load, inProgress, markCompleted, markOnHold, revokePayment, cancelContract } =
     useAdminContracts();
 
   useEffect(() => {
@@ -55,6 +55,12 @@ export default function InProgressPage() {
               onClick={() => revokePayment(c.id)}
             >
               입금 취소
+            </button>
+            <button
+              className="text-xs px-2 py-1 rounded border border-red-400 text-red-700 hover:bg-red-50 whitespace-nowrap"
+              onClick={() => cancelContract(c.id)}
+            >
+              계약 취소
             </button>
           </div>
         )}

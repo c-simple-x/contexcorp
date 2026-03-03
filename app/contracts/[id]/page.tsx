@@ -1,5 +1,6 @@
 // app/contracts/[id]/page.tsx
 import { getBaseUrl } from "@/lib/get-base-url";
+import ContractActions from "./ContractActions";
 
 export const dynamic = "force-dynamic";
 
@@ -28,11 +29,12 @@ export default async function ContractPage({ params }: { params: { id: string } 
 }
 
 function ContractView({ id, data }: { id: string; data: any }) {
-  const { title, terms, price, status, client } = data ?? {};
+  const { title, terms, price, status, client, signature } = data ?? {};
   return (
     <div className="container py-12">
-      <div className="mb-8">
+      <div className="mb-8 flex items-center justify-between">
         <a href="/admin/contracts" className="navlink text-sm">&larr; 목록으로</a>
+        <ContractActions contractId={id} status={status} clientEmail={client?.email} />
       </div>
 
       <div className="card p-6">
@@ -44,7 +46,9 @@ function ContractView({ id, data }: { id: string; data: any }) {
           </p>
           {client && (
             <p className="text-slate-600 text-sm mt-1">
-              고객: {client.company ? `${client.company} / ` : ""}{client.name} ({client.email}{client.phone ? `, ${client.phone}` : ""})
+              고객: {client.company ? `${client.company} / ` : ""}{client.name}
+              {" "}({client.email}{client.phone ? `, ${client.phone}` : ""})
+              {client.address && <> · {client.address}</>}
             </p>
           )}
         </div>
@@ -53,6 +57,26 @@ function ContractView({ id, data }: { id: string; data: any }) {
           {terms}
         </div>
 
+        {/* 서명 정보 */}
+        {signature && (
+          <div className="mt-6 border-t pt-4">
+            <p className="text-sm font-semibold mb-3">서명 정보</p>
+            <p className="text-sm text-slate-600">
+              서명자: {signature.signer_name} ({signature.signer_email})
+              · {new Date(signature.created_at).toLocaleString("ko-KR")}
+            </p>
+            {signature.signature_image && (
+              <div className="mt-3 inline-block border rounded-lg p-2 bg-slate-50">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src={signature.signature_image}
+                  alt="서명"
+                  className="h-24 object-contain"
+                />
+              </div>
+            )}
+          </div>
+        )}
       </div>
     </div>
   );
