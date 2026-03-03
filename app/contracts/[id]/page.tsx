@@ -46,6 +46,9 @@ function ContractView({ id, data }: { id: string; data: any }) {
     : STATUS_MAP[status] ?? { label: status, color: "bg-slate-100 text-slate-600 border-slate-200" };
 
   const items: { label: string; price: number }[] = Array.isArray(selected_items) ? selected_items : [];
+  const basePrice = price ?? 0;
+  const vat = Math.round(basePrice * 0.1);
+  const totalWithVat = basePrice + vat;
   const signedAt = signature?.signed_at ? new Date(signature.signed_at) : null;
   const createdAt = created_at ? new Date(created_at) : null;
 
@@ -107,14 +110,22 @@ function ContractView({ id, data }: { id: string; data: any }) {
                   </span>
                 </div>
                 <div className="flex justify-between border-b pb-2">
-                  <span className="text-slate-500">총 금액 (VAT 별도)</span>
-                  <span className="font-extrabold text-blue-700">₩{fmt(price ?? 0)}</span>
+                  <span className="text-slate-500">공급가액 (VAT 별도)</span>
+                  <span className="font-medium">₩{fmt(basePrice)}</span>
                 </div>
                 <div className="flex justify-between border-b pb-2">
                   <span className="text-slate-500">입금 상태</span>
                   <span className={`font-semibold ${payment_confirmed ? "text-green-600" : "text-orange-600"}`}>
                     {payment_confirmed ? "입금 확인" : "입금 대기"}
                   </span>
+                </div>
+                <div className="flex justify-between border-b pb-2">
+                  <span className="text-slate-500">부가세 (10%)</span>
+                  <span className="font-medium">₩{fmt(vat)}</span>
+                </div>
+                <div className="flex justify-between border-b pb-2 col-span-2">
+                  <span className="text-slate-700 font-semibold">실 입금액 (VAT 포함)</span>
+                  <span className="font-extrabold text-blue-700 text-base">₩{fmt(totalWithVat)}</span>
                 </div>
               </div>
             </section>
@@ -126,16 +137,10 @@ function ContractView({ id, data }: { id: string; data: any }) {
                 {/* 공급자 */}
                 <div className="rounded-xl border bg-slate-50 p-4">
                   <p className="text-xs font-semibold text-slate-400 uppercase mb-2">공급자 (갑)</p>
-                  <div className="flex items-start justify-between gap-2">
-                    <div>
-                      <p className="font-bold text-sm">CONTEX Corp. (콘텍스)</p>
-                      <p className="text-sm text-slate-600 mt-1">사업자등록번호: 181-48-00499</p>
-                      <p className="text-sm text-slate-600">대표: 홍정민</p>
-                      <p className="text-sm text-slate-600">이메일: hello@contexcorp.com</p>
-                    </div>
-                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img src="/ingam.png" alt="대표 도장" className="w-16 h-16 object-contain opacity-90 shrink-0" />
-                  </div>
+                  <p className="font-bold text-sm">CONTEX Corp. (콘텍스)</p>
+                  <p className="text-sm text-slate-600 mt-1">사업자등록번호: 181-48-00499</p>
+                  <p className="text-sm text-slate-600">대표: 홍정민</p>
+                  <p className="text-sm text-slate-600">이메일: hello@contexcorp.com</p>
                 </div>
                 {/* 고객 */}
                 <div className="rounded-xl border bg-slate-50 p-4">
@@ -179,9 +184,17 @@ function ContractView({ id, data }: { id: string; data: any }) {
                     </tbody>
                     <tfoot className="bg-slate-50 border-t-2 border-slate-200">
                       <tr>
-                        <td className="px-4 py-2.5 font-extrabold text-sm">합계 (VAT 별도)</td>
-                        <td className="px-4 py-2.5 text-right font-extrabold text-blue-700 tabular-nums">
-                          ₩{fmt(price ?? items.reduce((s, i) => s + i.price, 0))}
+                        <td className="px-4 py-2 text-sm text-slate-500">공급가액 (VAT 별도)</td>
+                        <td className="px-4 py-2 text-right text-slate-500 tabular-nums">₩{fmt(basePrice)}</td>
+                      </tr>
+                      <tr className="border-t border-slate-200">
+                        <td className="px-4 py-2 text-sm text-slate-500">부가세 (10%)</td>
+                        <td className="px-4 py-2 text-right text-slate-500 tabular-nums">₩{fmt(vat)}</td>
+                      </tr>
+                      <tr className="border-t-2 border-slate-300">
+                        <td className="px-4 py-2.5 font-extrabold text-sm">실 입금액 (VAT 포함)</td>
+                        <td className="px-4 py-2.5 text-right font-extrabold text-blue-700 tabular-nums text-base">
+                          ₩{fmt(totalWithVat)}
                         </td>
                       </tr>
                     </tfoot>
@@ -210,7 +223,10 @@ function ContractView({ id, data }: { id: string; data: any }) {
                 <div>
                   <p className="text-xs text-blue-500 font-semibold mb-0.5">계약금 입금 계좌</p>
                   <p className="text-sm font-bold text-blue-900">기업은행 458-060294-04019</p>
-                  <p className="text-sm text-blue-700">예금주: 홍정민 &nbsp;·&nbsp; 금액: ₩{fmt(price ?? 0)} <span className="text-xs font-normal">(VAT 별도)</span></p>
+                  <p className="text-sm text-blue-700">예금주: 홍정민</p>
+                  <p className="text-sm font-extrabold text-blue-900 mt-1">
+                    입금액: ₩{fmt(totalWithVat)} <span className="text-xs font-normal text-blue-600">(VAT 10% 포함 · 공급가 ₩{fmt(basePrice)})</span>
+                  </p>
                 </div>
               </div>
             </section>
