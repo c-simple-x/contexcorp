@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import KakaoAddressInput from "@/app/components/KakaoAddressInput";
 
 export type ClientInfo = {
   client_type: "individual" | "business";
@@ -159,13 +160,7 @@ export default function StepInfo({ onNext }: Props) {
         required
       />
 
-      <input
-        className="input"
-        placeholder="주소 *"
-        value={address}
-        onChange={(e) => setAddress(e.target.value)}
-        required
-      />
+      <KakaoAddressInput onChange={setAddress} />
 
       <label className="flex items-start gap-2 cursor-pointer text-sm text-slate-700">
         <input
