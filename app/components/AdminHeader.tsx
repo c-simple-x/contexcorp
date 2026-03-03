@@ -10,6 +10,7 @@ const NAV_LINKS = [
   { href: "/admin/inprogress", label: "진행중" },
   { href: "/admin/onhold", label: "보류" },
   { href: "/admin/completed", label: "종료됨" },
+  { href: "/admin/contracts", label: "전체 계약" },
 ];
 
 export default function AdminHeader() {

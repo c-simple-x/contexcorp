@@ -18,7 +18,7 @@ export default async function ContractPage({ params }: { params: { id: string } 
       <div className="container py-16">
         <h1 className="text-2xl font-bold">계약서를 찾을 수 없습니다.</h1>
         <p className="mt-2 text-slate-600">유효한 계약 ID인지 확인해 주세요.</p>
-        <a href="/contracts" className="navlink mt-4 inline-block">← 목록으로</a>
+        <a href="/admin/contracts" className="navlink mt-4 inline-block">← 목록으로</a>
       </div>
     );
   }
@@ -32,7 +32,7 @@ function ContractView({ id, data }: { id: string; data: any }) {
   return (
     <div className="container py-12">
       <div className="mb-8">
-        <a href="/contracts" className="navlink text-sm">&larr; 목록으로</a>
+        <a href="/admin/contracts" className="navlink text-sm">&larr; 목록으로</a>
       </div>
 
       <div className="card p-6">
