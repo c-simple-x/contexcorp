@@ -1,3 +1,5 @@
+import Header from "../components/Header";
+
 export const metadata = {
   title: "개인정보 처리방침 | CONTEX Corp.",
   description: "CONTEX Corp. 개인정보 처리방침",
@@ -5,6 +7,8 @@ export const metadata = {
 
 export default function PrivacyPage() {
   return (
+    <>
+      <Header />
     <main className="container py-12 max-w-3xl">
       <h1 className="text-3xl font-extrabold mb-1">개인정보 처리방침</h1>
       <p className="text-sm text-slate-500 mb-10">시행일자: 2025-10-18 · 최종 수정: 2026-03-01</p>
@@ -204,5 +208,6 @@ export default function PrivacyPage() {
         <p className="mt-1">본 방침은 2026년 3월 1일부터 시행됩니다.</p>
       </div>
     </main>
+    </>
   );
 }

@@ -5,6 +5,7 @@ import {
   Store, Building2, Calendar, Smartphone, Zap, Users
 } from "lucide-react";
 import ContactForm from "./components/ContactForm";
+import Header from "./components/Header";
 
 function Section({ id, className = "", children }: {
   id?: string; className?: string; children: React.ReactNode;
@@ -15,6 +16,7 @@ function Section({ id, className = "", children }: {
 export default function Page() {
   return (
     <div className="min-h-screen">
+      <Header />
       {/* HERO */}
       <div id="hero" className="hero-bg">
         <Section className="py-16 sm:py-20">
