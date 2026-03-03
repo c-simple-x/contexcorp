@@ -14,6 +14,7 @@ type ContractRow = {
 export default function ContractsListPage() {
   const [secret, setSecret] = useState("");
   const [authed, setAuthed] = useState(false);
+  const [checking, setChecking] = useState(true);
   const [authError, setAuthError] = useState("");
   const [list, setList] = useState<ContractRow[]>([]);
   const [loading, setLoading] = useState(false);
@@ -22,7 +23,9 @@ export default function ContractsListPage() {
     const saved = sessionStorage.getItem("admin_secret");
     if (saved) {
       setSecret(saved);
-      loadContracts(saved);
+      loadContracts(saved); // setChecking(false) called inside
+    } else {
+      setChecking(false);
     }
   }, []);
 
@@ -35,6 +38,7 @@ export default function ContractsListPage() {
       setAuthError("비밀번호가 틀렸습니다.");
       sessionStorage.removeItem("admin_secret");
       setLoading(false);
+      setChecking(false);
       return;
     }
     const json = await res.json().catch(() => ({}));
@@ -42,6 +46,7 @@ export default function ContractsListPage() {
     setAuthed(true);
     setAuthError("");
     setLoading(false);
+    setChecking(false);
   }
 
   function handleLogin(e: React.FormEvent) {
@@ -50,6 +55,8 @@ export default function ContractsListPage() {
     sessionStorage.setItem("admin_secret", secret);
     loadContracts(secret);
   }
+
+  if (checking) return null;
 
   if (!authed) {
     return (
