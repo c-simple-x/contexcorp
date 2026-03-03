@@ -6,12 +6,12 @@ export default function Header() {
           CONTEX <span className="font-semibold opacity-70">Corp.</span>
         </a>
         <nav className="hidden md:flex items-center gap-7 text-sm">
-          <a className="navlink" href="/#solutions">활용 대상</a>
-          <a className="navlink" href="/#showcase">AR 미리보기</a>
-          <a className="navlink" href="/#cases">실제 사례</a>
-          <a className="navlink" href="/#pricing">요금</a>
-          <a className="navlink" href="/#process">진행 절차</a>
-          <a className="navlink" href="/#contact">문의</a>
+          <a className="navlink" href="/#solutions">Use Cases</a>
+          <a className="navlink" href="/#showcase">AR Preview</a>
+          <a className="navlink" href="/#cases">Examples</a>
+          <a className="navlink" href="/#pricing">Pricing</a>
+          <a className="navlink" href="/#process">Process</a>
+          <a className="navlink" href="/#contact">Contact</a>
         </nav>
       </div>
     </header>

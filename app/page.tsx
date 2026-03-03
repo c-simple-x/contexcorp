@@ -155,7 +155,7 @@ export default function Page() {
       <Section id="pricing" className="py-16">
         <div className="text-center max-w-2xl mx-auto">
           <span className="pill">Pricing</span>
-          <h3 className="mt-3 text-3xl font-extrabold">투명한 요금 정책</h3>
+          <h3 className="mt-3 text-3xl font-extrabold">상품별 금액</h3>
           <p className="mt-2 text-slate-600">위치 독점권을 확보하고, 필요할 때만 추가 비용을 쓰는 합리적인 구조.</p>
         </div>
 
