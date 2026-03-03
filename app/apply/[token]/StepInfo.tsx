@@ -51,7 +51,11 @@ export default function StepInfo({ onNext }: Props) {
     setError("");
 
     if (!name.trim()) return setError("이름을 입력해주세요.");
+    if (!/^[가-힣a-zA-Z\s]{2,}$/.test(name.trim()))
+      return setError("올바른 이름을 입력해주세요. (한글 또는 영문)");
     if (type === "business" && !company.trim()) return setError("상호를 입력해주세요.");
+    if (type === "business" && /^[ㄱ-ㅎㅏ-ㅣ\s]+$/.test(company.trim()))
+      return setError("올바른 상호명을 입력해주세요.");
     if (type === "individual") {
       if (idFront.length !== 6 || idBack.length !== 7) return setError("주민등록번호를 올바르게 입력해주세요.");
     } else {
@@ -91,13 +95,18 @@ export default function StepInfo({ onNext }: Props) {
         />
       )}
 
-      <input
-        className="input"
-        placeholder={type === "business" ? "대표자명 *" : "성명 *"}
-        value={name}
-        onChange={(e) => setName(e.target.value)}
-        required
-      />
+      <div>
+        <input
+          className={`input ${name && !/^[가-힣a-zA-Z\s]{2,}$/.test(name.trim()) ? "border-red-400 focus:ring-red-300" : ""}`}
+          placeholder={type === "business" ? "대표자명 *" : "성명 *"}
+          value={name}
+          onChange={(e) => setName(e.target.value)}
+          required
+        />
+        {name && !/^[가-힣a-zA-Z\s]{2,}$/.test(name.trim()) && (
+          <p className="text-xs text-red-500 mt-1">한글 또는 영문으로 입력해주세요.</p>
+        )}
+      </div>
 
       <div>
         {type === "individual" ? (
