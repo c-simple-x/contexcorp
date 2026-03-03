@@ -37,6 +37,7 @@ export default function AdminPage() {
     });
     if (res.status === 401) {
       setAuthError("비밀번호가 틀렸습니다.");
+      setSecret("");
       sessionStorage.removeItem("admin_secret");
       setChecking(false);
       return;
@@ -61,7 +62,6 @@ export default function AdminPage() {
   useEffect(() => {
     const saved = sessionStorage.getItem("admin_secret");
     if (saved) {
-      setSecret(saved);
       loadTokens(saved); // setChecking(false) called inside
     } else {
       setChecking(false);
