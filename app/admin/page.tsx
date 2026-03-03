@@ -8,6 +8,7 @@ import { useAdminContracts, TokenRow } from "@/app/admin/_hooks";
 export default function AdminPage() {
   const [secret, setSecret] = useState("");
   const [authed, setAuthed] = useState(false);
+  const [checking, setChecking] = useState(true);
   const [authError, setAuthError] = useState("");
   const [tokens, setTokens] = useState<TokenRow[]>([]);
   const [label, setLabel] = useState("");
@@ -37,6 +38,7 @@ export default function AdminPage() {
     if (res.status === 401) {
       setAuthError("비밀번호가 틀렸습니다.");
       sessionStorage.removeItem("admin_secret");
+      setChecking(false);
       return;
     }
     const data = await res.json();
@@ -46,6 +48,7 @@ export default function AdminPage() {
       setAuthError("");
       load(s);
     }
+    setChecking(false);
   }
 
   function handleLogin(e: React.FormEvent) {
@@ -58,7 +61,9 @@ export default function AdminPage() {
     const saved = sessionStorage.getItem("admin_secret");
     if (saved) {
       setSecret(saved);
-      loadTokens(saved);
+      loadTokens(saved); // setChecking(false) called inside
+    } else {
+      setChecking(false);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -88,6 +93,8 @@ export default function AdminPage() {
       setTimeout(() => setCopied(false), 2000);
     });
   }
+
+  if (checking) return null;
 
   if (!authed) {
     return (
