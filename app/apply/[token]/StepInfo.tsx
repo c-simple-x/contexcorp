@@ -86,13 +86,18 @@ export default function StepInfo({ onNext }: Props) {
       </div>
 
       {type === "business" && (
-        <input
-          className="input"
-          placeholder="상호명 *"
-          value={company}
-          onChange={(e) => setCompany(e.target.value)}
-          required
-        />
+        <div>
+          <input
+            className={`input ${company && /^[ㄱ-ㅎㅏ-ㅣ\s]+$/.test(company.trim()) ? "border-red-400 focus:ring-red-300" : ""}`}
+            placeholder="상호명 *"
+            value={company}
+            onChange={(e) => setCompany(e.target.value)}
+            required
+          />
+          {company && /^[ㄱ-ㅎㅏ-ㅣ\s]+$/.test(company.trim()) && (
+            <p className="text-xs text-red-500 mt-1">올바른 상호명을 입력해주세요.</p>
+          )}
+        </div>
       )}
 
       <div>
