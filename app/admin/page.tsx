@@ -47,6 +47,7 @@ export default function AdminPage() {
       setAuthed(true);
       setAuthError("");
       load(s);
+      window.dispatchEvent(new Event("adminAuthChange"));
     }
     setChecking(false);
   }
@@ -158,6 +159,7 @@ export default function AdminPage() {
           onClick={() => {
             sessionStorage.removeItem("admin_secret");
             setAuthed(false);
+            window.dispatchEvent(new Event("adminAuthChange"));
           }}
         >
           로그아웃
