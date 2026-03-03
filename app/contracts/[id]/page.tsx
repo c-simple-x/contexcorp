@@ -55,7 +55,7 @@ function ContractView({ id, data }: { id: string; data: any }) {
           {terms}
         </div>
 
-        <SignForm id={id} />
+        {status !== "signed" && <SignForm id={id} />}
       </div>
     </div>
   );
