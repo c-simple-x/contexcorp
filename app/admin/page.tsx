@@ -159,6 +159,7 @@ export default function AdminPage() {
           onClick={() => {
             sessionStorage.removeItem("admin_secret");
             setAuthed(false);
+            setSecret("");
             window.dispatchEvent(new Event("adminAuthChange"));
           }}
         >
