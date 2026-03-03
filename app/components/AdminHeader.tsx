@@ -1,3 +1,5 @@
+import { House } from "lucide-react";
+
 export default function AdminHeader() {
   return (
     <header className="sticky top-0 z-50 border-b bg-slate-900 text-white">
@@ -6,7 +8,7 @@ export default function AdminHeader() {
           CONTEX <span className="font-semibold opacity-50">Admin</span>
         </a>
         <a href="/" className="text-slate-400 hover:text-white transition-colors" title="홈으로">
-          🏠
+          <House className="h-4 w-4" />
         </a>
       </div>
     </header>
