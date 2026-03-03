@@ -101,7 +101,13 @@ function ContractPdfDoc(props: ContractPdfProps) {
         </View>
 
         <View style={styles.totalBox}>
-          <Text style={styles.totalText}>합계 {formatPrice(price)} (부가세 별도)</Text>
+          <Text style={styles.totalText}>공급가액 {formatPrice(price)} (부가세 별도)</Text>
+          <Text style={{ fontSize: 10, color: "#475569", marginTop: 4 }}>
+            부가세(10%) {formatPrice(Math.round(price * 0.1))}
+          </Text>
+          <Text style={[styles.totalText, { marginTop: 6, color: "#dc2626" }]}>
+            총 입금 금액 {formatPrice(Math.round(price * 1.1))} (부가세 포함)
+          </Text>
         </View>
 
         <View style={styles.divider} />
@@ -109,9 +115,16 @@ function ContractPdfDoc(props: ContractPdfProps) {
         {/* 계약 조항 */}
         <View style={styles.section}>
           <Text style={styles.heading}>계약 조항</Text>
-          {terms.split("\n").map((line, i) => (
-            <Text key={i} style={styles.clause}>{line}</Text>
-          ))}
+          {terms.split("\n").map((line, i) => {
+            if (line.trim() === "") return <Text key={i} style={{ fontSize: 4 }}>{" "}</Text>;
+            const trimmed = line.trimStart();
+            const indent = line.length - trimmed.length;
+            return (
+              <Text key={i} style={[styles.clause, indent > 0 ? { paddingLeft: indent * 5 } : {}]}>
+                {trimmed}
+              </Text>
+            );
+          })}
         </View>
 
         <View style={styles.divider} />

@@ -50,11 +50,20 @@ export default function StepPreview({ info, products, contractId, onNext, onBack
               <span className="font-semibold tabular-nums">₩{item.price.toLocaleString("ko-KR")}</span>
             </div>
           ))}
-          <div className="border-t pt-2 mt-2 flex justify-between font-extrabold">
-            <span>합계</span>
-            <span className="text-blue-700">₩{products.total.toLocaleString("ko-KR")}</span>
+          <div className="border-t pt-2 mt-2 space-y-1">
+            <div className="flex justify-between text-sm text-slate-500">
+              <span>공급가액</span>
+              <span>₩{products.total.toLocaleString("ko-KR")}</span>
+            </div>
+            <div className="flex justify-between text-sm text-slate-500">
+              <span>부가세 (10%)</span>
+              <span>₩{Math.round(products.total * 0.1).toLocaleString("ko-KR")}</span>
+            </div>
+            <div className="flex justify-between font-extrabold border-t pt-1 mt-1">
+              <span>총 입금 금액</span>
+              <span className="text-blue-700">₩{Math.round(products.total * 1.1).toLocaleString("ko-KR")}</span>
+            </div>
           </div>
-          <p className="text-xs text-slate-500">부가세 별도</p>
         </div>
       </div>
 
