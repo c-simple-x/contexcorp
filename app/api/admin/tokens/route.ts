@@ -30,9 +30,11 @@ export async function POST(req: Request) {
   const label = String(body.label || "").trim() || null;
   const token = crypto.randomUUID();
 
+  const expires_at = new Date(Date.now() + 60 * 60 * 1000).toISOString(); // 1시간 후
+
   const { error } = await supabaseAdmin
     .from("contract_tokens")
-    .insert([{ token, label }]);
+    .insert([{ token, label, expires_at }]);
 
   if (error) return NextResponse.json({ ok: false, error: error.message }, { status: 500 });
 

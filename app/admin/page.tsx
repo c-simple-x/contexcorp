@@ -120,7 +120,34 @@ export default function AdminPage() {
     );
   }
 
+  const now = new Date();
   const unusedTokens = tokens.filter((t) => !t.used_at);
+  const activeTokens = unusedTokens.filter(
+    (t) => !t.expires_at || new Date(t.expires_at) > now
+  );
+  const expiredTokens = unusedTokens.filter(
+    (t) => t.expires_at && new Date(t.expires_at) <= now
+  );
+
+  function timeLeft(expiresAt: string | null): string {
+    if (!expiresAt) return "";
+    const diff = new Date(expiresAt).getTime() - Date.now();
+    if (diff <= 0) return "만료됨";
+    const mins = Math.floor(diff / 60000);
+    if (mins < 60) return `${mins}분 남음`;
+    const h = Math.floor(mins / 60);
+    const m = mins % 60;
+    return m > 0 ? `${h}시간 ${m}분 남음` : `${h}시간 남음`;
+  }
+
+  async function deleteToken(id: string) {
+    const s = sessionStorage.getItem("admin_secret") || secret;
+    const res = await fetch(`/api/admin/tokens/${id}`, {
+      method: "DELETE",
+      headers: { "x-admin-secret": s },
+    });
+    if (res.ok) setTokens((prev) => prev.filter((t) => t.id !== id));
+  }
 
   return (
     <div className="container py-12">
@@ -285,7 +312,7 @@ export default function AdminPage() {
           <span className="inline-block w-2.5 h-2.5 rounded-full bg-slate-300" />
           미사용 계약 URL
           <span className="text-sm font-normal text-slate-500">
-            ({unusedTokens.length}건)
+            (유효 {activeTokens.length}건{expiredTokens.length > 0 ? ` / 만료 ${expiredTokens.length}건` : ""})
           </span>
         </div>
         <table className="w-full text-sm">
@@ -293,21 +320,19 @@ export default function AdminPage() {
             <tr>
               <th className="text-left px-4 py-3">라벨</th>
               <th className="text-left px-4 py-3">생성일</th>
-              <th className="text-left px-4 py-3">URL 복사</th>
+              <th className="text-left px-4 py-3">남은 시간</th>
+              <th className="text-left px-4 py-3">액션</th>
             </tr>
           </thead>
           <tbody>
             {unusedTokens.length === 0 && (
               <tr>
-                <td
-                  colSpan={3}
-                  className="px-4 py-6 text-center text-slate-500"
-                >
+                <td colSpan={4} className="px-4 py-6 text-center text-slate-500">
                   미사용 URL이 없습니다.
                 </td>
               </tr>
             )}
-            {unusedTokens.map((t) => (
+            {activeTokens.map((t) => (
               <tr key={t.id} className="border-t">
                 <td className="px-4 py-3">
                   {t.label || <span className="text-slate-400">-</span>}
@@ -316,15 +341,47 @@ export default function AdminPage() {
                   {new Date(t.created_at).toLocaleString("ko-KR")}
                 </td>
                 <td className="px-4 py-3">
+                  <span className="text-green-600 font-medium">
+                    {timeLeft(t.expires_at)}
+                  </span>
+                </td>
+                <td className="px-4 py-3">
+                  <div className="flex gap-2">
+                    <button
+                      className="navlink text-xs"
+                      onClick={() =>
+                        copyUrl(`${window.location.origin}/apply/${t.token}`)
+                      }
+                    >
+                      복사
+                    </button>
+                    <button
+                      className="text-xs px-2 py-1 rounded border border-red-200 text-red-600 hover:bg-red-50 whitespace-nowrap"
+                      onClick={() => deleteToken(t.id)}
+                    >
+                      폐기
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            ))}
+            {expiredTokens.map((t) => (
+              <tr key={t.id} className="border-t bg-slate-50 opacity-60">
+                <td className="px-4 py-3 text-slate-400">
+                  {t.label || "-"}
+                </td>
+                <td className="px-4 py-3 text-slate-400">
+                  {new Date(t.created_at).toLocaleString("ko-KR")}
+                </td>
+                <td className="px-4 py-3">
+                  <span className="text-slate-400">만료됨</span>
+                </td>
+                <td className="px-4 py-3">
                   <button
-                    className="navlink text-xs"
-                    onClick={() =>
-                      copyUrl(
-                        `${window.location.origin}/apply/${t.token}`
-                      )
-                    }
+                    className="text-xs px-2 py-1 rounded border border-slate-300 text-slate-500 hover:bg-slate-100 whitespace-nowrap"
+                    onClick={() => deleteToken(t.id)}
                   >
-                    복사
+                    삭제
                   </button>
                 </td>
               </tr>
