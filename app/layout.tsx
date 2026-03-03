@@ -2,6 +2,7 @@
 import "./globals.css";
 
 import Script from "next/script";
+import Header from "./components/Header";
 
 export const metadata = {
   title: "CONTEX Corp. | AR·콘텐츠·마케팅 솔루션",
@@ -31,6 +32,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <body className="min-h-screen bg-gradient-to-b from-background via-white to-muted/20 text-foreground">
         {/* Turnstile 쓰는 경우 */}
         <Script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer />
+        <Header />
         {children}
       </body>
     </html>
