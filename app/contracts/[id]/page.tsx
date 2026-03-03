@@ -46,7 +46,7 @@ function ContractView({ id, data }: { id: string; data: any }) {
     : STATUS_MAP[status] ?? { label: status, color: "bg-slate-100 text-slate-600 border-slate-200" };
 
   const items: { label: string; price: number }[] = Array.isArray(selected_items) ? selected_items : [];
-  const signedAt = signature?.created_at ? new Date(signature.created_at) : null;
+  const signedAt = signature?.signed_at ? new Date(signature.signed_at) : null;
   const createdAt = created_at ? new Date(created_at) : null;
 
   // 서명 검증 ID: 계약 UUID 앞 8자 + 서명 날짜

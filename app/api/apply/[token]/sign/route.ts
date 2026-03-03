@@ -88,6 +88,7 @@ export async function POST(req: Request, { params }: Params) {
       signer_name,
       signer_email,
       signature_image: signature_image || null,
+      signed_at: signedAt,
       ip,
       user_agent: ua,
     }]);

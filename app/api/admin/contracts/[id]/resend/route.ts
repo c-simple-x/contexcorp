@@ -32,18 +32,18 @@ export async function POST(req: Request, { params }: Params) {
 
     const { data: sig } = await supabaseAdmin
       .from("signatures")
-      .select("signer_name,signer_email,signature_image,created_at")
+      .select("signer_name,signer_email,signature_image,signed_at")
       .eq("contract_id", params.id)
-      .order("created_at", { ascending: false })
+      .order("signed_at", { ascending: false })
       .limit(1)
-      .single();
+      .maybeSingle();
 
     if (!client?.email && !sig?.signer_email)
       return NextResponse.json({ ok: false, error: "no_email" }, { status: 400 });
 
     const toEmail = client?.email ?? sig!.signer_email;
     const toName = client?.name ?? sig?.signer_name ?? "고객";
-    const signedAt = sig?.created_at ?? contract.created_at;
+    const signedAt = sig?.signed_at ?? contract.created_at;
 
     const selectedItems: { label: string; price: number }[] =
       Array.isArray(contract.selected_items) ? contract.selected_items : [];
