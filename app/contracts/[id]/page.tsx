@@ -49,8 +49,13 @@ function ContractView({ id, data }: { id: string; data: any }) {
   const signedAt = signature?.signed_at ? new Date(signature.signed_at) : null;
   const createdAt = created_at ? new Date(created_at) : null;
 
-  // 서명 검증 ID: 계약 UUID 앞 8자 + 서명 날짜
-  const verifyId = `CTX-${id.slice(0, 8).toUpperCase()}${signedAt ? `-${signedAt.toISOString().slice(0, 10).replace(/-/g, "")}` : ""}`;
+  // KST (UTC+9) 날짜 계산
+  const KST_OFFSET = 9 * 60 * 60 * 1000;
+  const signedAtKst = signedAt ? new Date(signedAt.getTime() + KST_OFFSET) : null;
+  const createdAtKst = createdAt ? new Date(createdAt.getTime() + KST_OFFSET) : null;
+
+  // 서명 검증 ID: 계약 UUID 앞 8자 + KST 서명 날짜
+  const verifyId = `CTX-${id.slice(0, 8).toUpperCase()}${signedAtKst ? `-${signedAtKst.toISOString().slice(0, 10).replace(/-/g, "")}` : ""}`;
 
   return (
     <div className="min-h-screen bg-slate-100 py-10 print:bg-white print:py-0">
@@ -96,7 +101,9 @@ function ContractView({ id, data }: { id: string; data: any }) {
                 <div className="flex justify-between border-b pb-2">
                   <span className="text-slate-500">계약 체결일</span>
                   <span className="font-medium">
-                    {signedAt ? signedAt.toLocaleDateString("ko-KR") : createdAt?.toLocaleDateString("ko-KR") ?? "-"}
+                    {signedAtKst
+                      ? signedAtKst.toLocaleDateString("ko-KR", { timeZone: "UTC" })
+                      : createdAtKst?.toLocaleDateString("ko-KR", { timeZone: "UTC" }) ?? "-"}
                   </span>
                 </div>
                 <div className="flex justify-between border-b pb-2">
@@ -119,10 +126,16 @@ function ContractView({ id, data }: { id: string; data: any }) {
                 {/* 공급자 */}
                 <div className="rounded-xl border bg-slate-50 p-4">
                   <p className="text-xs font-semibold text-slate-400 uppercase mb-2">공급자 (갑)</p>
-                  <p className="font-bold text-sm">CONTEX Corp. (콘텍스)</p>
-                  <p className="text-sm text-slate-600 mt-1">사업자등록번호: 181-48-00499</p>
-                  <p className="text-sm text-slate-600">대표: 홍정민</p>
-                  <p className="text-sm text-slate-600">이메일: hello@contexcorp.com</p>
+                  <div className="flex items-start justify-between gap-2">
+                    <div>
+                      <p className="font-bold text-sm">CONTEX Corp. (콘텍스)</p>
+                      <p className="text-sm text-slate-600 mt-1">사업자등록번호: 181-48-00499</p>
+                      <p className="text-sm text-slate-600">대표: 홍정민</p>
+                      <p className="text-sm text-slate-600">이메일: hello@contexcorp.com</p>
+                    </div>
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img src="/ingam.png" alt="대표 도장" className="w-16 h-16 object-contain opacity-90 shrink-0" />
+                  </div>
                 </div>
                 {/* 고객 */}
                 <div className="rounded-xl border bg-slate-50 p-4">
@@ -185,17 +198,56 @@ function ContractView({ id, data }: { id: string; data: any }) {
               </div>
             </section>
 
+            {/* 입금 계좌 안내 */}
+            <section>
+              <h2 className="text-xs font-bold tracking-widest text-slate-400 uppercase mb-3">입금 계좌 안내</h2>
+              <div className="rounded-xl border bg-blue-50 border-blue-200 px-5 py-4 flex items-center gap-4">
+                <div className="w-10 h-10 rounded-full bg-blue-100 border border-blue-300 grid place-items-center shrink-0">
+                  <svg className="w-5 h-5 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
+                  </svg>
+                </div>
+                <div>
+                  <p className="text-xs text-blue-500 font-semibold mb-0.5">계약금 입금 계좌</p>
+                  <p className="text-sm font-bold text-blue-900">기업은행 458-060294-04019</p>
+                  <p className="text-sm text-blue-700">예금주: 홍정민 &nbsp;·&nbsp; 금액: ₩{fmt(price ?? 0)} <span className="text-xs font-normal">(VAT 별도)</span></p>
+                </div>
+              </div>
+            </section>
+
             {/* 전자서명 */}
             <section>
               <h2 className="text-xs font-bold tracking-widest text-slate-400 uppercase mb-3">전자서명</h2>
               {signature ? (
                 <div className="rounded-xl border p-5">
                   <div className="grid md:grid-cols-2 gap-6 items-start">
-                    {/* 서명 이미지 */}
-                    <div>
-                      <p className="text-xs text-slate-400 mb-2">서명자 서명</p>
+                    {/* 공급자(갑) 서명 */}
+                    <div className="border rounded-lg p-4 bg-slate-50">
+                      <p className="text-xs font-semibold text-slate-400 uppercase mb-3">공급자 (갑) 서명</p>
+                      <div className="flex flex-col items-center gap-2">
+                        {/* eslint-disable-next-line @next/next/no-img-element */}
+                        <img src="/ingam.png" alt="대표 도장" className="h-24 object-contain" />
+                        <div className="text-center text-xs text-slate-500 space-y-0.5">
+                          <p className="font-semibold text-slate-700">CONTEX Corp. 대표 홍정민</p>
+                          <p>hello@contexcorp.com</p>
+                        </div>
+                      </div>
+                      <div className="mt-3 pt-3 border-t space-y-1.5 text-sm">
+                        <div className="flex justify-between border-b pb-1">
+                          <span className="text-slate-500 shrink-0">서명 일시</span>
+                          <span className="font-medium text-xs text-right">
+                            {createdAtKst
+                              ? createdAtKst.toLocaleString("ko-KR", { timeZone: "UTC" })
+                              : "-"}
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                    {/* 계약자(을) 서명 */}
+                    <div className="border rounded-lg p-4">
+                      <p className="text-xs font-semibold text-slate-400 uppercase mb-3">계약자 (을) 서명</p>
                       {signature.signature_image ? (
-                        <div className="rounded-lg border-2 border-dashed border-slate-200 bg-white p-3 inline-block">
+                        <div className="rounded-lg border-2 border-dashed border-slate-200 bg-white p-3 mb-3 flex justify-center">
                           {/* eslint-disable-next-line @next/next/no-img-element */}
                           <img
                             src={signature.signature_image}
@@ -204,26 +256,27 @@ function ContractView({ id, data }: { id: string; data: any }) {
                           />
                         </div>
                       ) : (
-                        <div className="rounded-lg border-2 border-dashed border-slate-200 h-20 w-48 grid place-items-center text-xs text-slate-400">
+                        <div className="rounded-lg border-2 border-dashed border-slate-200 h-20 mb-3 grid place-items-center text-xs text-slate-400">
                           서명 이미지 없음
                         </div>
                       )}
-                    </div>
-                    {/* 서명 메타 */}
-                    <div className="space-y-2 text-sm">
-                      <div className="flex justify-between border-b pb-1.5">
-                        <span className="text-slate-500">서명자</span>
-                        <span className="font-semibold">{signature.signer_name}</span>
-                      </div>
-                      <div className="flex justify-between border-b pb-1.5">
-                        <span className="text-slate-500">이메일</span>
-                        <span className="font-medium">{signature.signer_email}</span>
-                      </div>
-                      <div className="flex justify-between border-b pb-1.5">
-                        <span className="text-slate-500">서명 일시</span>
-                        <span className="font-medium">
-                          {signedAt ? signedAt.toLocaleString("ko-KR") : "-"}
-                        </span>
+                      <div className="space-y-1.5 text-sm">
+                        <div className="flex justify-between border-b pb-1">
+                          <span className="text-slate-500">서명자</span>
+                          <span className="font-semibold">{signature.signer_name}</span>
+                        </div>
+                        <div className="flex justify-between border-b pb-1">
+                          <span className="text-slate-500">이메일</span>
+                          <span className="font-medium text-xs break-all text-right">{signature.signer_email}</span>
+                        </div>
+                        <div className="flex justify-between border-b pb-1">
+                          <span className="text-slate-500 shrink-0">서명 일시</span>
+                          <span className="font-medium text-xs text-right">
+                            {signedAtKst
+                              ? signedAtKst.toLocaleString("ko-KR", { timeZone: "UTC" })
+                              : "-"}
+                          </span>
+                        </div>
                       </div>
                     </div>
                   </div>
