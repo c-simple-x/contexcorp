@@ -66,7 +66,7 @@ export async function POST(req: Request, { params }: Params) {
     // 2) 계약 + 고객 정보 조회
     const { data: contract, error: cErr } = await supabaseAdmin
       .from("contracts")
-      .select("id,title,terms,price,selected_items,client_id")
+      .select("id,title,terms,price,selected_items,client_id,created_at")
       .eq("id", contract_id)
       .single();
 
@@ -122,6 +122,7 @@ export async function POST(req: Request, { params }: Params) {
         signerEmail: signer_email,
         signatureImage: signature_image,
         signedAt,
+        createdAt: contract.created_at,
       });
     } catch (e: any) {
       pdfError = e?.message;

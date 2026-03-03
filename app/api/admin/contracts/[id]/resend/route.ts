@@ -66,6 +66,7 @@ export async function POST(req: Request, { params }: Params) {
       signerEmail: sig?.signer_email ?? toEmail,
       signatureImage: sig?.signature_image,
       signedAt,
+      createdAt: contract.created_at,
     });
 
     const key = process.env.RESEND_API_KEY;
