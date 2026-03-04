@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import {
   MapPin, Phone, Mail, CheckCircle2,
   Store, Building2, Calendar, Smartphone, Zap, Users,
@@ -41,6 +41,14 @@ const FAQ_DATA = [
     q: "결제는 어떻게 하나요?",
     a: "전자계약 체결 후 안내된 계좌로 선입금하시면 됩니다. 입금 확인 후 제작 및 세팅이 시작됩니다. 모든 금액은 부가세(10%) 별도입니다.",
   },
+  {
+    q: "계약 기간은 어떻게 되나요?",
+    a: "일반 GPS 위치 사용권은 1년 단위이며, 대중집합공간 위치 사용권은 원하는 일수만큼 자유롭게 설정 가능합니다. 만료 전 갱신하면 동일 좌표를 계속 유지할 수 있습니다.",
+  },
+  {
+    q: "여러 위치에 동시에 광고할 수 있나요?",
+    a: "네, 각 위치별로 사용권을 별도로 구매하면 됩니다. 다수 위치 운영 시 별도 상담을 통해 할인을 제공해 드립니다.",
+  },
 ];
 
 function FaqAccordion() {
@@ -67,6 +75,21 @@ function FaqAccordion() {
   );
 }
 
+function LazyVideo({ src, className }: { src: string; className?: string }) {
+  const ref = useRef<HTMLVideoElement>(null);
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    const io = new IntersectionObserver(
+      ([entry]) => { entry.isIntersecting ? el.play() : el.pause(); },
+      { threshold: 0.3 },
+    );
+    io.observe(el);
+    return () => io.disconnect();
+  }, []);
+  return <video ref={ref} className={className} src={src} muted loop playsInline preload="metadata" />;
+}
+
 export default function Page() {
   return (
     <div className="min-h-screen">
@@ -85,8 +108,8 @@ export default function Page() {
                 자영업자부터 프랜차이즈 브랜드까지, 가장 직관적인 공간 마케팅.
               </p>
               <div className="mt-6 flex flex-wrap gap-3">
-                <a href="#showcase" className="btn">AR 미리보기</a>
                 <a href="#contact" className="btn">문의하기</a>
+                <a href="#showcase" className="btn-outline">AR 미리보기</a>
               </div>
               <div className="mt-8 grid grid-cols-2 sm:grid-cols-4 gap-4 text-sm">
                 {[
@@ -126,6 +149,25 @@ export default function Page() {
         </Section>
       </div>
 
+      {/* SOCIAL PROOF */}
+      <div className="border-y bg-slate-50">
+        <Section className="py-10">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-6 text-center">
+            {[
+              { value: "10+", label: "파트너 고객사" },
+              { value: "50+", label: "AR 배너 운영" },
+              { value: "±2m", label: "GPS 정밀도" },
+              { value: "24h", label: "평균 세팅 시간" },
+            ].map((s) => (
+              <div key={s.label}>
+                <p className="text-3xl md:text-4xl font-extrabold text-blue-600">{s.value}</p>
+                <p className="mt-1 text-sm text-slate-600">{s.label}</p>
+              </div>
+            ))}
+          </div>
+        </Section>
+      </div>
+
       {/* SOLUTIONS */}
       <Section id="solutions" className="py-16">
         <div className="text-center max-w-2xl mx-auto">
@@ -155,7 +197,7 @@ export default function Page() {
       <Section id="showcase" className="py-16">
         <div className="text-center max-w-2xl mx-auto mb-6">
           <span className="pill">AR 체험</span>
-          <h3 className="mt-3 text-3xl font-extrabold">AR 미리보기</h3>
+          <h3 className="mt-3 text-3xl font-extrabold">이런 모습으로 보입니다</h3>
           <p className="mt-2 text-slate-600">실제 거리에서 스마트폰으로 체험하는 AR 배너입니다.</p>
         </div>
         <div className="card p-6">
@@ -201,14 +243,9 @@ export default function Page() {
           ].map((item) => (
             <div key={item.name} className="card overflow-hidden">
               <div className="aspect-[9/16] bg-black">
-                <video
+                <LazyVideo
                   className="w-full h-full object-cover"
                   src={`https://pub-4d204982c58e47eeb7eef39ac8c94010.r2.dev/${item.name}.MP4`}
-                  autoPlay
-                  muted
-                  loop
-                  playsInline
-                  preload="metadata"
                 />
               </div>
               <p className="text-xs text-center text-slate-600 py-2 px-1 truncate">{item.label}</p>
@@ -257,6 +294,7 @@ export default function Page() {
             </div>
             <div className="p-5">
               <div className="text-3xl font-extrabold">₩100,000 <span className="text-base font-medium">/ 년</span></div>
+              <p className="text-xs text-slate-400 mt-1">VAT 별도</p>
               <p className="mt-2 text-sm text-slate-600">원하는 GPS 좌표에 연간 독점 AR 노출권을 확보합니다.</p>
               <ul className="mt-4 space-y-2 text-sm text-slate-600">
                 <li className="bullet"><CheckCircle2 className="icon" /> 좌표 독점 운영권</li>
@@ -271,6 +309,7 @@ export default function Page() {
             </div>
             <div className="p-5">
               <div className="text-3xl font-extrabold">₩100,000 <span className="text-base font-medium">/ 일</span></div>
+              <p className="text-xs text-slate-400 mt-1">VAT 별도</p>
               <p className="mt-2 text-sm text-slate-600">CONTEX가 보유한 대중집합공간에 AR 광고를 집행합니다. 원하는 일수만큼 유연하게 운영하세요.</p>
               <ul className="mt-4 space-y-2 text-sm text-slate-600">
                 <li className="bullet"><CheckCircle2 className="icon" /> 유동 인구 밀집 공간</li>
@@ -289,6 +328,7 @@ export default function Page() {
               <div className="p-5 border-b text-lg font-semibold">배너 디자인 제작</div>
               <div className="p-5">
                 <div className="text-3xl font-extrabold">₩150,000 <span className="text-base font-medium">/ 회</span></div>
+                <p className="text-xs text-slate-400 mt-1">VAT 별도</p>
                 <p className="mt-2 text-sm text-slate-600">브랜드 가이드에 맞는 AR 배너를 기획·디자인·최적화까지 맞춤 제작합니다. 파일 교체 비용 포함.</p>
               </div>
             </div>
@@ -307,6 +347,7 @@ export default function Page() {
               </div>
               <div className="p-5">
                 <div className="text-3xl font-extrabold">₩20,000 <span className="text-base font-medium">/ 회</span></div>
+                <p className="text-xs text-slate-400 mt-1">VAT 별도</p>
                 <p className="mt-2 text-sm text-slate-600">완성된 배너 파일을 직접 전달 시 서버 등록 및 교체. 별도 디자인 작업 없이 빠르게 업데이트.</p>
               </div>
             </div>
@@ -322,6 +363,7 @@ export default function Page() {
               <div className="p-5 border-b text-lg font-semibold">파일 교체</div>
               <div className="p-5">
                 <div className="text-3xl font-extrabold">₩60,000 <span className="text-base font-medium">/ 회</span></div>
+                <p className="text-xs text-slate-400 mt-1">VAT 별도</p>
                 <p className="mt-2 text-sm text-slate-600">완성된 3D 소재 파일을 전달하면 서버에 등록 후 기존 배너와 교체합니다.</p>
               </div>
             </div>
@@ -331,6 +373,7 @@ export default function Page() {
               </div>
               <div className="p-5">
                 <div className="text-3xl font-extrabold">₩550,000</div>
+                <p className="text-xs text-slate-400 mt-1">VAT 별도</p>
                 <p className="mt-2 text-sm text-slate-600">자연스러운 모션과 루프가 가능한 기본 길이입니다.</p>
               </div>
             </div>
@@ -340,6 +383,7 @@ export default function Page() {
               </div>
               <div className="p-5">
                 <div className="text-3xl font-extrabold">₩1,067,000</div>
+                <p className="text-xs text-slate-400 mt-1">VAT 별도</p>
                 <p className="mt-1 text-xs text-blue-600 font-medium">3% 할인 적용</p>
                 <p className="mt-2 text-sm text-slate-600">풍부한 연출과 스토리텔링이 가능한 가장 많이 선택하는 길이입니다.</p>
               </div>
@@ -348,6 +392,7 @@ export default function Page() {
               <div className="p-5 border-b text-lg font-semibold">제작 15초</div>
               <div className="p-5">
                 <div className="text-3xl font-extrabold">₩1,567,500</div>
+                <p className="text-xs text-slate-400 mt-1">VAT 별도</p>
                 <p className="mt-1 text-xs text-slate-500 font-medium">5% 할인 적용</p>
                 <p className="mt-2 text-sm text-slate-600">긴 스토리와 다양한 씬 전환이 가능한 프리미엄 모션 배너입니다.</p>
               </div>
@@ -405,7 +450,7 @@ export default function Page() {
             </div>
           </div>
           <div className="card">
-            <div className="p-5 border-b text-lg font-semibold">문의하기</div>
+            <div className="p-5 border-b text-lg font-semibold">빠른 상담 신청</div>
             <div className="p-5">
               <ContactForm />
               <p className="text-xs text-slate-500 mt-3">* 모든 금액은 부가세 별도. 작업은 비용 선납 확인 후 진행됩니다.</p>
@@ -413,25 +458,6 @@ export default function Page() {
           </div>
         </div>
       </Section>
-
-      {/* SOCIAL PROOF */}
-      <div className="border-t bg-slate-50">
-        <Section className="py-12">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-6 text-center">
-            {[
-              { value: "10+", label: "파트너 고객사" },
-              { value: "50+", label: "AR 배너 운영" },
-              { value: "±2m", label: "GPS 정밀도" },
-              { value: "24h", label: "평균 세팅 시간" },
-            ].map((s) => (
-              <div key={s.label}>
-                <p className="text-3xl md:text-4xl font-extrabold text-blue-600">{s.value}</p>
-                <p className="mt-1 text-sm text-slate-600">{s.label}</p>
-              </div>
-            ))}
-          </div>
-        </Section>
-      </div>
 
       {/* FOOTER */}
       <footer className="border-t bg-white/80">
@@ -448,6 +474,7 @@ export default function Page() {
               <p>통신판매업 신고번호 : 제2021-고양일산서-0031호</p>
               <p>개인정보처리 담당자 : 홍정민</p>
               <p>대표 : 홍정민</p>
+              <p>주소 : 경기도 고양시 일산서구 킨텍스로 240, 909호</p>
             </div>
             <div className="text-sm">
               <div className="font-semibold mb-2">정책</div>

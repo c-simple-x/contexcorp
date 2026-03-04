@@ -169,13 +169,12 @@ export default function AdminPage() {
   }
 
   // 통계 계산
-  const now2 = new Date();
   const thisMonthContracts = contracts.filter((c) => {
     const d = new Date(c.created_at);
-    return c.status !== "cancelled" && d.getMonth() === now2.getMonth() && d.getFullYear() === now2.getFullYear();
+    return c.status !== "cancelled" && d.getMonth() === now.getMonth() && d.getFullYear() === now.getFullYear();
   });
   const totalRevenue = contracts
-    .filter((c) => c.payment_confirmed)
+    .filter((c) => c.payment_confirmed && c.status !== "cancelled")
     .reduce((sum, c) => sum + (c.price ?? 0), 0);
   const thisMonthRevenue = thisMonthContracts
     .filter((c) => c.payment_confirmed)
@@ -183,11 +182,11 @@ export default function AdminPage() {
 
   // 월별 매출 (최근 6개월)
   const monthlyRevenue = Array.from({ length: 6 }, (_, i) => {
-    const d = new Date(now2.getFullYear(), now2.getMonth() - (5 - i), 1);
+    const d = new Date(now.getFullYear(), now.getMonth() - (5 - i), 1);
     const revenue = contracts
       .filter((c) => {
         const cd = new Date(c.created_at);
-        return c.payment_confirmed && cd.getMonth() === d.getMonth() && cd.getFullYear() === d.getFullYear();
+        return c.payment_confirmed && c.status !== "cancelled" && cd.getMonth() === d.getMonth() && cd.getFullYear() === d.getFullYear();
       })
       .reduce((s, c) => s + (c.price ?? 0), 0);
     return {
@@ -201,11 +200,11 @@ export default function AdminPage() {
     : n >= 1000 ? `₩${Math.round(n / 1000)}K` : `₩${n}`;
 
   // 만료 예정 계약 (D-30 이내, signed + payment_confirmed)
-  const thirtyDaysLater = new Date(now2.getTime() + 30 * 24 * 60 * 60 * 1000);
+  const thirtyDaysLater = new Date(now.getTime() + 30 * 24 * 60 * 60 * 1000);
   const expiringContracts = contracts.filter((c) => {
     if (!c.expires_at || c.status !== "signed" || !c.payment_confirmed) return false;
     const exp = new Date(c.expires_at);
-    return exp > now2 && exp <= thirtyDaysLater;
+    return exp > now && exp <= thirtyDaysLater;
   });
 
   function downloadCsv() {
@@ -221,7 +220,7 @@ export default function AdminPage() {
       STATUS_LABEL[c.status] ?? c.status,
       c.payment_confirmed ? "Y" : "N",
       new Date(c.created_at).toLocaleDateString("ko-KR"),
-      ((c as any).memo ?? "").replace(/[\r\n]+/g, " "),
+      (c.memo ?? "").replace(/[\r\n]+/g, " "),
     ]);
     const bom = "\uFEFF";
     const csv = bom + [header, ...rows].map((r) => r.map((v) => `"${v.replace(/"/g, '""')}"`).join(",")).join("\n");
@@ -239,6 +238,12 @@ export default function AdminPage() {
       <div className="mb-8 flex items-center justify-between">
         <h1 className="text-2xl font-extrabold">대시보드</h1>
         <div className="flex items-center gap-3">
+          <a
+            href="/admin/contracts"
+            className="flex items-center gap-1.5 text-xs px-3 py-1.5 rounded border border-slate-300 text-slate-600 hover:bg-slate-50"
+          >
+            전체 계약 목록 →
+          </a>
           <button
             className="flex items-center gap-1.5 text-xs px-3 py-1.5 rounded border border-slate-300 text-slate-600 hover:bg-slate-50"
             onClick={downloadCsv}
@@ -268,7 +273,7 @@ export default function AdminPage() {
           <div className="space-y-1">
             {expiringContracts.map((c) => {
               const exp = new Date(c.expires_at!);
-              const daysLeft = Math.ceil((exp.getTime() - now2.getTime()) / (1000 * 60 * 60 * 24));
+              const daysLeft = Math.ceil((exp.getTime() - now.getTime()) / (1000 * 60 * 60 * 24));
               return (
                 <div key={c.id} className="flex items-center justify-between text-sm">
                   <span className="text-orange-800">
@@ -389,7 +394,7 @@ export default function AdminPage() {
           <div className="flex gap-1 flex-wrap">
             <button
               className="text-xs px-2 py-1 rounded border border-orange-300 text-orange-700 hover:bg-orange-50 whitespace-nowrap"
-              onClick={() => confirmPayment(c.id)}
+              onClick={() => confirm("입금을 확인 처리하시겠습니까?") && confirmPayment(c.id)}
             >
               입금 확인
             </button>
@@ -512,7 +517,45 @@ export default function AdminPage() {
             (유효 {activeTokens.length}건{expiredTokens.length > 0 ? ` / 만료 ${expiredTokens.length}건` : ""})
           </span>
         </div>
-        <table className="w-full text-sm">
+        {/* 모바일 카드 뷰 */}
+        <div className="md:hidden divide-y">
+          {unusedTokens.length === 0 && (
+            <p className="px-4 py-6 text-center text-slate-500 text-sm">미사용 URL이 없습니다.</p>
+          )}
+          {activeTokens.map((t) => (
+            <div key={t.id} className="px-4 py-3 space-y-2">
+              <div className="flex items-center justify-between">
+                <span className="font-semibold text-sm truncate">{t.label || <span className="text-slate-400">-</span>}</span>
+                <span className="text-green-600 font-medium text-xs">{timeLeft(t.expires_at)}</span>
+              </div>
+              <p className="text-xs text-slate-500">{new Date(t.created_at).toLocaleString("ko-KR")}</p>
+              <div className="flex gap-2">
+                <button className="navlink text-xs" onClick={() => copyUrl(`${window.location.origin}/apply/${t.token}`)}>복사</button>
+                <button className="text-xs px-2 py-1 rounded border border-blue-200 text-blue-600 hover:bg-blue-50" onClick={() => extendToken(t.id)}>연장</button>
+                <button className="text-xs px-2 py-1 rounded border border-red-200 text-red-600 hover:bg-red-50" onClick={() => confirm("이 URL을 삭제하시겠습니까?") && deleteToken(t.id)}>폐기</button>
+              </div>
+            </div>
+          ))}
+          {expiredTokens.length > 0 && (
+            <div className="px-4 py-2">
+              <button className="text-xs text-slate-400 hover:text-slate-600" onClick={() => setShowExpired(!showExpired)}>
+                {showExpired ? "▾" : "▸"} 만료된 URL ({expiredTokens.length}건)
+              </button>
+            </div>
+          )}
+          {showExpired && expiredTokens.map((t) => (
+            <div key={t.id} className="px-4 py-3 opacity-60 space-y-1">
+              <span className="text-sm text-slate-400">{t.label || "-"}</span>
+              <div className="flex items-center justify-between">
+                <span className="text-xs text-slate-400">{new Date(t.created_at).toLocaleString("ko-KR")}</span>
+                <button className="text-xs px-2 py-1 rounded border border-slate-300 text-slate-500 hover:bg-slate-100" onClick={() => confirm("이 URL을 삭제하시겠습니까?") && deleteToken(t.id)}>삭제</button>
+              </div>
+            </div>
+          ))}
+        </div>
+
+        {/* 데스크톱 테이블 */}
+        <table className="hidden md:table w-full text-sm">
           <thead className="bg-slate-50">
             <tr>
               <th className="text-left px-4 py-3">라벨</th>
