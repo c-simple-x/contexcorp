@@ -19,7 +19,7 @@ export async function GET(_req: Request, { params }: Params) {
 
     const { data: client, error: cErr } = await supabaseAdmin
       .from("clients")
-      .select("id,company,name,email,phone,address")
+      .select("id,client_type,company,name,email,phone,address")
       .eq("id", contract.client_id)
       .single();
     if (cErr) throw cErr;
