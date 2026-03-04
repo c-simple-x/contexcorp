@@ -198,17 +198,28 @@ export default function Page() {
           <h4 className="text-xl font-extrabold mb-4">기본 배너 관련 요금</h4>
           <div className="grid md:grid-cols-2 gap-6">
             <div className="card hover-card">
-              <div className="p-5 border-b text-lg font-semibold">디자인 제작</div>
+              <div className="p-5 border-b text-lg font-semibold">배너 디자인 제작</div>
               <div className="p-5">
                 <div className="text-3xl font-extrabold">₩150,000 <span className="text-base font-medium">/ 회</span></div>
-                <p className="mt-2 text-sm text-slate-600">브랜드 가이드에 맞는 AR 배너를 기획·디자인·최적화까지 맞춤 제작합니다.</p>
+                <p className="mt-2 text-sm text-slate-600">브랜드 가이드에 맞는 AR 배너를 기획·디자인·최적화까지 맞춤 제작합니다. 파일 교체 비용 포함.</p>
               </div>
             </div>
             <div className="card hover-card">
-              <div className="p-5 border-b text-lg font-semibold">디자인 단순 변경</div>
+              <div className="p-5 border-b text-lg font-semibold flex items-center gap-2">
+                배너 파일 교체
+                <span className="group/tip relative">
+                  <span className="w-4 h-4 rounded-full bg-slate-100 border border-slate-300 text-slate-400 text-[10px] font-bold inline-flex items-center justify-center cursor-help hover:bg-blue-50 hover:border-blue-300 hover:text-blue-500 transition">?</span>
+                  <span className="pointer-events-none absolute bottom-full left-1/2 -translate-x-1/2 mb-2.5 hidden group-hover/tip:block w-52 rounded-xl bg-slate-800 text-white text-xs px-3.5 py-3 shadow-2xl z-20">
+                    <span className="block font-semibold text-slate-200 mb-2">배너 파일 규격</span>
+                    <span className="flex justify-between items-center"><span className="text-slate-400">비율</span><span className="font-medium">1 : 1.5</span></span>
+                    <span className="flex justify-between items-center mt-1"><span className="text-slate-400">용량</span><span className="font-medium">50 KB 미만</span></span>
+                    <span className="absolute top-full left-1/2 -translate-x-1/2 border-[5px] border-transparent border-t-slate-800" />
+                  </span>
+                </span>
+              </div>
               <div className="p-5">
                 <div className="text-3xl font-extrabold">₩20,000 <span className="text-base font-medium">/ 회</span></div>
-                <p className="mt-2 text-sm text-slate-600">완성된 파일을 직접 전달 시 단순 교체. 별도 디자인 작업 없이 빠르게 업데이트.</p>
+                <p className="mt-2 text-sm text-slate-600">완성된 배너 파일을 직접 전달 시 서버 등록 및 교체. 별도 디자인 작업 없이 빠르게 업데이트.</p>
               </div>
             </div>
           </div>
@@ -220,7 +231,7 @@ export default function Page() {
 
           {/* 교체 */}
           <div className="card hover-card max-w-sm mb-6">
-            <div className="p-5 border-b text-lg font-semibold">3D 모션 배너 교체</div>
+            <div className="p-5 border-b text-lg font-semibold">3D 모션 배너 파일 교체</div>
             <div className="p-5">
               <div className="text-3xl font-extrabold">₩60,000 <span className="text-base font-medium">/ 회</span></div>
               <p className="mt-2 text-sm text-slate-600">완성된 3D 소재 파일을 전달하면 서버에 등록 후 기존 배너와 교체합니다.</p>

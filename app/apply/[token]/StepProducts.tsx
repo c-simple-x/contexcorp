@@ -19,12 +19,12 @@ const LOCATION_ANNUAL_PRICE = 100000;
 const LOCATION_DAILY_PRICE = 100000;
 
 const CONTENT_PRODUCTS = {
-  design_change:     { label: "디자인 단순 변경",          price: 20000,   group: "design" },
-  design_create:     { label: "디자인 제작",               price: 150000,  group: "design" },
-  banner_3d_replace: { label: "3D 모션 배너 교체",         price: 60000,   group: null },
-  banner_3d_5s:      { label: "3D 모션 배너 제작 (5초)",   price: 550000,  group: "banner_3d" },
-  banner_3d_10s:     { label: "3D 모션 배너 제작 (10초)",  price: 1067000, group: "banner_3d" },
-  banner_3d_15s:     { label: "3D 모션 배너 제작 (15초)",  price: 1567500, group: "banner_3d" },
+  design_change:     { label: "배너 파일 교체",             price: 20000,   group: "design" },
+  design_create:     { label: "배너 디자인 제작",            price: 150000,  group: "design" },
+  banner_3d_replace: { label: "3D 모션 배너 파일 교체",      price: 60000,   group: "banner_3d" },
+  banner_3d_5s:      { label: "3D 모션 배너 제작 (5초)",    price: 550000,  group: "banner_3d" },
+  banner_3d_10s:     { label: "3D 모션 배너 제작 (10초)",   price: 1067000, group: "banner_3d" },
+  banner_3d_15s:     { label: "3D 모션 배너 제작 (15초)",   price: 1567500, group: "banner_3d" },
 } as const;
 
 type ContentKey = keyof typeof CONTENT_PRODUCTS;
@@ -76,7 +76,7 @@ export default function StepProducts({ onNext, onBack }: Props) {
 
   const contentGroups = [
     { title: "기본 배너", keys: ["design_change", "design_create"] as ContentKey[], note: "중복 선택 불가" },
-    { title: "3D 모션 배너", keys: ["banner_3d_replace", "banner_3d_5s", "banner_3d_10s", "banner_3d_15s"] as ContentKey[], note: "제작 옵션은 중복 선택 불가" },
+    { title: "3D 모션 배너", keys: ["banner_3d_replace", "banner_3d_5s", "banner_3d_10s", "banner_3d_15s"] as ContentKey[], note: "중복 선택 불가" },
   ];
 
   function handleSubmit(e: React.FormEvent) {

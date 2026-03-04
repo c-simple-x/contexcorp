@@ -1,5 +1,5 @@
 'use client';
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import SuccessModal from './SuccessModal';
 
 // ✅ 한국 전화번호 포맷 함수 (숫자만 → 010-0000-0000)
@@ -22,7 +22,21 @@ export default function ContactForm() {
   const [ok, setOk] = useState<boolean | null>(null);
   const [open, setOpen] = useState(false);
   const [phone, setPhone] = useState('');
+  const [message, setMessage] = useState('');
   const [privacyAgreed, setPrivacyAgreed] = useState(false);
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
+
+  useEffect(() => {
+    function handlePrefill(e: Event) {
+      const detail = (e as CustomEvent<{ message: string }>).detail;
+      if (detail?.message) {
+        setMessage(detail.message);
+        setTimeout(() => textareaRef.current?.focus(), 100);
+      }
+    }
+    window.addEventListener('prefill-contact', handlePrefill);
+    return () => window.removeEventListener('prefill-contact', handlePrefill);
+  }, []);
 
   async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -54,7 +68,7 @@ export default function ContactForm() {
       name: String(fd.get('name') || ''),
       email,
       phone,
-      message: String(fd.get('message') || ''),
+      message,
       source: 'web',
       captcha: (document.querySelector('input[name="cf-turnstile-response"]') as HTMLInputElement)?.value || '',
     };
@@ -71,6 +85,7 @@ export default function ContactForm() {
       if (success) {
         form.reset();
         setPhone('');
+        setMessage('');
         setOpen(true);
       }
     } catch {
@@ -114,7 +129,18 @@ export default function ContactForm() {
           pattern="[\d\-]{9,13}"
         />
 
-        <textarea name="message" placeholder="요청 내용 (위치 좌표, 기간, 예산 등)" rows={5} className="textarea" minLength={10} required title="요청 내용은 10자 이상 입력해주세요." />
+        <textarea
+          ref={textareaRef}
+          name="message"
+          placeholder="요청 내용 (위치 좌표, 기간, 예산 등)"
+          rows={5}
+          className="textarea"
+          minLength={10}
+          required
+          title="요청 내용은 10자 이상 입력해주세요."
+          value={message}
+          onChange={(e) => setMessage(e.target.value)}
+        />
 
         {process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY && (
           <div className="cf-turnstile mt-1" data-sitekey={process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY} data-theme="light" />
