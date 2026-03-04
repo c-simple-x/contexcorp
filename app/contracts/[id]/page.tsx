@@ -39,7 +39,7 @@ export default async function ContractPage({ params }: { params: { id: string } 
 function ContractView({ id, data }: { id: string; data: any }) {
   const {
     title, terms, price, status, payment_confirmed,
-    selected_items, created_at, client, signature, expires_at,
+    selected_items, created_at, client, signature, expires_at, memo,
   } = data ?? {};
 
   const statusInfo = payment_confirmed && status === "signed"
@@ -70,7 +70,7 @@ function ContractView({ id, data }: { id: string; data: any }) {
           <a href="/admin/contracts" className="navlink text-sm">← 목록으로</a>
           <div className="flex items-center gap-2">
             <PrintButton contractId={id} />
-            <ContractActions contractId={id} status={status} clientEmail={client?.email} />
+            <ContractActions contractId={id} status={status} clientEmail={client?.email} initialMemo={memo} />
           </div>
         </div>
 

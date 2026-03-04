@@ -1,8 +1,10 @@
 "use client";
 
+import { useState } from "react";
 import {
   MapPin, Phone, Mail, CheckCircle2,
-  Store, Building2, Calendar, Smartphone, Zap, Users
+  Store, Building2, Calendar, Smartphone, Zap, Users,
+  ChevronDown,
 } from "lucide-react";
 import ContactForm from "./components/ContactForm";
 import Header from "./components/Header";
@@ -12,6 +14,57 @@ function Section({ id, className = "", children }: {
   id?: string; className?: string; children: React.ReactNode;
 }) {
   return <section id={id} className={`container ${className}`}>{children}</section>;
+}
+
+const FAQ_DATA = [
+  {
+    q: "AR 광고는 어떻게 보나요?",
+    a: "CONTEX 앱을 설치한 뒤, 등록된 위치 근처에서 카메라를 켜면 AR 배너가 자동으로 나타납니다. 별도 QR 코드나 마커 없이 GPS 좌표 기반으로 작동합니다.",
+  },
+  {
+    q: "위치 독점이란 무엇인가요?",
+    a: "계약 기간 동안 해당 GPS 좌표에는 다른 광고주의 AR 배너가 노출되지 않습니다. 하나의 좌표에 하나의 브랜드만 운영되어 독점적인 광고 효과를 보장합니다.",
+  },
+  {
+    q: "배너 디자인을 직접 만들어 올릴 수 있나요?",
+    a: "네, 배너 파일 교체 서비스(₩20,000)를 이용하면 직접 만든 이미지를 등록할 수 있습니다. 파일 규격은 1:1.5 비율, 50KB 미만이어야 합니다.",
+  },
+  {
+    q: "계약 후 배너 내용을 바꿀 수 있나요?",
+    a: "네, 운영 기간 내에 배너 파일 교체 또는 디자인 재제작을 요청할 수 있습니다. 변경 시 해당 서비스 비용이 별도 발생합니다.",
+  },
+  {
+    q: "3D 모션 배너와 기본 배너의 차이는?",
+    a: "기본 배너는 정적 이미지 기반이고, 3D 모션 배너는 이동·회전·파티클 등 애니메이션 효과가 포함된 입체 배너입니다. 더 높은 몰입감과 주목도를 제공합니다.",
+  },
+  {
+    q: "결제는 어떻게 하나요?",
+    a: "전자계약 체결 후 안내된 계좌로 선입금하시면 됩니다. 입금 확인 후 제작 및 세팅이 시작됩니다. 모든 금액은 부가세(10%) 별도입니다.",
+  },
+];
+
+function FaqAccordion() {
+  const [open, setOpen] = useState<number | null>(null);
+  return (
+    <div className="divide-y rounded-xl border overflow-hidden">
+      {FAQ_DATA.map((item, i) => (
+        <div key={i}>
+          <button
+            className="w-full flex items-center justify-between gap-4 px-5 py-4 text-left hover:bg-slate-50 transition"
+            onClick={() => setOpen(open === i ? null : i)}
+          >
+            <span className="text-sm font-semibold text-slate-800">{item.q}</span>
+            <ChevronDown className={`h-4 w-4 text-slate-400 shrink-0 transition-transform ${open === i ? "rotate-180" : ""}`} />
+          </button>
+          {open === i && (
+            <div className="px-5 pb-4 text-sm text-slate-600 leading-relaxed">
+              {item.a}
+            </div>
+          )}
+        </div>
+      ))}
+    </div>
+  );
 }
 
 export default function Page() {
@@ -302,6 +355,21 @@ export default function Page() {
           </div>
         </div>
 
+        {/* 갱신/재구매 안내 */}
+        <div className="mt-10 rounded-xl border border-blue-100 bg-blue-50/50 p-5">
+          <h4 className="text-lg font-extrabold mb-2">변경 / 재구매 안내</h4>
+          <p className="text-sm text-slate-600 leading-relaxed">
+            이미 위치 사용권을 보유하고 계신가요? 배너 디자인 변경이나 3D 모션 배너 추가 제작만 별도로 신청할 수 있습니다.
+            위치 사용권 비용 없이 <span className="font-semibold text-slate-800">콘텐츠 제작비만</span> 결제하면 됩니다.
+          </p>
+          <div className="mt-3 flex flex-wrap gap-2 text-xs">
+            <span className="px-3 py-1 rounded-full border border-blue-200 bg-white text-blue-700">배너 파일 교체 ₩20,000</span>
+            <span className="px-3 py-1 rounded-full border border-blue-200 bg-white text-blue-700">배너 디자인 제작 ₩150,000</span>
+            <span className="px-3 py-1 rounded-full border border-blue-200 bg-white text-blue-700">3D 모션 배너 파일 교체 ₩60,000</span>
+            <span className="px-3 py-1 rounded-full border border-blue-200 bg-white text-blue-700">3D 모션 배너 제작 ₩550,000~</span>
+          </div>
+        </div>
+
         {/* 견적 계산기 */}
         <div className="mt-16">
           <div className="text-center max-w-2xl mx-auto mb-8">
@@ -309,6 +377,18 @@ export default function Page() {
             <h3 className="mt-3 text-2xl font-extrabold">원하는 항목을 선택하면 견적을 바로 확인하세요</h3>
           </div>
           <PriceCalculator />
+        </div>
+      </Section>
+
+      {/* FAQ */}
+      <Section id="faq" className="py-16">
+        <div className="text-center max-w-2xl mx-auto">
+          <span className="pill">FAQ</span>
+          <h3 className="mt-3 text-3xl font-extrabold">자주 묻는 질문</h3>
+          <p className="mt-2 text-slate-600">궁금한 점을 빠르게 확인하세요.</p>
+        </div>
+        <div className="mt-10 max-w-3xl mx-auto">
+          <FaqAccordion />
         </div>
       </Section>
 
@@ -333,6 +413,25 @@ export default function Page() {
           </div>
         </div>
       </Section>
+
+      {/* SOCIAL PROOF */}
+      <div className="border-t bg-slate-50">
+        <Section className="py-12">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-6 text-center">
+            {[
+              { value: "10+", label: "파트너 고객사" },
+              { value: "50+", label: "AR 배너 운영" },
+              { value: "±2m", label: "GPS 정밀도" },
+              { value: "24h", label: "평균 세팅 시간" },
+            ].map((s) => (
+              <div key={s.label}>
+                <p className="text-3xl md:text-4xl font-extrabold text-blue-600">{s.value}</p>
+                <p className="mt-1 text-sm text-slate-600">{s.label}</p>
+              </div>
+            ))}
+          </div>
+        </Section>
+      </div>
 
       {/* FOOTER */}
       <footer className="border-t bg-white/80">

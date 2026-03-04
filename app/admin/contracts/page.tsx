@@ -1,7 +1,8 @@
 "use client";
 
-import { useEffect, useState, useMemo } from "react";
+import { useEffect, useState, useMemo, useCallback } from "react";
 import { useAdminContracts } from "@/app/admin/_hooks";
+import { Download } from "lucide-react";
 
 const STATUS_LABEL: Record<string, string> = {
   signed: "서명완료",
@@ -47,6 +48,30 @@ export default function AdminContractsPage() {
     });
   }, [contracts, query, statusFilter]);
 
+  const downloadCsv = useCallback(() => {
+    const header = ["고객명", "상호", "이메일", "금액(원)", "상태", "입금확인", "생성일", "메모"];
+    const rows = filtered.map((c) => [
+      c.client?.name ?? "",
+      c.client?.company ?? "",
+      c.client?.email ?? "",
+      String(c.price ?? 0),
+      STATUS_LABEL[c.status] ?? c.status,
+      c.payment_confirmed ? "Y" : "N",
+      new Date(c.created_at).toLocaleDateString("ko-KR"),
+      (c.memo ?? "").replace(/[\r\n]+/g, " "),
+    ]);
+
+    const bom = "\uFEFF";
+    const csv = bom + [header, ...rows].map((r) => r.map((v) => `"${v.replace(/"/g, '""')}"`).join(",")).join("\n");
+    const blob = new Blob([csv], { type: "text/csv;charset=utf-8" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `CONTEX_계약목록_${new Date().toISOString().slice(0, 10)}.csv`;
+    a.click();
+    URL.revokeObjectURL(url);
+  }, [filtered]);
+
   if (!authed) return null;
 
   return (
@@ -54,7 +79,15 @@ export default function AdminContractsPage() {
       <div className="mb-6">
         <a href="/admin" className="navlink text-sm">← 대시보드</a>
       </div>
-      <h1 className="text-2xl font-extrabold mb-6">전체 계약 목록</h1>
+      <div className="flex items-center justify-between mb-6">
+        <h1 className="text-2xl font-extrabold">전체 계약 목록</h1>
+        <button
+          className="flex items-center gap-1.5 text-xs px-3 py-1.5 rounded border border-slate-300 text-slate-600 hover:bg-slate-50"
+          onClick={downloadCsv}
+        >
+          <Download className="h-3.5 w-3.5" /> CSV 다운로드
+        </button>
+      </div>
 
       {/* 검색 / 필터 */}
       <div className="flex flex-col sm:flex-row gap-3 mb-4">

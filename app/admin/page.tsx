@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Copy, CheckCircle2, Plus, ExternalLink } from "lucide-react";
+import { Copy, CheckCircle2, Plus, ExternalLink, Download } from "lucide-react";
 import ContractTable from "@/app/components/admin/ContractTable";
 import { useAdminContracts, TokenRow } from "@/app/admin/_hooks";
 
@@ -208,21 +208,55 @@ export default function AdminPage() {
     return exp > now2 && exp <= thirtyDaysLater;
   });
 
+  function downloadCsv() {
+    const STATUS_LABEL: Record<string, string> = {
+      signed: "서명완료", on_hold: "보류", completed: "종료", cancelled: "취소",
+    };
+    const header = ["고객명", "상호", "이메일", "금액(원)", "상태", "입금확인", "생성일", "메모"];
+    const rows = contracts.map((c) => [
+      c.client?.name ?? "",
+      c.client?.company ?? "",
+      c.client?.email ?? "",
+      String(c.price ?? 0),
+      STATUS_LABEL[c.status] ?? c.status,
+      c.payment_confirmed ? "Y" : "N",
+      new Date(c.created_at).toLocaleDateString("ko-KR"),
+      ((c as any).memo ?? "").replace(/[\r\n]+/g, " "),
+    ]);
+    const bom = "\uFEFF";
+    const csv = bom + [header, ...rows].map((r) => r.map((v) => `"${v.replace(/"/g, '""')}"`).join(",")).join("\n");
+    const blob = new Blob([csv], { type: "text/csv;charset=utf-8" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `CONTEX_계약목록_${new Date().toISOString().slice(0, 10)}.csv`;
+    a.click();
+    URL.revokeObjectURL(url);
+  }
+
   return (
     <div className="container py-12">
       <div className="mb-8 flex items-center justify-between">
         <h1 className="text-2xl font-extrabold">대시보드</h1>
-        <button
-          className="navlink text-sm"
-          onClick={() => {
-            sessionStorage.removeItem("admin_secret");
-            setAuthed(false);
-            setSecret("");
-            window.dispatchEvent(new Event("adminAuthChange"));
-          }}
-        >
-          로그아웃
-        </button>
+        <div className="flex items-center gap-3">
+          <button
+            className="flex items-center gap-1.5 text-xs px-3 py-1.5 rounded border border-slate-300 text-slate-600 hover:bg-slate-50"
+            onClick={downloadCsv}
+          >
+            <Download className="h-3.5 w-3.5" /> CSV
+          </button>
+          <button
+            className="navlink text-sm"
+            onClick={() => {
+              sessionStorage.removeItem("admin_secret");
+              setAuthed(false);
+              setSecret("");
+              window.dispatchEvent(new Event("adminAuthChange"));
+            }}
+          >
+            로그아웃
+          </button>
+        </div>
       </div>
 
       {/* 만료 예정 계약 알림 */}

@@ -10,6 +10,7 @@ export type ContractRow = {
   payment_confirmed: boolean;
   created_at: string;
   expires_at?: string | null;
+  memo?: string | null;
   client?: { company?: string | null; name?: string | null; email?: string | null };
 };
 
@@ -83,6 +84,8 @@ export function useAdminContracts() {
     cancelContract: (id: string) => patch(id, { status: "cancelled" }),
     restoreContract: (id: string) =>
       patch(id, { status: "signed", payment_confirmed: false }),
+    updateMemo: (id: string, memo: string) => patch(id, { memo }),
+    updatePrice: (id: string, price: number) => patch(id, { price }),
     setContracts,
     ...filterContracts(contracts),
   };

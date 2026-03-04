@@ -32,7 +32,7 @@ export async function GET(req: Request) {
   try {
     const { data: contracts, error } = await supabaseAdmin
       .from("contracts")
-      .select("id,title,price,status,payment_confirmed,created_at,client_id")
+      .select("id,title,price,status,payment_confirmed,created_at,client_id,memo")
       .order("created_at", { ascending: false });
 
     if (error) throw error;
@@ -41,11 +41,11 @@ export async function GET(req: Request) {
     const clientIds = Array.from(new Set(contracts.map((c) => c.client_id)));
     const { data: clients, error: cErr } = await supabaseAdmin
       .from("clients")
-      .select("id,company,name")
+      .select("id,company,name,email")
       .in("id", clientIds);
 
     if (cErr) throw cErr;
-    const cmap = new Map(clients?.map((c) => [c.id, { company: c.company, name: c.name }]) ?? []);
+    const cmap = new Map(clients?.map((c) => [c.id, { company: c.company, name: c.name, email: c.email }]) ?? []);
 
     const enriched = contracts.map((c) => ({ ...c, client: cmap.get(c.client_id) ?? null }));
     return NextResponse.json({ ok: true, contracts: enriched });

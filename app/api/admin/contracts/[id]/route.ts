@@ -21,6 +21,8 @@ export async function PATCH(req: Request, { params }: Params) {
     const update: Record<string, unknown> = {};
     if (body.payment_confirmed !== undefined) update.payment_confirmed = body.payment_confirmed;
     if (body.status !== undefined) update.status = body.status;
+    if (body.memo !== undefined) update.memo = body.memo;
+    if (body.price !== undefined) update.price = Number(body.price);
 
     if (Object.keys(update).length === 0) {
       return NextResponse.json({ ok: false, error: "no fields to update" }, { status: 400 });
