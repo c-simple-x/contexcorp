@@ -64,7 +64,7 @@ export async function GET(req: Request, { params }: Params) {
 
     const filename = `CONTEX_계약서_${(sig?.signed_at ?? contract.created_at).slice(0, 10)}.pdf`;
 
-    return new Response(pdfBuffer, {
+    return new Response(pdfBuffer as unknown as BodyInit, {
       headers: {
         "Content-Type": "application/pdf",
         "Content-Disposition": `attachment; filename*=UTF-8''${encodeURIComponent(filename)}`,
