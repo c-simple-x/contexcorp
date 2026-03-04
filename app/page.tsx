@@ -221,7 +221,7 @@ export default function Page() {
       <Section id="process" className="py-16">
         <div className="text-center max-w-2xl mx-auto">
           <span className="pill">진행 절차</span>
-          <h3 className="mt-3 text-3xl font-extrabold">진행 절차</h3>
+          <h3 className="mt-3 text-3xl font-extrabold">이렇게 진행됩니다</h3>
           <p className="mt-2 text-slate-600">위치 선정부터 AR 노출까지, 복잡한 과정은 저희가 처리합니다.</p>
         </div>
         <div className="mt-10 grid md:grid-cols-5 gap-4">
