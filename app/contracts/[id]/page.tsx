@@ -68,7 +68,7 @@ function ContractView({ id, data }: { id: string; data: any }) {
         <div className="mb-6 flex items-center justify-between print:hidden">
           <a href="/admin/contracts" className="navlink text-sm">← 목록으로</a>
           <div className="flex items-center gap-2">
-            <PrintButton />
+            <PrintButton contractId={id} />
             <ContractActions contractId={id} status={status} clientEmail={client?.email} />
           </div>
         </div>
