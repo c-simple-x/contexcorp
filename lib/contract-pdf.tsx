@@ -40,7 +40,7 @@ const S = StyleSheet.create({
     fontFamily: "NanumGothic",
     fontSize: 9,
     color: "#1e293b",
-    paddingTop: 40,
+    paddingTop: 56,
     paddingBottom: 48,
     paddingHorizontal: 0,
   },
