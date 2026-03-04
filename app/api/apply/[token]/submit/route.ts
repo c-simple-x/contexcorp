@@ -139,6 +139,8 @@ export async function POST(req: Request, { params }: Params) {
         status: "draft",
         selected_items: selectedItems,
         expires_at: expiresAt,
+        discount_percent: locationDiscount,
+        promo_percent: promoDiscount,
       }])
       .select("id")
       .single();

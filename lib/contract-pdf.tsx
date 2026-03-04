@@ -179,7 +179,9 @@ export type ContractPdfProps = {
   title: string;
   terms: string;
   price: number;
-  selectedItems: { label: string; price: number }[];
+  discountPercent?: number;
+  promoPercent?: number;
+  selectedItems: { label: string; price: number; original_price?: number }[];
   client: {
     client_type: "individual" | "business";
     company?: string;
@@ -198,9 +200,12 @@ export type ContractPdfProps = {
 function ContractPdfDoc(props: ContractPdfProps) {
   const {
     contractId, title, terms, price, selectedItems,
+    discountPercent = 0, promoPercent = 0,
     client, signerName, signerEmail, signatureImage, signedAt, createdAt,
   } = props;
 
+  const hasDiscount = discountPercent > 0 || promoPercent > 0;
+  const originalTotal = selectedItems.reduce((s, i) => s + (i.original_price ?? i.price), 0);
   const basePrice = price;
   const vat = Math.round(basePrice * 0.1);
   const totalWithVat = basePrice + vat;
@@ -231,6 +236,18 @@ function ContractPdfDoc(props: ContractPdfProps) {
                 <Text style={S.infoLabel}>계약 번호</Text>
                 <Text style={S.infoValue}>{contractNo}</Text>
               </View>
+              {discountPercent > 0 && (
+                <View style={S.infoRow}>
+                  <Text style={S.infoLabel}>위치 할인</Text>
+                  <Text style={{ fontSize: 8, fontWeight: "bold", color: "#dc2626" }}>{discountPercent}%</Text>
+                </View>
+              )}
+              {promoPercent > 0 && (
+                <View style={S.infoRow}>
+                  <Text style={S.infoLabel}>프로모션 할인</Text>
+                  <Text style={{ fontSize: 8, fontWeight: "bold", color: "#7c3aed" }}>{promoPercent}%</Text>
+                </View>
+              )}
               <View style={S.infoRow}>
                 <Text style={S.infoLabel}>공급가액 (VAT 별도)</Text>
                 <Text style={S.infoValue}>₩{fmt(basePrice)}</Text>
@@ -245,6 +262,18 @@ function ContractPdfDoc(props: ContractPdfProps) {
                 <Text style={S.infoLabel}>계약 체결일</Text>
                 <Text style={S.infoValue}>{signedDateKst}</Text>
               </View>
+              {hasDiscount && (
+                <View style={S.infoRow}>
+                  <Text style={S.infoLabel}>정가 합계</Text>
+                  <Text style={{ fontSize: 8, color: "#94a3b8", textDecoration: "line-through" }}>₩{fmt(originalTotal)}</Text>
+                </View>
+              )}
+              {hasDiscount && (
+                <View style={S.infoRow}>
+                  <Text style={S.infoLabel}>할인 금액</Text>
+                  <Text style={{ fontSize: 8, fontWeight: "bold", color: "#dc2626" }}>-₩{fmt(originalTotal - basePrice)}</Text>
+                </View>
+              )}
               <View style={[S.infoRow, { borderBottom: "none" }]}>
                 <Text style={S.infoLabel}>실 입금액 (VAT 포함)</Text>
                 <Text style={S.infoValueBlue}>₩{fmt(totalWithVat)}</Text>
@@ -286,18 +315,41 @@ function ContractPdfDoc(props: ContractPdfProps) {
             <View style={S.table}>
               <View style={S.thead}>
                 <Text style={[S.theadCell, { flex: 1 }]}>서비스 항목</Text>
-                <Text style={[S.theadCell, { textAlign: "right" }]}>금액</Text>
+                {hasDiscount && <Text style={[S.theadCell, { textAlign: "right", width: 70 }]}>정가</Text>}
+                <Text style={[S.theadCell, { textAlign: "right", width: 70 }]}>금액</Text>
               </View>
-              {selectedItems.map((item, i) => (
-                <View key={i} style={i % 2 === 0 ? S.trow : S.trowAlt}>
-                  <Text style={S.tcell}>{item.label}</Text>
-                  <Text style={S.tcellRight}>₩{fmt(item.price)}</Text>
+              {selectedItems.map((item, i) => {
+                const hasItemDiscount = item.original_price && item.original_price !== item.price;
+                return (
+                  <View key={i} style={i % 2 === 0 ? S.trow : S.trowAlt}>
+                    <Text style={S.tcell}>{item.label}</Text>
+                    {hasDiscount && (
+                      <Text style={{ fontSize: 8, textAlign: "right", width: 70, color: hasItemDiscount ? "#94a3b8" : "#1e293b", textDecoration: hasItemDiscount ? "line-through" : "none" }}>
+                        {hasItemDiscount ? `₩${fmt(item.original_price!)}` : ""}
+                      </Text>
+                    )}
+                    <Text style={{ fontSize: 8, textAlign: "right", width: 70, color: hasItemDiscount ? "#dc2626" : "#1e293b", fontWeight: hasItemDiscount ? "bold" : "normal" }}>
+                      ₩{fmt(item.price)}
+                    </Text>
+                  </View>
+                );
+              })}
+              {hasDiscount && (
+                <View style={S.tfootRow}>
+                  <Text style={S.tfootLabel}>정가 합계</Text>
+                  <Text style={{ fontSize: 8, color: "#94a3b8", textAlign: "right", textDecoration: "line-through" }}>₩{fmt(originalTotal)}</Text>
                 </View>
-              ))}
+              )}
               <View style={S.tfootRow}>
                 <Text style={S.tfootLabel}>공급가액 (VAT 별도)</Text>
                 <Text style={S.tfootValue}>₩{fmt(basePrice)}</Text>
               </View>
+              {hasDiscount && (
+                <View style={S.tfootRow}>
+                  <Text style={S.tfootLabel}>할인</Text>
+                  <Text style={{ fontSize: 8, color: "#dc2626", fontWeight: "bold", textAlign: "right" }}>-₩{fmt(originalTotal - basePrice)}</Text>
+                </View>
+              )}
               <View style={S.tfootRow}>
                 <Text style={S.tfootLabel}>부가세 (10%)</Text>
                 <Text style={S.tfootValue}>₩{fmt(vat)}</Text>

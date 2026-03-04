@@ -45,6 +45,23 @@ export default function StepPreview({ info, products, contractId, onNext, onBack
         </div>
       </div>
 
+      {/* 계약 정보 */}
+      <div className="rounded-xl border border-slate-200 overflow-hidden">
+        <div className="px-4 py-3 border-b text-sm font-semibold bg-slate-50">계약 정보</div>
+        <div className="px-4 py-3 space-y-0">
+          <Row label="계약 번호" value={contractId.slice(0, 8).toUpperCase()} />
+          {(products.discountPercent ?? 0) > 0 && (
+            <Row label="위치 할인" value={`${products.discountPercent}%`} />
+          )}
+          {(products.promoPercent ?? 0) > 0 && (
+            <Row label="프로모션 할인" value={`${products.promoPercent}%`} />
+          )}
+          <Row label="공급가액" value={`₩${products.total.toLocaleString("ko-KR")}`} />
+          <Row label="부가세" value={`₩${vat.toLocaleString("ko-KR")}`} />
+          <Row label="총 입금액" value={`₩${totalWithVat.toLocaleString("ko-KR")}`} />
+        </div>
+      </div>
+
       {/* 계약 항목 */}
       <div className="rounded-xl border border-slate-200 overflow-hidden">
         <div className="px-4 py-3 border-b text-sm font-semibold bg-slate-50">계약 항목 및 금액</div>

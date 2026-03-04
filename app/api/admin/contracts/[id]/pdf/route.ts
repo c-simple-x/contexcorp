@@ -18,7 +18,7 @@ export async function GET(req: Request, { params }: Params) {
   try {
     const { data: contract, error: cErr } = await supabaseAdmin
       .from("contracts")
-      .select("id,title,terms,price,selected_items,client_id,created_at")
+      .select("id,title,terms,price,selected_items,client_id,created_at,discount_percent,promo_percent")
       .eq("id", params.id)
       .single();
     if (cErr || !contract)
@@ -38,7 +38,7 @@ export async function GET(req: Request, { params }: Params) {
       .limit(1)
       .maybeSingle();
 
-    const selectedItems: { label: string; price: number }[] =
+    const selectedItems: { label: string; price: number; original_price?: number }[] =
       Array.isArray(contract.selected_items) ? contract.selected_items : [];
 
     const pdfBuffer = await generateContractPdf({
@@ -46,6 +46,8 @@ export async function GET(req: Request, { params }: Params) {
       title: contract.title,
       terms: contract.terms,
       price: contract.price,
+      discountPercent: contract.discount_percent ?? 0,
+      promoPercent: contract.promo_percent ?? 0,
       selectedItems,
       client: {
         client_type: client?.client_type ?? "business",
