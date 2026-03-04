@@ -128,10 +128,9 @@ const S = StyleSheet.create({
 
   /* ── 계약 조항 ── */
   termsBox: {
-    border: "1px solid #e2e8f0",
-    borderRadius: 6,
-    backgroundColor: "#f8fafc",
-    padding: 12,
+    borderLeft: "3px solid #cbd5e1",
+    paddingLeft: 12,
+    paddingRight: 4,
   },
   termsText: { fontSize: 8, lineHeight: 1.8, color: "#374151" },
 
