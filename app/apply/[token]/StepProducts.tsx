@@ -41,7 +41,8 @@ type Props = {
 export default function StepProducts({ onNext, onBack }: Props) {
   const [purchaseType, setPurchaseType] = useState<PurchaseType>("new");
   const [locationType, setLocationType] = useState<LocationType>("annual");
-  const [locationDays, setLocationDays] = useState(1);
+  const [locationDaysStr, setLocationDaysStr] = useState("1");
+  const locationDays = Math.max(1, Math.min(365, Number(locationDaysStr) || 1));
   const [selected, setSelected] = useState<Set<ContentKey>>(new Set());
 
   function toggle(key: ContentKey) {
@@ -176,8 +177,9 @@ export default function StepProducts({ onNext, onBack }: Props) {
               <label className="text-sm font-semibold text-slate-700 mb-2 block">운영 일수</label>
               <div className="flex items-center gap-3">
                 <input
-                  type="number" min={1} max={365} value={locationDays}
-                  onChange={(e) => setLocationDays(Math.max(1, Math.min(365, Number(e.target.value))))}
+                  type="number" min={1} max={365} value={locationDaysStr}
+                  onChange={(e) => setLocationDaysStr(e.target.value)}
+                  onBlur={() => setLocationDaysStr(String(locationDays))}
                   className="input w-24 text-center" required
                 />
                 <span className="text-sm text-slate-600">일 × {fmt(LOCATION_DAILY_PRICE)} =</span>

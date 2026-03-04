@@ -29,7 +29,8 @@ function fmt(n: number) {
 
 export default function PriceCalculator() {
   const [locationType, setLocationType] = useState<LocationType>("none");
-  const [locationDays, setLocationDays] = useState(1);
+  const [locationDaysStr, setLocationDaysStr] = useState("1");
+  const locationDays = Math.max(1, Math.min(365, Number(locationDaysStr) || 1));
   const [selected, setSelected] = useState<Set<ContentKey>>(new Set());
 
   function toggle(key: ContentKey, isRadio: boolean, groupKeys: ContentKey[]) {
@@ -144,9 +145,10 @@ export default function PriceCalculator() {
                     type="number"
                     min={1}
                     max={365}
-                    value={locationDays}
+                    value={locationDaysStr}
                     onClick={(e) => e.stopPropagation()}
-                    onChange={(e) => setLocationDays(Math.max(1, Math.min(365, Number(e.target.value))))}
+                    onChange={(e) => setLocationDaysStr(e.target.value)}
+                    onBlur={() => setLocationDaysStr(String(locationDays))}
                     className="input w-24 text-center"
                   />
                   <span className="text-sm text-slate-600">일 × {fmt(LOCATION_DAILY_PRICE)} =</span>
