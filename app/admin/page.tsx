@@ -15,6 +15,7 @@ export default function AdminPage() {
   const [creating, setCreating] = useState(false);
   const [newUrl, setNewUrl] = useState("");
   const [copied, setCopied] = useState(false);
+  const [showExpired, setShowExpired] = useState(false);
 
   const {
     contracts,
@@ -171,7 +172,7 @@ export default function AdminPage() {
   const now2 = new Date();
   const thisMonthContracts = contracts.filter((c) => {
     const d = new Date(c.created_at);
-    return d.getMonth() === now2.getMonth() && d.getFullYear() === now2.getFullYear();
+    return c.status !== "cancelled" && d.getMonth() === now2.getMonth() && d.getFullYear() === now2.getFullYear();
   });
   const totalRevenue = contracts
     .filter((c) => c.payment_confirmed)
@@ -360,7 +361,7 @@ export default function AdminPage() {
             </button>
             <button
               className="text-xs px-2 py-1 rounded border border-red-400 text-red-700 hover:bg-red-50 whitespace-nowrap"
-              onClick={() => cancelContract(c.id)}
+              onClick={() => confirm("정말 계약을 취소하시겠습니까?") && cancelContract(c.id)}
             >
               계약 취소
             </button>
@@ -392,13 +393,13 @@ export default function AdminPage() {
             </button>
             <button
               className="text-xs px-2 py-1 rounded border border-red-200 text-red-600 hover:bg-red-50 whitespace-nowrap"
-              onClick={() => revokePayment(c.id)}
+              onClick={() => confirm("입금 확인을 취소하시겠습니까?") && revokePayment(c.id)}
             >
               입금 취소
             </button>
             <button
               className="text-xs px-2 py-1 rounded border border-red-400 text-red-700 hover:bg-red-50 whitespace-nowrap"
-              onClick={() => cancelContract(c.id)}
+              onClick={() => confirm("정말 계약을 취소하시겠습니까?") && cancelContract(c.id)}
             >
               계약 취소
             </button>
@@ -424,7 +425,7 @@ export default function AdminPage() {
             </button>
             <button
               className="text-xs px-2 py-1 rounded border border-red-400 text-red-700 hover:bg-red-50 whitespace-nowrap"
-              onClick={() => cancelContract(c.id)}
+              onClick={() => confirm("정말 계약을 취소하시겠습니까?") && cancelContract(c.id)}
             >
               계약 취소
             </button>
@@ -525,7 +526,7 @@ export default function AdminPage() {
                     </button>
                     <button
                       className="text-xs px-2 py-1 rounded border border-red-200 text-red-600 hover:bg-red-50 whitespace-nowrap"
-                      onClick={() => deleteToken(t.id)}
+                      onClick={() => confirm("이 URL을 삭제하시겠습니까?") && deleteToken(t.id)}
                     >
                       폐기
                     </button>
@@ -533,7 +534,19 @@ export default function AdminPage() {
                 </td>
               </tr>
             ))}
-            {expiredTokens.map((t) => (
+            {expiredTokens.length > 0 && (
+              <tr className="border-t">
+                <td colSpan={4} className="px-4 py-2">
+                  <button
+                    className="text-xs text-slate-400 hover:text-slate-600"
+                    onClick={() => setShowExpired(!showExpired)}
+                  >
+                    {showExpired ? "▾" : "▸"} 만료된 URL ({expiredTokens.length}건)
+                  </button>
+                </td>
+              </tr>
+            )}
+            {showExpired && expiredTokens.map((t) => (
               <tr key={t.id} className="border-t bg-slate-50 opacity-60">
                 <td className="px-4 py-3 text-slate-400">
                   {t.label || "-"}
@@ -547,7 +560,7 @@ export default function AdminPage() {
                 <td className="px-4 py-3">
                   <button
                     className="text-xs px-2 py-1 rounded border border-slate-300 text-slate-500 hover:bg-slate-100 whitespace-nowrap"
-                    onClick={() => deleteToken(t.id)}
+                    onClick={() => confirm("이 URL을 삭제하시겠습니까?") && deleteToken(t.id)}
                   >
                     삭제
                   </button>
@@ -558,9 +571,6 @@ export default function AdminPage() {
         </table>
       </div>
 
-      <p className="text-xs text-slate-500 mt-3">
-        * 이 페이지는 내부 관리용입니다. 공유하지 마세요.
-      </p>
     </div>
   );
 }

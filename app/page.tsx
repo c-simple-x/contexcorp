@@ -99,7 +99,12 @@ export default function Page() {
       </Section>
 
       {/* SHOWCASE */}
-      <Section id="showcase" className="py-8">
+      <Section id="showcase" className="py-16">
+        <div className="text-center max-w-2xl mx-auto mb-6">
+          <span className="pill">AR 체험</span>
+          <h3 className="mt-3 text-3xl font-extrabold">AR 미리보기</h3>
+          <p className="mt-2 text-slate-600">실제 거리에서 스마트폰으로 체험하는 AR 배너입니다.</p>
+        </div>
         <div className="card p-6">
           <div className="grid lg:grid-cols-3 gap-6 items-center">
             <div className="lg:col-span-2">
@@ -134,12 +139,18 @@ export default function Page() {
           <p className="mt-2 text-slate-600">실제 거리와 공간에서 촬영한 AR 광고 운영 영상입니다.</p>
         </div>
         <div className="mt-10 grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
-          {["ex1", "ex2", "ex3", "ex4", "ex5"].map((name) => (
-            <div key={name} className="card overflow-hidden">
+          {[
+            { name: "ex1", label: "라스트라벨 일산덕이점" },
+            { name: "ex2", label: "101수산" },
+            { name: "ex3", label: "상추네 장작불 닭볶음탕" },
+            { name: "ex4", label: "내셔널지오그래픽 일산덕이점" },
+            { name: "ex5", label: "라스트라벨 일산덕이점" },
+          ].map((item) => (
+            <div key={item.name} className="card overflow-hidden">
               <div className="aspect-[9/16] bg-black">
                 <video
                   className="w-full h-full object-cover"
-                  src={`https://pub-4d204982c58e47eeb7eef39ac8c94010.r2.dev/${name}.MP4`}
+                  src={`https://pub-4d204982c58e47eeb7eef39ac8c94010.r2.dev/${item.name}.MP4`}
                   autoPlay
                   muted
                   loop
@@ -147,6 +158,30 @@ export default function Page() {
                   preload="metadata"
                 />
               </div>
+              <p className="text-xs text-center text-slate-600 py-2 px-1 truncate">{item.label}</p>
+            </div>
+          ))}
+        </div>
+      </Section>
+
+      {/* PROCESS */}
+      <Section id="process" className="py-16">
+        <div className="text-center max-w-2xl mx-auto">
+          <span className="pill">진행 절차</span>
+          <h3 className="mt-3 text-3xl font-extrabold">진행 절차</h3>
+          <p className="mt-2 text-slate-600">위치 선정부터 AR 노출까지, 복잡한 과정은 저희가 처리합니다.</p>
+        </div>
+        <div className="mt-10 grid md:grid-cols-5 gap-4">
+          {[
+            { n: 1, t: "위치 · 목적 상담",   d: "원하는 위치, 활용 목적, 예산을 편하게 공유해주세요." },
+            { n: 2, t: "위치 확정 및 계약",   d: "GPS 좌표를 확정하고 1년 위치 독점 운영 계약을 체결합니다." },
+            { n: 3, t: "콘텐츠 제작",         d: "브랜드에 맞는 AR 배너 또는 3D 모션 배너를 제작합니다." },
+            { n: 4, t: "AR 배포 · 세팅",      d: "지정 좌표에 AR 콘텐츠를 등록하고 노출을 시작합니다." },
+            { n: 5, t: "운영 · 업데이트",     d: "서면 요청 한 번으로 내용 변경, 지속적인 운영 관리를 제공합니다." },
+          ].map(s => (
+            <div key={s.n} className="card hover-card">
+              <div className="p-5 border-b text-lg font-semibold">{s.n}. {s.t}</div>
+              <div className="p-5 text-sm text-slate-600">{s.d}</div>
             </div>
           ))}
         </div>
@@ -227,47 +262,41 @@ export default function Page() {
 
         {/* 3D 모션 배너 관련 요금 */}
         <div className="mt-10">
-          <h4 className="text-xl font-extrabold mb-4">3D 모션 배너 관련 요금</h4>
-
-          {/* 교체 */}
-          <div className="card hover-card max-w-sm mb-6">
-            <div className="p-5 border-b text-lg font-semibold">3D 모션 배너 파일 교체</div>
-            <div className="p-5">
-              <div className="text-3xl font-extrabold">₩60,000 <span className="text-base font-medium">/ 회</span></div>
-              <p className="mt-2 text-sm text-slate-600">완성된 3D 소재 파일을 전달하면 서버에 등록 후 기존 배너와 교체합니다.</p>
+          <h4 className="text-xl font-extrabold mb-2">3D 모션 배너 관련 요금</h4>
+          <p className="text-sm text-slate-500 mb-4">제작 기준: 초당 ₩110,000 (부가세 별도)</p>
+          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+            <div className="card hover-card">
+              <div className="p-5 border-b text-lg font-semibold">파일 교체</div>
+              <div className="p-5">
+                <div className="text-3xl font-extrabold">₩60,000 <span className="text-base font-medium">/ 회</span></div>
+                <p className="mt-2 text-sm text-slate-600">완성된 3D 소재 파일을 전달하면 서버에 등록 후 기존 배너와 교체합니다.</p>
+              </div>
             </div>
-          </div>
-
-          {/* 제작 */}
-          <div>
-            <p className="text-sm font-semibold text-slate-700 mb-3">3D 모션 배너 제작 · 초당 ₩110,000 <span className="font-normal text-slate-500">(부가세 별도)</span></p>
-            <div className="grid md:grid-cols-3 gap-6">
-              <div className="card hover-card">
-                <div className="p-5 border-b text-lg font-semibold flex items-center gap-2">
-                  5초 <span className="text-xs font-normal text-slate-500 border border-slate-300 rounded-full px-2 py-0.5">기본</span>
-                </div>
-                <div className="p-5">
-                  <div className="text-3xl font-extrabold">₩550,000</div>
-                  <p className="mt-2 text-sm text-slate-600">자연스러운 모션과 루프가 가능한 기본 길이입니다.</p>
-                </div>
+            <div className="card hover-card">
+              <div className="p-5 border-b text-lg font-semibold flex items-center gap-2">
+                제작 5초 <span className="text-xs font-normal text-slate-500 border border-slate-300 rounded-full px-2 py-0.5">기본</span>
               </div>
-              <div className="card hover-card border-blue-200">
-                <div className="p-5 border-b text-lg font-semibold flex items-center gap-2">
-                  10초 <span className="text-xs font-normal text-blue-600 border border-blue-200 rounded-full px-2 py-0.5">Best</span>
-                </div>
-                <div className="p-5">
-                  <div className="text-3xl font-extrabold">₩1,067,000</div>
-                  <p className="mt-1 text-xs text-blue-600 font-medium">3% 할인 적용</p>
-                  <p className="mt-2 text-sm text-slate-600">풍부한 연출과 스토리텔링이 가능한 가장 많이 선택하는 길이입니다.</p>
-                </div>
+              <div className="p-5">
+                <div className="text-3xl font-extrabold">₩550,000</div>
+                <p className="mt-2 text-sm text-slate-600">자연스러운 모션과 루프가 가능한 기본 길이입니다.</p>
               </div>
-              <div className="card hover-card">
-                <div className="p-5 border-b text-lg font-semibold">15초</div>
-                <div className="p-5">
-                  <div className="text-3xl font-extrabold">₩1,567,500</div>
-                  <p className="mt-1 text-xs text-slate-500 font-medium">5% 할인 적용</p>
-                  <p className="mt-2 text-sm text-slate-600">긴 스토리와 다양한 씬 전환이 가능한 프리미엄 모션 배너입니다.</p>
-                </div>
+            </div>
+            <div className="card hover-card border-blue-200">
+              <div className="p-5 border-b text-lg font-semibold flex items-center gap-2">
+                제작 10초 <span className="text-xs font-normal text-blue-600 border border-blue-200 rounded-full px-2 py-0.5">Best</span>
+              </div>
+              <div className="p-5">
+                <div className="text-3xl font-extrabold">₩1,067,000</div>
+                <p className="mt-1 text-xs text-blue-600 font-medium">3% 할인 적용</p>
+                <p className="mt-2 text-sm text-slate-600">풍부한 연출과 스토리텔링이 가능한 가장 많이 선택하는 길이입니다.</p>
+              </div>
+            </div>
+            <div className="card hover-card">
+              <div className="p-5 border-b text-lg font-semibold">제작 15초</div>
+              <div className="p-5">
+                <div className="text-3xl font-extrabold">₩1,567,500</div>
+                <p className="mt-1 text-xs text-slate-500 font-medium">5% 할인 적용</p>
+                <p className="mt-2 text-sm text-slate-600">긴 스토리와 다양한 씬 전환이 가능한 프리미엄 모션 배너입니다.</p>
               </div>
             </div>
           </div>
@@ -278,32 +307,8 @@ export default function Page() {
           <div className="text-center max-w-2xl mx-auto mb-8">
             <span className="pill">견적 계산기</span>
             <h3 className="mt-3 text-2xl font-extrabold">원하는 항목을 선택하면 견적을 바로 확인하세요</h3>
-            <p className="mt-2 text-slate-600 text-sm">* VAT 10% 포함 금액 기준이며, 최종 견적은 상담 후 확정됩니다.</p>
           </div>
           <PriceCalculator />
-        </div>
-      </Section>
-
-      {/* PROCESS */}
-      <Section id="process" className="py-16">
-        <div className="text-center max-w-2xl mx-auto">
-          <span className="pill">Process</span>
-          <h3 className="mt-3 text-3xl font-extrabold">진행 절차</h3>
-          <p className="mt-2 text-slate-600">위치 선정부터 AR 노출까지, 복잡한 과정은 저희가 처리합니다.</p>
-        </div>
-        <div className="mt-10 grid md:grid-cols-5 gap-4">
-          {[
-            { n: 1, t: "위치 · 목적 상담",   d: "원하는 위치, 활용 목적, 예산을 편하게 공유해주세요." },
-            { n: 2, t: "위치 확정 및 계약",   d: "GPS 좌표를 확정하고 1년 위치 독점 운영 계약을 체결합니다." },
-            { n: 3, t: "콘텐츠 제작",         d: "브랜드에 맞는 AR 배너 또는 3D 모션 배너를 제작합니다." },
-            { n: 4, t: "AR 배포 · 세팅",      d: "지정 좌표에 AR 콘텐츠를 등록하고 노출을 시작합니다." },
-            { n: 5, t: "운영 · 업데이트",     d: "서면 요청 한 번으로 내용 변경, 지속적인 운영 관리를 제공합니다." },
-          ].map(s => (
-            <div key={s.n} className="card hover-card">
-              <div className="p-5 border-b text-lg font-semibold">{s.n}. {s.t}</div>
-              <div className="p-5 text-sm text-slate-600">{s.d}</div>
-            </div>
-          ))}
         </div>
       </Section>
 

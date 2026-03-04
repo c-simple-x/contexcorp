@@ -141,7 +141,7 @@ function ContractView({ id, data }: { id: string; data: any }) {
                   <p className="font-bold text-sm">CONTEX Corp. (콘텍스)</p>
                   <p className="text-sm text-slate-600 mt-1">사업자등록번호: 181-48-00499</p>
                   <p className="text-sm text-slate-600">대표: 홍정민</p>
-                  <p className="text-sm text-slate-600">이메일: hello@contexcorp.com</p>
+                  <p className="text-sm text-slate-600">이메일: contact@contexcorp.com</p>
                 </div>
                 {/* 고객 */}
                 <div className="rounded-xl border bg-slate-50 p-4">
@@ -249,7 +249,7 @@ function ContractView({ id, data }: { id: string; data: any }) {
                         <img src="/ingam.png" alt="대표 도장" className="h-24 object-contain" />
                         <div className="text-center text-xs text-slate-500 space-y-0.5">
                           <p className="font-semibold text-slate-700">CONTEX Corp. 대표 홍정민</p>
-                          <p>hello@contexcorp.com</p>
+                          <p>contact@contexcorp.com</p>
                         </div>
                       </div>
                       <div className="mt-3 pt-3 border-t space-y-1.5 text-sm">

@@ -66,7 +66,7 @@ export async function GET(req: Request) {
               <p>안녕하세요, <strong>${toName}</strong> 님.</p>
               <p>보유하신 AR 위치 사용권이 <strong>${expDate}</strong>에 만료 예정입니다.</p>
               <p>갱신하시면 기존 AR 배너 위치를 계속 유지하실 수 있습니다.</p>
-              <p style="font-size:13px;color:#64748b">갱신 문의: hello@contexcorp.com · +82-10-3653-1987</p>
+              <p style="font-size:13px;color:#64748b">갱신 문의: contact@contexcorp.com · +82-10-3653-1987</p>
             </div>
           </div>
         `,

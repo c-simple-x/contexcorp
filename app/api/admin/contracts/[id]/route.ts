@@ -107,7 +107,7 @@ async function sendPaymentConfirmedEmail(contractId: string) {
               </tr>
             </table>
             <p style="font-size:13px;color:#64748b">진행 상황은 순차적으로 이메일로 안내드리겠습니다.<br>문의 사항이 있으시면 언제든지 연락해 주세요.</p>
-            <p style="font-size:13px;color:#94a3b8;margin-top:16px">hello@contexcorp.com · +82-10-3653-1987</p>
+            <p style="font-size:13px;color:#94a3b8;margin-top:16px">contact@contexcorp.com · +82-10-3653-1987</p>
           </div>
         </div>
       `,

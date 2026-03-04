@@ -38,7 +38,7 @@ const jsonLd = {
   description: "AR 위치형 광고·3D 배너·콘텐츠·마케팅·유통까지 원스톱 솔루션",
   url: "https://www.contexcorp.com",
   telephone: "+82-10-3653-1987",
-  email: "hello@contexcorp.com",
+  email: "contact@contexcorp.com",
   address: {
     "@type": "PostalAddress",
     addressCountry: "KR",
