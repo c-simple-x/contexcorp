@@ -77,7 +77,7 @@ function ContractView({ id, data }: { id: string; data: any }) {
         <div className="bg-white shadow-sm rounded-2xl overflow-hidden print:shadow-none print:rounded-none">
 
           {/* 헤더 */}
-          <div className="bg-slate-800 text-white px-8 py-6 print:bg-slate-800">
+          <div className="bg-slate-800 text-white px-4 py-5 sm:px-8 sm:py-6 print:bg-slate-800">
             <div className="flex items-start justify-between gap-4">
               <div>
                 <p className="text-xs font-semibold tracking-widest text-slate-400 uppercase mb-1">
@@ -91,12 +91,12 @@ function ContractView({ id, data }: { id: string; data: any }) {
             </div>
           </div>
 
-          <div className="px-8 py-6 space-y-8">
+          <div className="px-4 py-5 sm:px-8 sm:py-6 space-y-8">
 
             {/* 계약 기본 정보 */}
             <section>
               <h2 className="text-xs font-bold tracking-widest text-slate-400 uppercase mb-3">계약 정보</h2>
-              <div className="grid grid-cols-2 gap-x-8 gap-y-2 text-sm">
+              <div className="grid grid-cols-1 sm:grid-cols-2 sm:gap-x-8 text-sm">
                 <div className="flex justify-between border-b pb-2">
                   <span className="text-slate-500">계약 번호</span>
                   <span className="font-mono font-medium text-xs">{id.slice(0, 8).toUpperCase()}</span>
@@ -123,7 +123,7 @@ function ContractView({ id, data }: { id: string; data: any }) {
                   <span className="text-slate-500">부가세 (10%)</span>
                   <span className="font-medium">₩{fmt(vat)}</span>
                 </div>
-                <div className="flex justify-between border-b pb-2 col-span-2">
+                <div className="flex justify-between border-b pb-2 sm:col-span-2">
                   <span className="text-slate-700 font-semibold">실 입금액 (VAT 포함)</span>
                   <span className="font-extrabold text-blue-700 text-base">₩{fmt(totalWithVat)}</span>
                 </div>
@@ -206,7 +206,7 @@ function ContractView({ id, data }: { id: string; data: any }) {
             {/* 계약 조항 */}
             <section>
               <h2 className="text-xs font-bold tracking-widest text-slate-400 uppercase mb-3">계약 조항</h2>
-              <div className="rounded-xl border bg-slate-50 p-5 text-sm leading-7 whitespace-pre-wrap text-slate-700 max-h-80 overflow-y-auto">
+              <div className="rounded-xl border bg-slate-50 p-4 sm:p-5 text-sm leading-7 whitespace-pre-wrap break-words text-slate-700 max-h-96 overflow-y-auto overflow-x-hidden">
                 {terms}
               </div>
             </section>
@@ -323,9 +323,9 @@ function ContractView({ id, data }: { id: string; data: any }) {
           </div>
 
           {/* 계약서 하단 */}
-          <div className="border-t bg-slate-50 px-8 py-4 text-xs text-slate-400 flex items-center justify-between">
+          <div className="border-t bg-slate-50 px-4 sm:px-8 py-3 sm:py-4 text-xs text-slate-400 flex items-center justify-between gap-2">
             <span>본 계약서는 전자서명법에 따라 유효한 전자계약입니다.</span>
-            <span className="font-mono">{id}</span>
+            <span className="font-mono hidden sm:block shrink-0">{id}</span>
           </div>
         </div>
       </div>

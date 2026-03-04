@@ -50,7 +50,7 @@ export default function AdminContractsPage() {
   if (!authed) return null;
 
   return (
-    <div className="container py-12">
+    <div className="container py-8 md:py-12">
       <div className="mb-6">
         <a href="/admin" className="navlink text-sm">← 대시보드</a>
       </div>
@@ -78,7 +78,42 @@ export default function AdminContractsPage() {
       </div>
 
       <div className="card overflow-hidden">
-        <table className="w-full text-sm">
+        {/* ── 모바일 카드 목록 ── */}
+        <div className="md:hidden divide-y">
+          {filtered.length === 0 ? (
+            <p className="px-4 py-6 text-center text-slate-500 text-sm">
+              {query || statusFilter !== "all" ? "검색 결과가 없습니다." : "등록된 계약이 없습니다."}
+            </p>
+          ) : (
+            filtered.map((c) => (
+              <div key={c.id} className="px-4 py-3 flex items-center justify-between gap-3">
+                <div className="min-w-0 flex-1">
+                  <p className="font-semibold text-sm truncate">
+                    {c.client?.company
+                      ? `${c.client.company}${c.client.name ? ` (${c.client.name})` : ""}`
+                      : (c.client?.name ?? c.title)}
+                  </p>
+                  <p className="text-xs text-slate-500 mt-0.5">
+                    ₩{new Intl.NumberFormat("ko-KR").format(c.price ?? 0)}
+                    &nbsp;·&nbsp;
+                    {new Date(c.created_at).toLocaleDateString("ko-KR")}
+                  </p>
+                </div>
+                <div className="flex items-center gap-2 shrink-0">
+                  <span className={`rounded-full border px-2 py-0.5 text-xs ${STATUS_COLOR[c.status] ?? "border-slate-300 text-slate-600"}`}>
+                    {STATUS_LABEL[c.status] ?? c.status}
+                  </span>
+                  <a href={`/contracts/${c.id}`} className="navlink text-xs whitespace-nowrap">
+                    열기 →
+                  </a>
+                </div>
+              </div>
+            ))
+          )}
+        </div>
+
+        {/* ── 데스크톱 테이블 ── */}
+        <table className="hidden md:table w-full text-sm">
           <thead className="bg-slate-50">
             <tr>
               <th className="text-left px-4 py-3">고객</th>
@@ -108,11 +143,7 @@ export default function AdminContractsPage() {
                   ₩{new Intl.NumberFormat("ko-KR").format(c.price ?? 0)}
                 </td>
                 <td className="px-4 py-3">
-                  <span
-                    className={`rounded-full border px-2 py-0.5 text-xs ${
-                      STATUS_COLOR[c.status] ?? "border-slate-300 text-slate-600"
-                    }`}
-                  >
+                  <span className={`rounded-full border px-2 py-0.5 text-xs ${STATUS_COLOR[c.status] ?? "border-slate-300 text-slate-600"}`}>
                     {STATUS_LABEL[c.status] ?? c.status}
                   </span>
                 </td>
