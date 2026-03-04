@@ -25,6 +25,8 @@ function Row({ label, value }: { label: string; value: string }) {
 export default function StepPreview({ info, products, contractId, onNext, onBack }: Props) {
   const [confirmed, setConfirmed] = useState(false);
 
+  const originalTotal = products.items.reduce((s, i) => s + (i.originalPrice ?? i.price), 0);
+  const hasDiscount = (products.discountPercent ?? 0) > 0 || (products.promoPercent ?? 0) > 0;
   const vat = Math.round(products.total * 0.1);
   const totalWithVat = products.total + vat;
 
@@ -47,19 +49,50 @@ export default function StepPreview({ info, products, contractId, onNext, onBack
       <div className="rounded-xl border border-slate-200 overflow-hidden">
         <div className="px-4 py-3 border-b text-sm font-semibold bg-slate-50">계약 항목 및 금액</div>
         <div className="px-4 py-3">
+          {/* 할인 안내 */}
+          {hasDiscount && (
+            <div className="mb-3 rounded-lg bg-slate-50 border border-slate-200 px-3 py-2 space-y-0.5">
+              {(products.discountPercent ?? 0) > 0 && (
+                <p className="text-xs text-red-600 font-medium">📍 위치 사용권 {products.discountPercent}% 할인 적용</p>
+              )}
+              {(products.promoPercent ?? 0) > 0 && (
+                <p className="text-xs text-purple-600 font-medium">🎉 프로모션 {products.promoPercent}% 할인 적용</p>
+              )}
+            </div>
+          )}
           <div className="space-y-2 mb-3">
-            {products.items.map((item) => (
-              <div key={item.key} className="flex justify-between items-start gap-2 text-sm">
-                <span className="min-w-0 break-words flex-1">{item.label}</span>
-                <span className="font-semibold tabular-nums shrink-0">₩{item.price.toLocaleString("ko-KR")}</span>
-              </div>
-            ))}
+            {products.items.map((item) => {
+              const hasItemDiscount = item.originalPrice && item.originalPrice !== item.price;
+              return (
+                <div key={item.key} className="flex justify-between items-start gap-2 text-sm">
+                  <span className="min-w-0 break-words flex-1">{item.label}</span>
+                  <span className="tabular-nums shrink-0 text-right">
+                    {hasItemDiscount && (
+                      <span className="text-xs line-through text-slate-400 mr-1.5">₩{item.originalPrice!.toLocaleString("ko-KR")}</span>
+                    )}
+                    <span className={`font-semibold ${hasItemDiscount ? "text-red-600" : ""}`}>₩{item.price.toLocaleString("ko-KR")}</span>
+                  </span>
+                </div>
+              );
+            })}
           </div>
           <div className="border-t pt-3 space-y-1.5">
+            {hasDiscount && (
+              <div className="flex justify-between text-xs text-slate-400">
+                <span>정가 합계</span>
+                <span className="line-through">₩{originalTotal.toLocaleString("ko-KR")}</span>
+              </div>
+            )}
             <div className="flex justify-between text-xs text-slate-500">
               <span>공급가액 (VAT 별도)</span>
               <span>₩{products.total.toLocaleString("ko-KR")}</span>
             </div>
+            {hasDiscount && (
+              <div className="flex justify-between text-xs text-red-600 font-medium">
+                <span>할인</span>
+                <span>-₩{(originalTotal - products.total).toLocaleString("ko-KR")}</span>
+              </div>
+            )}
             <div className="flex justify-between text-xs text-slate-500">
               <span>부가세 (10%)</span>
               <span>₩{vat.toLocaleString("ko-KR")}</span>

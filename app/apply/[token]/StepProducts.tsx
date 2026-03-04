@@ -6,10 +6,12 @@ import { CheckCircle2 } from "lucide-react";
 export type SelectedProducts = {
   keys: string[];
   total: number;
-  items: { key: string; label: string; price: number }[];
+  items: { key: string; label: string; price: number; originalPrice?: number }[];
   purchaseType: "new" | "renewal";
   locationType?: "annual" | "daily";
   locationDays?: number;
+  discountPercent?: number;
+  promoPercent?: number;
 };
 
 type PurchaseType = "new" | "renewal";
@@ -100,10 +102,12 @@ export default function StepProducts({ discountPercent = 0, promoPercent = 0, on
     onNext({
       keys: allItems.map((i) => i.key),
       total,
-      items: allItems,
+      items: allItems.map((i) => ({ key: i.key, label: i.label, price: i.price, originalPrice: i.originalPrice })),
       purchaseType,
       locationType: purchaseType === "new" ? locationType : undefined,
       locationDays: purchaseType === "new" && locationType === "daily" ? locationDays : undefined,
+      discountPercent,
+      promoPercent,
     });
   }
 
