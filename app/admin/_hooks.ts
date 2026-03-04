@@ -9,7 +9,8 @@ export type ContractRow = {
   status: string;
   payment_confirmed: boolean;
   created_at: string;
-  client?: { company?: string | null; name?: string | null };
+  expires_at?: string | null;
+  client?: { company?: string | null; name?: string | null; email?: string | null };
 };
 
 export type TokenRow = {

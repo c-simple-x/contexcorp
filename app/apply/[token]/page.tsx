@@ -56,6 +56,7 @@ export default function ApplyPage({ params }: { params: { token: string } }) {
         phone: state.info.phone,
         address: state.info.address,
         selected: products.keys,
+        purchase_type: products.purchaseType,
         location_type: products.locationType,
         location_days: products.locationDays,
       }),

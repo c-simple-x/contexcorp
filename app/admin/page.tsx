@@ -180,6 +180,33 @@ export default function AdminPage() {
     .filter((c) => c.payment_confirmed)
     .reduce((sum, c) => sum + (c.price ?? 0), 0);
 
+  // 월별 매출 (최근 6개월)
+  const monthlyRevenue = Array.from({ length: 6 }, (_, i) => {
+    const d = new Date(now2.getFullYear(), now2.getMonth() - (5 - i), 1);
+    const revenue = contracts
+      .filter((c) => {
+        const cd = new Date(c.created_at);
+        return c.payment_confirmed && cd.getMonth() === d.getMonth() && cd.getFullYear() === d.getFullYear();
+      })
+      .reduce((s, c) => s + (c.price ?? 0), 0);
+    return {
+      label: `${d.getMonth() + 1}월`,
+      revenue,
+    };
+  });
+  const maxRevenue = Math.max(...monthlyRevenue.map((m) => m.revenue), 1);
+  const fmtW = (n: number) => n >= 1000000
+    ? `₩${(n / 1000000).toFixed(1)}M`
+    : n >= 1000 ? `₩${Math.round(n / 1000)}K` : `₩${n}`;
+
+  // 만료 예정 계약 (D-30 이내, signed + payment_confirmed)
+  const thirtyDaysLater = new Date(now2.getTime() + 30 * 24 * 60 * 60 * 1000);
+  const expiringContracts = contracts.filter((c) => {
+    if (!c.expires_at || c.status !== "signed" || !c.payment_confirmed) return false;
+    const exp = new Date(c.expires_at);
+    return exp > now2 && exp <= thirtyDaysLater;
+  });
+
   return (
     <div className="container py-12">
       <div className="mb-8 flex items-center justify-between">
@@ -197,6 +224,32 @@ export default function AdminPage() {
         </button>
       </div>
 
+      {/* 만료 예정 계약 알림 */}
+      {expiringContracts.length > 0 && (
+        <div className="rounded-xl border border-orange-200 bg-orange-50 p-4 mb-6">
+          <p className="text-sm font-semibold text-orange-700 mb-2">
+            ⚠ 30일 이내 만료 예정 계약 ({expiringContracts.length}건)
+          </p>
+          <div className="space-y-1">
+            {expiringContracts.map((c) => {
+              const exp = new Date(c.expires_at!);
+              const daysLeft = Math.ceil((exp.getTime() - now2.getTime()) / (1000 * 60 * 60 * 24));
+              return (
+                <div key={c.id} className="flex items-center justify-between text-sm">
+                  <span className="text-orange-800">
+                    {c.client?.company || c.client?.name || c.title}
+                  </span>
+                  <div className="flex items-center gap-3">
+                    <span className="text-orange-600 font-medium">D-{daysLeft}</span>
+                    <a href={`/contracts/${c.id}`} className="text-xs navlink">보기 →</a>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      )}
+
       {/* 통계 카드 */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
         {[
@@ -210,6 +263,27 @@ export default function AdminPage() {
             <p className="text-xl font-extrabold mt-1 tabular-nums">{stat.value}</p>
           </div>
         ))}
+      </div>
+
+      {/* 월별 매출 차트 */}
+      <div className="card p-5 mb-8">
+        <h2 className="text-sm font-semibold text-slate-700 mb-4">월별 매출 (최근 6개월)</h2>
+        <div className="space-y-3">
+          {monthlyRevenue.map((m) => (
+            <div key={m.label} className="flex items-center gap-3">
+              <span className="w-8 text-xs text-slate-500 shrink-0 text-right">{m.label}</span>
+              <div className="flex-1 h-6 bg-slate-100 rounded-full overflow-hidden">
+                <div
+                  className="h-full bg-blue-500 rounded-full transition-all"
+                  style={{ width: `${(m.revenue / maxRevenue) * 100}%` }}
+                />
+              </div>
+              <span className="w-20 text-xs font-semibold tabular-nums text-right text-slate-700">
+                {m.revenue > 0 ? fmtW(m.revenue) : "-"}
+              </span>
+            </div>
+          ))}
+        </div>
       </div>
 
       {/* 신규 계약 URL 생성 */}

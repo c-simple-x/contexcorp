@@ -38,13 +38,32 @@ const jsonLd = {
   description: "AR 위치형 광고·3D 배너·콘텐츠·마케팅·유통까지 원스톱 솔루션",
   url: "https://www.contexcorp.com",
   telephone: "+82-10-3653-1987",
-  email: "contact@contexcorp.com",
+  email: "hello@contexcorp.com",
   address: {
     "@type": "PostalAddress",
     addressCountry: "KR",
   },
+  hasOfferCatalog: {
+    "@type": "OfferCatalog",
+    name: "AR 광고 서비스",
+    itemListElement: [
+      {
+        "@type": "Offer",
+        itemOffered: { "@type": "Service", name: "일반 GPS 위치 사용권 (연간)" },
+        price: "100000",
+        priceCurrency: "KRW",
+      },
+      {
+        "@type": "Offer",
+        itemOffered: { "@type": "Service", name: "3D 모션 배너 제작 (10초)" },
+        price: "1067000",
+        priceCurrency: "KRW",
+      },
+    ],
+  },
   knowsAbout: [
     "AR 광고", "증강현실 마케팅", "3D 모션 배너", "위치 기반 광고", "공간 마케팅",
+    "GPS 광고", "소상공인 마케팅",
   ],
   priceRange: "₩₩",
 };

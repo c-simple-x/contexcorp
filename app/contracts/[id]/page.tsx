@@ -2,6 +2,7 @@
 import { getBaseUrl } from "@/lib/get-base-url";
 import ContractActions from "./ContractActions";
 import PrintButton from "./PrintButton";
+import DecryptButton from "./DecryptButton";
 
 export const dynamic = "force-dynamic";
 
@@ -38,7 +39,7 @@ export default async function ContractPage({ params }: { params: { id: string } 
 function ContractView({ id, data }: { id: string; data: any }) {
   const {
     title, terms, price, status, payment_confirmed,
-    selected_items, created_at, client, signature,
+    selected_items, created_at, client, signature, expires_at,
   } = data ?? {};
 
   const statusInfo = payment_confirmed && status === "signed"
@@ -154,6 +155,9 @@ function ContractView({ id, data }: { id: string; data: any }) {
                       {client.email && <p className="text-sm text-slate-600 mt-1">{client.email}</p>}
                       {client.phone && <p className="text-sm text-slate-600">{client.phone}</p>}
                       {client.address && <p className="text-sm text-slate-600">{client.address}</p>}
+                      <div className="mt-2 pt-2 border-t border-slate-200">
+                        <DecryptButton contractId={id} clientType={client.client_type} />
+                      </div>
                     </>
                   ) : (
                     <p className="text-sm text-slate-400">-</p>

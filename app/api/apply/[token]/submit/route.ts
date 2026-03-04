@@ -44,6 +44,7 @@ export async function POST(req: Request, { params }: Params) {
     const id_number_encrypted = id_number ? encrypt(id_number) : null;
 
     // 4) 상품 선택 파싱 및 금액 계산
+    const purchase_type: "new" | "renewal" = body.purchase_type === "renewal" ? "renewal" : "new";
     const location_type: "annual" | "daily" = body.location_type === "daily" ? "daily" : "annual";
     const location_days = Math.max(1, Math.min(365, Number(body.location_days) || 1));
 
@@ -64,10 +65,12 @@ export async function POST(req: Request, { params }: Params) {
       banner_3d_15s: "3D 모션 배너 제작 (15초)",
     };
 
-    // 위치 항목 (유형에 따라 서버에서 계산)
-    const locationItem = location_type === "annual"
-      ? { key: "location", label: "위치 사용권 (연간)", price: 200000 }
-      : { key: "location_daily", label: `대중집합공간 위치 사용권 (${location_days}일)`, price: location_days * 150000 };
+    // 위치 항목 (신규 구매 시에만)
+    const locationItem = purchase_type === "new"
+      ? location_type === "annual"
+        ? { key: "location", label: "일반 GPS 위치 사용권 (연간)", price: 100000 }
+        : { key: "location_daily", label: `대중집합공간 위치 사용권 (${location_days}일)`, price: location_days * 100000 }
+      : null;
 
     // 콘텐츠 항목
     const selectedKeys: string[] = Array.isArray(body.selected) ? body.selected : [];
@@ -75,8 +78,13 @@ export async function POST(req: Request, { params }: Params) {
       .filter((k) => CONTENT_PRICES[k])
       .map((k) => ({ key: k, label: CONTENT_LABELS[k] || k, price: CONTENT_PRICES[k] }));
 
-    const selectedItems = [locationItem, ...contentItems];
+    const selectedItems = locationItem ? [locationItem, ...contentItems] : contentItems;
     const total = selectedItems.reduce((s, i) => s + i.price, 0);
+
+    // expires_at: 연간 GPS 계약인 경우 1년 후 만료
+    const expiresAt = purchase_type === "new" && location_type === "annual"
+      ? new Date(Date.now() + 365 * 24 * 60 * 60 * 1000).toISOString()
+      : null;
 
     // 5) client 생성
     const { data: clientIns, error: cErr } = await supabaseAdmin
@@ -112,6 +120,7 @@ export async function POST(req: Request, { params }: Params) {
         price: total,
         status: "draft",
         selected_items: selectedItems,
+        expires_at: expiresAt,
       }])
       .select("id")
       .single();

@@ -6,6 +6,7 @@ import {
 } from "lucide-react";
 import ContactForm from "./components/ContactForm";
 import Header from "./components/Header";
+import PriceCalculator from "./components/PriceCalculator";
 
 function Section({ id, className = "", children }: {
   id?: string; className?: string; children: React.ReactNode;
@@ -167,7 +168,7 @@ export default function Page() {
               <span className="text-xs font-normal text-slate-500 border border-slate-300 rounded-full px-2 py-0.5">연간</span>
             </div>
             <div className="p-5">
-              <div className="text-3xl font-extrabold">₩200,000 <span className="text-base font-medium">/ 년</span></div>
+              <div className="text-3xl font-extrabold">₩100,000 <span className="text-base font-medium">/ 년</span></div>
               <p className="mt-2 text-sm text-slate-600">원하는 GPS 좌표에 연간 독점 AR 노출권을 확보합니다.</p>
               <ul className="mt-4 space-y-2 text-sm text-slate-600">
                 <li className="bullet"><CheckCircle2 className="icon" /> 좌표 독점 운영권</li>
@@ -181,7 +182,7 @@ export default function Page() {
               <span className="text-xs font-normal text-orange-700 border border-orange-200 rounded-full px-2 py-0.5 bg-orange-50">일 단위</span>
             </div>
             <div className="p-5">
-              <div className="text-3xl font-extrabold">₩150,000 <span className="text-base font-medium">/ 일</span></div>
+              <div className="text-3xl font-extrabold">₩100,000 <span className="text-base font-medium">/ 일</span></div>
               <p className="mt-2 text-sm text-slate-600">CONTEX가 보유한 대중집합공간에 AR 광고를 집행합니다. 원하는 일수만큼 유연하게 운영하세요.</p>
               <ul className="mt-4 space-y-2 text-sm text-slate-600">
                 <li className="bullet"><CheckCircle2 className="icon" /> 유동 인구 밀집 공간</li>
@@ -259,6 +260,16 @@ export default function Page() {
               </div>
             </div>
           </div>
+        </div>
+
+        {/* 견적 계산기 */}
+        <div className="mt-16">
+          <div className="text-center max-w-2xl mx-auto mb-8">
+            <span className="pill">견적 계산기</span>
+            <h3 className="mt-3 text-2xl font-extrabold">원하는 항목을 선택하면 견적을 바로 확인하세요</h3>
+            <p className="mt-2 text-slate-600 text-sm">* VAT 10% 포함 금액 기준이며, 최종 견적은 상담 후 확정됩니다.</p>
+          </div>
+          <PriceCalculator />
         </div>
       </Section>
 
