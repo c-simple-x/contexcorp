@@ -12,6 +12,7 @@ export default function AdminPage() {
   const [authError, setAuthError] = useState("");
   const [tokens, setTokens] = useState<TokenRow[]>([]);
   const [label, setLabel] = useState("");
+  const [discount, setDiscount] = useState("0");
   const [creating, setCreating] = useState(false);
   const [newUrl, setNewUrl] = useState("");
   const [copied, setCopied] = useState(false);
@@ -81,12 +82,13 @@ export default function AdminPage() {
     const res = await fetch("/api/admin/tokens", {
       method: "POST",
       headers: { "Content-Type": "application/json", "x-admin-secret": s },
-      body: JSON.stringify({ label }),
+      body: JSON.stringify({ label, discount_percent: Number(discount) || 0 }),
     });
     const data = await res.json();
     if (data.ok) {
       setNewUrl(data.url);
       setLabel("");
+      setDiscount("0");
       loadTokens(s);
     }
     setCreating(false);
@@ -332,8 +334,8 @@ export default function AdminPage() {
           <Plus className="h-4 w-4" /> 신규 계약 URL 생성
         </div>
         <div className="p-5">
-          <form onSubmit={createToken} className="flex gap-3 items-end">
-            <div className="flex-1">
+          <form onSubmit={createToken} className="flex gap-3 items-end flex-wrap">
+            <div className="flex-1 min-w-[200px]">
               <label className="text-sm text-slate-600 mb-1 block">
                 라벨 (메모용, 선택)
               </label>
@@ -342,6 +344,19 @@ export default function AdminPage() {
                 placeholder="예: 홍길동 - 강남 매장 AR"
                 value={label}
                 onChange={(e) => setLabel(e.target.value)}
+              />
+            </div>
+            <div className="w-28">
+              <label className="text-sm text-slate-600 mb-1 block">
+                할인율 (%)
+              </label>
+              <input
+                type="number"
+                className="input text-center"
+                min={0}
+                max={50}
+                value={discount}
+                onChange={(e) => setDiscount(e.target.value)}
               />
             </div>
             <button className="btn" disabled={creating}>
@@ -525,7 +540,10 @@ export default function AdminPage() {
           {activeTokens.map((t) => (
             <div key={t.id} className="px-4 py-3 space-y-2">
               <div className="flex items-center justify-between">
-                <span className="font-semibold text-sm truncate">{t.label || <span className="text-slate-400">-</span>}</span>
+                <span className="font-semibold text-sm truncate">
+                  {t.label || <span className="text-slate-400">-</span>}
+                  {t.discount_percent > 0 && <span className="ml-1.5 text-xs text-red-600 font-medium">-{t.discount_percent}%</span>}
+                </span>
                 <span className="text-green-600 font-medium text-xs">{timeLeft(t.expires_at)}</span>
               </div>
               <p className="text-xs text-slate-500">{new Date(t.created_at).toLocaleString("ko-KR")}</p>
@@ -576,6 +594,7 @@ export default function AdminPage() {
               <tr key={t.id} className="border-t">
                 <td className="px-4 py-3">
                   {t.label || <span className="text-slate-400">-</span>}
+                  {t.discount_percent > 0 && <span className="ml-1.5 text-xs text-red-600 font-medium">-{t.discount_percent}%</span>}
                 </td>
                 <td className="px-4 py-3">
                   {new Date(t.created_at).toLocaleString("ko-KR")}

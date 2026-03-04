@@ -15,7 +15,7 @@ export async function POST(req: Request, { params }: Params) {
     // 1) 토큰 확인
     const { data: tokenRow, error: tErr } = await supabaseAdmin
       .from("contract_tokens")
-      .select("id,used_at,expires_at")
+      .select("id,used_at,expires_at,discount_percent")
       .eq("token", token)
       .single();
 
@@ -78,7 +78,17 @@ export async function POST(req: Request, { params }: Params) {
       .filter((k) => CONTENT_PRICES[k])
       .map((k) => ({ key: k, label: CONTENT_LABELS[k] || k, price: CONTENT_PRICES[k] }));
 
-    const selectedItems = locationItem ? [locationItem, ...contentItems] : contentItems;
+    // 할인 적용
+    const discountPercent = Math.max(0, Math.min(50, Number(tokenRow.discount_percent) || 0));
+    const applyDiscount = (price: number) =>
+      discountPercent > 0 ? Math.round(price * (100 - discountPercent) / 100) : price;
+
+    const rawItems = locationItem ? [locationItem, ...contentItems] : contentItems;
+    const selectedItems = rawItems.map((i) => ({
+      ...i,
+      original_price: i.price,
+      price: applyDiscount(i.price),
+    }));
     const total = selectedItems.reduce((s, i) => s + i.price, 0);
 
     // expires_at: 연간 GPS 계약인 경우 1년 후 만료

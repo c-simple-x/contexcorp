@@ -11,7 +11,7 @@ export async function GET(_req: Request, { params }: Params) {
 
   const { data, error } = await supabaseAdmin
     .from("contract_tokens")
-    .select("id,token,label,used_at,expires_at")
+    .select("id,token,label,used_at,expires_at,discount_percent")
     .eq("token", token)
     .single();
 
@@ -27,5 +27,5 @@ export async function GET(_req: Request, { params }: Params) {
     return NextResponse.json({ ok: false, error: "expired" }, { status: 410 });
   }
 
-  return NextResponse.json({ ok: true, label: data.label });
+  return NextResponse.json({ ok: true, label: data.label, discount_percent: data.discount_percent ?? 0 });
 }

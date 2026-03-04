@@ -15,7 +15,7 @@ export async function GET(req: Request) {
 
   const { data, error } = await supabaseAdmin
     .from("contract_tokens")
-    .select("id,token,label,used_at,expires_at,created_at,contract_id")
+    .select("id,token,label,used_at,expires_at,created_at,contract_id,discount_percent")
     .order("created_at", { ascending: false });
 
   if (error) return NextResponse.json({ ok: false, error: error.message }, { status: 500 });
@@ -28,13 +28,14 @@ export async function POST(req: Request) {
 
   const body = await req.json().catch(() => ({}));
   const label = String(body.label || "").trim() || null;
+  const discount_percent = Math.max(0, Math.min(50, Number(body.discount_percent) || 0));
   const token = crypto.randomUUID();
 
   const expires_at = new Date(Date.now() + 60 * 60 * 1000).toISOString(); // 1시간 후
 
   const { error } = await supabaseAdmin
     .from("contract_tokens")
-    .insert([{ token, label, expires_at }]);
+    .insert([{ token, label, expires_at, discount_percent }]);
 
   if (error) return NextResponse.json({ ok: false, error: error.message }, { status: 500 });
 

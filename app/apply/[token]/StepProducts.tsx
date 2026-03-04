@@ -34,11 +34,12 @@ function fmt(n: number) {
 }
 
 type Props = {
+  discountPercent?: number;
   onNext: (products: SelectedProducts) => void;
   onBack: () => void;
 };
 
-export default function StepProducts({ onNext, onBack }: Props) {
+export default function StepProducts({ discountPercent = 0, onNext, onBack }: Props) {
   const [purchaseType, setPurchaseType] = useState<PurchaseType>("new");
   const [locationType, setLocationType] = useState<LocationType>("annual");
   const [locationDaysStr, setLocationDaysStr] = useState("1");
@@ -67,11 +68,17 @@ export default function StepProducts({ onNext, onBack }: Props) {
       : { key: "location_daily", label: `대중집합공간 위치 사용권 (${locationDays}일)`, price: locationDays * LOCATION_DAILY_PRICE }
     : null;
 
+  function applyDiscount(price: number) {
+    return discountPercent > 0 ? Math.round(price * (100 - discountPercent) / 100) : price;
+  }
+
   const contentItems = (Object.keys(CONTENT_PRODUCTS) as ContentKey[])
     .filter((k) => selected.has(k))
-    .map((k) => ({ key: k, label: CONTENT_PRODUCTS[k].label, price: CONTENT_PRODUCTS[k].price }));
+    .map((k) => ({ key: k, label: CONTENT_PRODUCTS[k].label, price: applyDiscount(CONTENT_PRODUCTS[k].price), originalPrice: CONTENT_PRODUCTS[k].price }));
 
-  const allItems = locationItem ? [locationItem, ...contentItems] : contentItems;
+  const allItems = locationItem
+    ? [{ ...locationItem, originalPrice: locationItem.price, price: applyDiscount(locationItem.price) }, ...contentItems]
+    : contentItems;
   const total = allItems.reduce((s, i) => s + i.price, 0);
   const canSubmit = purchaseType === "renewal" ? contentItems.length > 0 : true;
 
@@ -94,6 +101,13 @@ export default function StepProducts({ onNext, onBack }: Props) {
 
   return (
     <form onSubmit={handleSubmit} className="grid gap-6">
+
+      {/* 할인 배너 */}
+      {discountPercent > 0 && (
+        <div className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 flex items-center gap-2">
+          <span className="text-red-600 font-bold text-sm">🎉 {discountPercent}% 할인이 적용됩니다</span>
+        </div>
+      )}
 
       {/* 구매 유형 */}
       <div>
@@ -147,7 +161,11 @@ export default function StepProducts({ onNext, onBack }: Props) {
                 </div>
                 <p className="text-xs text-slate-500 mt-1">원하는 GPS 좌표에 연간 독점 AR 노출권을 확보합니다.</p>
               </div>
-              <span className="text-sm font-semibold tabular-nums shrink-0">{fmt(LOCATION_ANNUAL_PRICE)}/년</span>
+              <span className="text-sm font-semibold tabular-nums shrink-0">
+                {discountPercent > 0 ? (
+                  <><span className="line-through text-slate-400 font-normal">{fmt(LOCATION_ANNUAL_PRICE)}</span>{" "}<span className="text-red-600">{fmt(applyDiscount(LOCATION_ANNUAL_PRICE))}</span></>
+                ) : fmt(LOCATION_ANNUAL_PRICE)}/년
+              </span>
             </label>
 
             <label
@@ -168,7 +186,11 @@ export default function StepProducts({ onNext, onBack }: Props) {
                 </div>
                 <p className="text-xs text-slate-500 mt-1">CONTEX가 보유한 대중집합공간에 AR 광고를 집행합니다.</p>
               </div>
-              <span className="text-sm font-semibold tabular-nums shrink-0">{fmt(LOCATION_DAILY_PRICE)}/일</span>
+              <span className="text-sm font-semibold tabular-nums shrink-0">
+                {discountPercent > 0 ? (
+                  <><span className="line-through text-slate-400 font-normal">{fmt(LOCATION_DAILY_PRICE)}</span>{" "}<span className="text-red-600">{fmt(applyDiscount(LOCATION_DAILY_PRICE))}</span></>
+                ) : fmt(LOCATION_DAILY_PRICE)}/일
+              </span>
             </label>
           </div>
 
@@ -182,8 +204,8 @@ export default function StepProducts({ onNext, onBack }: Props) {
                   onBlur={() => setLocationDaysStr(String(locationDays))}
                   className="input w-24 text-center" required
                 />
-                <span className="text-sm text-slate-600">일 × {fmt(LOCATION_DAILY_PRICE)} =</span>
-                <span className="text-sm font-extrabold text-orange-700">{fmt(locationDays * LOCATION_DAILY_PRICE)}</span>
+                <span className="text-sm text-slate-600">일 × {fmt(discountPercent > 0 ? applyDiscount(LOCATION_DAILY_PRICE) : LOCATION_DAILY_PRICE)} =</span>
+                <span className="text-sm font-extrabold text-orange-700">{fmt(applyDiscount(locationDays * LOCATION_DAILY_PRICE))}</span>
               </div>
             </div>
           )}
@@ -226,7 +248,11 @@ export default function StepProducts({ onNext, onBack }: Props) {
                       </p>
                     )}
                   </div>
-                  <span className="text-sm font-semibold tabular-nums">{fmt(prod.price)}</span>
+                  <span className="text-sm font-semibold tabular-nums">
+                    {discountPercent > 0 ? (
+                      <><span className="line-through text-slate-400 font-normal">{fmt(prod.price)}</span>{" "}<span className="text-red-600">{fmt(applyDiscount(prod.price))}</span></>
+                    ) : fmt(prod.price)}
+                  </span>
                 </label>
               );
             })}
@@ -238,13 +264,26 @@ export default function StepProducts({ onNext, onBack }: Props) {
       <div className="rounded-xl border border-blue-200 bg-blue-50 p-4">
         <div className="flex items-center justify-between">
           <span className="text-sm font-semibold text-slate-700">합계</span>
-          <span className="text-xl font-extrabold text-blue-700">{fmt(total)}</span>
+          <div className="text-right">
+            {discountPercent > 0 && (
+              <span className="text-sm line-through text-slate-400 mr-2">{fmt(allItems.reduce((s, i) => s + i.originalPrice, 0))}</span>
+            )}
+            <span className="text-xl font-extrabold text-blue-700">{fmt(total)}</span>
+          </div>
         </div>
         <p className="text-xs text-slate-500 mt-1">부가세 별도</p>
+        {discountPercent > 0 && (
+          <p className="text-xs text-red-600 font-medium mt-0.5">{discountPercent}% 할인 적용</p>
+        )}
         {allItems.map((i) => (
           <div key={i.key} className="flex justify-between text-xs text-slate-600 mt-1">
             <span>· {i.label}</span>
-            <span>{fmt(i.price)}</span>
+            <span>
+              {discountPercent > 0 && i.originalPrice !== i.price && (
+                <span className="line-through text-slate-400 mr-1">{fmt(i.originalPrice)}</span>
+              )}
+              {fmt(i.price)}
+            </span>
           </div>
         ))}
         {purchaseType === "renewal" && total === 0 && (

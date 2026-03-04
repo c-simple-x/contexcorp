@@ -22,6 +22,7 @@ export type TokenRow = {
   expires_at: string | null;
   created_at: string;
   contract_id: string | null;
+  discount_percent: number;
 };
 
 function getSecret(): string {

@@ -19,6 +19,7 @@ type State =
 export default function ApplyPage({ params }: { params: { token: string } }) {
   const { token } = params;
   const [tokenStatus, setTokenStatus] = useState<"loading" | "ok" | "invalid" | "used" | "expired">("loading");
+  const [discountPercent, setDiscountPercent] = useState(0);
   const [state, setState] = useState<State>({ step: 1 });
   const [submitting, setSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState("");
@@ -27,7 +28,10 @@ export default function ApplyPage({ params }: { params: { token: string } }) {
     fetch(`/api/apply/${token}`)
       .then((r) => r.json())
       .then((d) => {
-        if (d.ok) setTokenStatus("ok");
+        if (d.ok) {
+          setTokenStatus("ok");
+          setDiscountPercent(d.discount_percent ?? 0);
+        }
         else if (d.error === "already_used") setTokenStatus("used");
         else if (d.error === "expired") setTokenStatus("expired");
         else setTokenStatus("invalid");
@@ -162,6 +166,7 @@ export default function ApplyPage({ params }: { params: { token: string } }) {
             )}
             {!submitting && currentStep === 2 && state.step === 2 && (
               <StepProducts
+                discountPercent={discountPercent}
                 onNext={handleProductsNext}
                 onBack={() => setState({ step: 1 })}
               />
