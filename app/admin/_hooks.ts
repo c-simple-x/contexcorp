@@ -23,6 +23,7 @@ export type TokenRow = {
   created_at: string;
   contract_id: string | null;
   discount_percent: number;
+  promo_percent: number;
 };
 
 function getSecret(): string {

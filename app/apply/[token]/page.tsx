@@ -20,6 +20,7 @@ export default function ApplyPage({ params }: { params: { token: string } }) {
   const { token } = params;
   const [tokenStatus, setTokenStatus] = useState<"loading" | "ok" | "invalid" | "used" | "expired">("loading");
   const [discountPercent, setDiscountPercent] = useState(0);
+  const [promoPercent, setPromoPercent] = useState(0);
   const [state, setState] = useState<State>({ step: 1 });
   const [submitting, setSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState("");
@@ -31,6 +32,7 @@ export default function ApplyPage({ params }: { params: { token: string } }) {
         if (d.ok) {
           setTokenStatus("ok");
           setDiscountPercent(d.discount_percent ?? 0);
+          setPromoPercent(d.promo_percent ?? 0);
         }
         else if (d.error === "already_used") setTokenStatus("used");
         else if (d.error === "expired") setTokenStatus("expired");
@@ -167,6 +169,7 @@ export default function ApplyPage({ params }: { params: { token: string } }) {
             {!submitting && currentStep === 2 && state.step === 2 && (
               <StepProducts
                 discountPercent={discountPercent}
+                promoPercent={promoPercent}
                 onNext={handleProductsNext}
                 onBack={() => setState({ step: 1 })}
               />

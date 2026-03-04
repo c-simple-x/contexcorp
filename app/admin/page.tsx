@@ -13,6 +13,7 @@ export default function AdminPage() {
   const [tokens, setTokens] = useState<TokenRow[]>([]);
   const [label, setLabel] = useState("");
   const [discount, setDiscount] = useState("0");
+  const [promo, setPromo] = useState("0");
   const [creating, setCreating] = useState(false);
   const [newUrl, setNewUrl] = useState("");
   const [copied, setCopied] = useState(false);
@@ -82,13 +83,14 @@ export default function AdminPage() {
     const res = await fetch("/api/admin/tokens", {
       method: "POST",
       headers: { "Content-Type": "application/json", "x-admin-secret": s },
-      body: JSON.stringify({ label, discount_percent: Number(discount) || 0 }),
+      body: JSON.stringify({ label, discount_percent: Number(discount) || 0, promo_percent: Number(promo) || 0 }),
     });
     const data = await res.json();
     if (data.ok) {
       setNewUrl(data.url);
       setLabel("");
       setDiscount("0");
+      setPromo("0");
       loadTokens(s);
     }
     setCreating(false);
@@ -348,7 +350,7 @@ export default function AdminPage() {
             </div>
             <div className="w-28">
               <label className="text-sm text-slate-600 mb-1 block">
-                할인율 (%)
+                위치 할인 (%)
               </label>
               <input
                 type="number"
@@ -357,6 +359,19 @@ export default function AdminPage() {
                 max={50}
                 value={discount}
                 onChange={(e) => setDiscount(e.target.value)}
+              />
+            </div>
+            <div className="w-28">
+              <label className="text-sm text-slate-600 mb-1 block">
+                프로모션 (%)
+              </label>
+              <input
+                type="number"
+                className="input text-center"
+                min={0}
+                max={50}
+                value={promo}
+                onChange={(e) => setPromo(e.target.value)}
               />
             </div>
             <button className="btn" disabled={creating}>
@@ -542,7 +557,8 @@ export default function AdminPage() {
               <div className="flex items-center justify-between">
                 <span className="font-semibold text-sm truncate">
                   {t.label || <span className="text-slate-400">-</span>}
-                  {t.discount_percent > 0 && <span className="ml-1.5 text-xs text-red-600 font-medium">-{t.discount_percent}%</span>}
+                  {t.discount_percent > 0 && <span className="ml-1.5 text-xs text-red-600 font-medium">위치-{t.discount_percent}%</span>}
+                  {t.promo_percent > 0 && <span className="ml-1.5 text-xs text-purple-600 font-medium">프로모션-{t.promo_percent}%</span>}
                 </span>
                 <span className="text-green-600 font-medium text-xs">{timeLeft(t.expires_at)}</span>
               </div>
@@ -594,7 +610,8 @@ export default function AdminPage() {
               <tr key={t.id} className="border-t">
                 <td className="px-4 py-3">
                   {t.label || <span className="text-slate-400">-</span>}
-                  {t.discount_percent > 0 && <span className="ml-1.5 text-xs text-red-600 font-medium">-{t.discount_percent}%</span>}
+                  {t.discount_percent > 0 && <span className="ml-1.5 text-xs text-red-600 font-medium">위치-{t.discount_percent}%</span>}
+                  {t.promo_percent > 0 && <span className="ml-1.5 text-xs text-purple-600 font-medium">프로모션-{t.promo_percent}%</span>}
                 </td>
                 <td className="px-4 py-3">
                   {new Date(t.created_at).toLocaleString("ko-KR")}
