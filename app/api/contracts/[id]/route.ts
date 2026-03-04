@@ -12,7 +12,7 @@ export async function GET(_req: Request, { params }: Params) {
 
     const { data: contract, error } = await supabaseAdmin
       .from("contracts")
-      .select("id,title,terms,price,status,payment_confirmed,selected_items,created_at,client_id,memo")
+      .select("id,title,terms,price,status,payment_confirmed,selected_items,created_at,client_id,memo,discount_percent,promo_percent")
       .eq("id", id)
       .single();
     if (error) throw error;

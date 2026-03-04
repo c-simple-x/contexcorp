@@ -40,14 +40,19 @@ function ContractView({ id, data }: { id: string; data: any }) {
   const {
     title, terms, price, status, payment_confirmed,
     selected_items, created_at, client, signature, expires_at, memo,
+    discount_percent, promo_percent,
   } = data ?? {};
 
   const statusInfo = payment_confirmed && status === "signed"
     ? { label: "진행중", color: "bg-blue-100 text-blue-700 border-blue-200" }
     : STATUS_MAP[status] ?? { label: status, color: "bg-slate-100 text-slate-600 border-slate-200" };
 
-  const items: { label: string; price: number }[] = Array.isArray(selected_items) ? selected_items : [];
+  const items: { label: string; price: number; original_price?: number }[] = Array.isArray(selected_items) ? selected_items : [];
   const basePrice = price ?? 0;
+  const locationDiscount = discount_percent ?? 0;
+  const promoDiscount = promo_percent ?? 0;
+  const hasDiscount = locationDiscount > 0 || promoDiscount > 0;
+  const originalTotal = items.reduce((s: number, i: { original_price?: number; price: number }) => s + (i.original_price ?? i.price), 0);
   const vat = Math.round(basePrice * 0.1);
   const totalWithVat = basePrice + vat;
   const signedAt = signature?.signed_at ? new Date(signature.signed_at) : null;
@@ -110,6 +115,18 @@ function ContractView({ id, data }: { id: string; data: any }) {
                       : createdAtKst?.toLocaleDateString("ko-KR", { timeZone: "UTC" }) ?? "-"}
                   </span>
                 </div>
+                {locationDiscount > 0 && (
+                  <div className="flex justify-between border-b pb-2">
+                    <span className="text-red-600">위치 할인</span>
+                    <span className="font-medium text-red-600">{locationDiscount}%</span>
+                  </div>
+                )}
+                {promoDiscount > 0 && (
+                  <div className="flex justify-between border-b pb-2">
+                    <span className="text-purple-600">프로모션 할인</span>
+                    <span className="font-medium text-purple-600">{promoDiscount}%</span>
+                  </div>
+                )}
                 <div className="flex justify-between border-b pb-2">
                   <span className="text-slate-500">공급가액 (VAT 별도)</span>
                   <span className="font-medium">₩{fmt(basePrice)}</span>
@@ -171,32 +188,65 @@ function ContractView({ id, data }: { id: string; data: any }) {
               <section>
                 <h2 className="text-xs font-bold tracking-widest text-slate-400 uppercase mb-3">선택 서비스</h2>
                 <div className="rounded-xl border overflow-hidden">
+                  {hasDiscount && (
+                    <div className="bg-slate-50 px-4 py-2.5 border-b space-y-0.5">
+                      {locationDiscount > 0 && (
+                        <p className="text-xs text-red-600 font-medium">📍 위치 사용권 {locationDiscount}% 할인 적용</p>
+                      )}
+                      {promoDiscount > 0 && (
+                        <p className="text-xs text-purple-600 font-medium">🎉 프로모션 {promoDiscount}% 할인 적용</p>
+                      )}
+                    </div>
+                  )}
                   <table className="w-full text-sm">
                     <thead className="bg-slate-50 text-xs">
                       <tr>
                         <th className="text-left px-4 py-2 font-semibold text-slate-500">서비스 항목</th>
+                        {hasDiscount && <th className="text-right px-4 py-2 font-semibold text-slate-400">정가</th>}
                         <th className="text-right px-4 py-2 font-semibold text-slate-500">금액</th>
                       </tr>
                     </thead>
                     <tbody>
-                      {items.map((item, i) => (
-                        <tr key={i} className="border-t">
-                          <td className="px-4 py-2.5">{item.label}</td>
-                          <td className="px-4 py-2.5 text-right tabular-nums">₩{fmt(item.price)}</td>
-                        </tr>
-                      ))}
+                      {items.map((item, i) => {
+                        const hasItemDiscount = item.original_price != null && item.original_price !== item.price;
+                        return (
+                          <tr key={i} className="border-t">
+                            <td className="px-4 py-2.5">{item.label}</td>
+                            {hasDiscount && (
+                              <td className="px-4 py-2.5 text-right tabular-nums text-slate-400 text-xs">
+                                {hasItemDiscount ? <span className="line-through">₩{fmt(item.original_price!)}</span> : ""}
+                              </td>
+                            )}
+                            <td className={`px-4 py-2.5 text-right tabular-nums ${hasItemDiscount ? "text-red-600 font-semibold" : ""}`}>
+                              ₩{fmt(item.price)}
+                            </td>
+                          </tr>
+                        );
+                      })}
                     </tbody>
                     <tfoot className="bg-slate-50 border-t-2 border-slate-200">
-                      <tr>
-                        <td className="px-4 py-2 text-sm text-slate-500">공급가액 (VAT 별도)</td>
+                      {hasDiscount && (
+                        <>
+                          <tr>
+                            <td colSpan={hasDiscount ? 2 : 1} className="px-4 py-2 text-sm text-slate-400">정가 합계</td>
+                            <td className="px-4 py-2 text-right text-slate-400 tabular-nums line-through">₩{fmt(originalTotal)}</td>
+                          </tr>
+                          <tr className="border-t border-slate-200">
+                            <td colSpan={hasDiscount ? 2 : 1} className="px-4 py-2 text-sm text-red-600 font-medium">할인</td>
+                            <td className="px-4 py-2 text-right text-red-600 font-medium tabular-nums">-₩{fmt(originalTotal - basePrice)}</td>
+                          </tr>
+                        </>
+                      )}
+                      <tr className={hasDiscount ? "border-t border-slate-200" : ""}>
+                        <td colSpan={hasDiscount ? 2 : 1} className="px-4 py-2 text-sm text-slate-500">공급가액 (VAT 별도)</td>
                         <td className="px-4 py-2 text-right text-slate-500 tabular-nums">₩{fmt(basePrice)}</td>
                       </tr>
                       <tr className="border-t border-slate-200">
-                        <td className="px-4 py-2 text-sm text-slate-500">부가세 (10%)</td>
+                        <td colSpan={hasDiscount ? 2 : 1} className="px-4 py-2 text-sm text-slate-500">부가세 (10%)</td>
                         <td className="px-4 py-2 text-right text-slate-500 tabular-nums">₩{fmt(vat)}</td>
                       </tr>
                       <tr className="border-t-2 border-slate-300">
-                        <td className="px-4 py-2.5 font-extrabold text-sm">실 입금액 (VAT 포함)</td>
+                        <td colSpan={hasDiscount ? 2 : 1} className="px-4 py-2.5 font-extrabold text-sm">실 입금액 (VAT 포함)</td>
                         <td className="px-4 py-2.5 text-right font-extrabold text-blue-700 tabular-nums text-base">
                           ₩{fmt(totalWithVat)}
                         </td>
