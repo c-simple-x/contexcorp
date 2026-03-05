@@ -408,10 +408,17 @@ export default function Page() {
             위치 사용권 비용 없이 <span className="font-semibold text-slate-800">콘텐츠 제작비만</span> 결제하면 됩니다.
           </p>
           <div className="mt-3 grid grid-cols-2 gap-2 text-xs">
-            <span className="px-3 py-1.5 rounded-full border border-blue-200 bg-white text-blue-700 text-center">배너 파일 교체 ₩20,000</span>
-            <span className="px-3 py-1.5 rounded-full border border-blue-200 bg-white text-blue-700 text-center">배너 디자인 제작 ₩150,000</span>
-            <span className="px-3 py-1.5 rounded-full border border-blue-200 bg-white text-blue-700 text-center">3D 모션 배너 파일 교체 ₩60,000</span>
-            <span className="px-3 py-1.5 rounded-full border border-blue-200 bg-white text-blue-700 text-center">3D 모션 배너 제작 ₩550,000~</span>
+            {[
+              { name: "배너 파일 교체", price: "₩20,000" },
+              { name: "배너 디자인 제작", price: "₩150,000" },
+              { name: "3D 모션 배너 파일 교체", price: "₩60,000" },
+              { name: "3D 모션 배너 제작", price: "₩550,000~" },
+            ].map((item) => (
+              <div key={item.name} className="flex flex-col items-center justify-center rounded-xl border border-blue-200 bg-white text-blue-700 px-3 py-2.5 text-center">
+                <span>{item.name}</span>
+                <span className="font-semibold">{item.price}</span>
+              </div>
+            ))}
           </div>
         </div>
 
