@@ -65,7 +65,7 @@ function FaqAccordion() {
             <ChevronDown className={`h-4 w-4 text-slate-400 shrink-0 transition-transform ${open === i ? "rotate-180" : ""}`} />
           </button>
           {open === i && (
-            <div className="px-5 pb-4 text-sm text-slate-600 leading-relaxed">
+            <div className="px-5 pb-5 -mt-1 text-sm text-slate-600 leading-relaxed">
               {item.a}
             </div>
           )}
@@ -407,11 +407,11 @@ export default function Page() {
             이미 위치 사용권을 보유하고 계신가요? 배너 디자인 변경이나 3D 모션 배너 추가 제작만 별도로 신청할 수 있습니다.
             위치 사용권 비용 없이 <span className="font-semibold text-slate-800">콘텐츠 제작비만</span> 결제하면 됩니다.
           </p>
-          <div className="mt-3 flex flex-wrap gap-2 text-xs">
-            <span className="px-3 py-1 rounded-full border border-blue-200 bg-white text-blue-700">배너 파일 교체 ₩20,000</span>
-            <span className="px-3 py-1 rounded-full border border-blue-200 bg-white text-blue-700">배너 디자인 제작 ₩150,000</span>
-            <span className="px-3 py-1 rounded-full border border-blue-200 bg-white text-blue-700">3D 모션 배너 파일 교체 ₩60,000</span>
-            <span className="px-3 py-1 rounded-full border border-blue-200 bg-white text-blue-700">3D 모션 배너 제작 ₩550,000~</span>
+          <div className="mt-3 grid grid-cols-2 gap-2 text-xs">
+            <span className="px-3 py-1.5 rounded-full border border-blue-200 bg-white text-blue-700 text-center">배너 파일 교체 ₩20,000</span>
+            <span className="px-3 py-1.5 rounded-full border border-blue-200 bg-white text-blue-700 text-center">배너 디자인 제작 ₩150,000</span>
+            <span className="px-3 py-1.5 rounded-full border border-blue-200 bg-white text-blue-700 text-center">3D 모션 배너 파일 교체 ₩60,000</span>
+            <span className="px-3 py-1.5 rounded-full border border-blue-200 bg-white text-blue-700 text-center">3D 모션 배너 제작 ₩550,000~</span>
           </div>
         </div>
 
