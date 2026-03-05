@@ -4,7 +4,7 @@ import { useState, useRef, useEffect } from "react";
 import {
   MapPin, Phone, Mail, CheckCircle2,
   Store, Building2, Calendar, Smartphone, Zap, Users,
-  ChevronDown,
+  ChevronDown, Shield, Eye, Clock, X as XIcon, Check,
 } from "lucide-react";
 import ContactForm from "./components/ContactForm";
 import Header from "./components/Header";
@@ -99,13 +99,13 @@ export default function Page() {
         <Section className="py-16 sm:py-20">
           <div className="grid lg:grid-cols-2 gap-12 items-center">
             <div>
-              <div className="pill">위치 기반 AR 광고 대행</div>
+              <div className="pill">실시간 위치 기반 AR 광고</div>
               <h1 className="mt-5 text-4xl md:text-5xl font-extrabold leading-tight tracking-tight">
-                거리에서 만나는<br/><span className="text-blue-600">브랜드 경험</span>
+                영상이 아닙니다.<br/><span className="text-blue-600">그 자리에 있습니다.</span>
               </h1>
               <p className="mt-4 text-slate-600 leading-relaxed">
-                GPS로 정확히 고정되는 AR 배너. 지나가는 사람들이 스마트폰을 들면 내 광고가 살아납니다.<br/>
-                자영업자부터 프랜차이즈 브랜드까지, 가장 직관적인 공간 마케팅.
+                GPS 좌표에 고정된 AR 배너가 24시간 실시간으로 노출됩니다.<br/>
+                앱 설치 없이, 촬영·편집 없이. 스마트폰을 들면 바로 보이는 공간 광고.
               </p>
               <div className="mt-6 flex flex-wrap gap-3">
                 <a href="#contact" className="btn">문의하기</a>
@@ -113,10 +113,10 @@ export default function Page() {
               </div>
               <div className="mt-8 grid grid-cols-2 sm:grid-cols-4 gap-4 text-sm">
                 {[
-                  { icon: MapPin,     label: "위치 독점" },
-                  { icon: Smartphone, label: "AR 체험" },
-                  { icon: Zap,        label: "즉각 노출" },
-                  { icon: Users,      label: "체험 바이럴" },
+                  { icon: Shield,     label: "좌표 독점" },
+                  { icon: Eye,        label: "실시간 AR" },
+                  { icon: Zap,        label: "앱 설치 불필요" },
+                  { icon: Clock,      label: "24시간 노출" },
                 ].map((f) => (
                   <div key={f.label} className="feature-chip">
                     <f.icon className="h-4 w-4 text-blue-600" /> {f.label}
@@ -154,10 +154,10 @@ export default function Page() {
         <Section className="py-10">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-6 text-center">
             {[
-              { value: "10+", label: "파트너 고객사" },
-              { value: "50+", label: "AR 배너 운영" },
-              { value: "±2m", label: "GPS 정밀도" },
-              { value: "24h", label: "평균 세팅 시간" },
+              { value: "±2m",   label: "GPS 위치 정밀도" },
+              { value: "24/7",  label: "연중무휴 AR 노출" },
+              { value: "0원",   label: "앱 설치 비용" },
+              { value: "24h",   label: "평균 세팅 시간" },
             ].map((s) => (
               <div key={s.label}>
                 <p className="text-3xl md:text-4xl font-extrabold text-blue-600">{s.value}</p>
@@ -193,6 +193,63 @@ export default function Page() {
         </div>
       </Section>
 
+      {/* WHY REAL-TIME AR */}
+      <div className="bg-slate-50 border-y">
+        <Section id="why" className="py-16">
+          <div className="text-center max-w-2xl mx-auto">
+            <span className="pill">Why CONTEX</span>
+            <h3 className="mt-3 text-3xl font-extrabold">영상 합성이 아닌, 실시간 AR</h3>
+            <p className="mt-2 text-slate-600">같은 AR 광고라도 방식이 다릅니다. CONTEX는 실제 현장에서 작동하는 실시간 AR입니다.</p>
+          </div>
+
+          <div className="mt-10 grid md:grid-cols-2 gap-6">
+            {/* 영상 합성 방식 */}
+            <div className="card p-6 border-slate-300 opacity-75">
+              <div className="flex items-center gap-2 mb-4">
+                <div className="w-8 h-8 rounded-full bg-slate-200 grid place-items-center">
+                  <XIcon className="h-4 w-4 text-slate-500" />
+                </div>
+                <div>
+                  <p className="font-bold text-slate-500">일반 AR 광고 (영상 합성)</p>
+                  <p className="text-xs text-slate-400">FOOH · CGI 합성 방식</p>
+                </div>
+              </div>
+              <ul className="space-y-3 text-sm text-slate-500">
+                <li className="flex items-start gap-2"><XIcon className="h-4 w-4 shrink-0 mt-0.5" /> 촬영 후 3D를 영상에 합성 → SNS 배포</li>
+                <li className="flex items-start gap-2"><XIcon className="h-4 w-4 shrink-0 mt-0.5" /> 한 번 제작하면 끝, 현장 체험 불가</li>
+                <li className="flex items-start gap-2"><XIcon className="h-4 w-4 shrink-0 mt-0.5" /> 특정 위치와 무관, 아무 데서나 재생</li>
+                <li className="flex items-start gap-2"><XIcon className="h-4 w-4 shrink-0 mt-0.5" /> 촬영·편집에 수백만 원, 수정 시 재촬영</li>
+              </ul>
+            </div>
+
+            {/* CONTEX 방식 */}
+            <div className="card p-6 border-blue-200 ring-2 ring-blue-100">
+              <div className="flex items-center gap-2 mb-4">
+                <div className="w-8 h-8 rounded-full bg-blue-100 grid place-items-center">
+                  <Check className="h-4 w-4 text-blue-600" />
+                </div>
+                <div>
+                  <p className="font-bold text-slate-800">CONTEX <span className="text-blue-600">(실시간 AR)</span></p>
+                  <p className="text-xs text-slate-500">GPS 좌표 고정 · 현장 체험</p>
+                </div>
+              </div>
+              <ul className="space-y-3 text-sm text-slate-700">
+                <li className="flex items-start gap-2"><Check className="h-4 w-4 text-blue-600 shrink-0 mt-0.5" /> 현장에서 스마트폰을 들면 <strong>실시간</strong>으로 AR 노출</li>
+                <li className="flex items-start gap-2"><Check className="h-4 w-4 text-blue-600 shrink-0 mt-0.5" /> 24시간 365일 해당 좌표에서 계속 작동</li>
+                <li className="flex items-start gap-2"><Check className="h-4 w-4 text-blue-600 shrink-0 mt-0.5" /> GPS ±2m 정밀도로 위치 고정, <strong>좌표 독점</strong></li>
+                <li className="flex items-start gap-2"><Check className="h-4 w-4 text-blue-600 shrink-0 mt-0.5" /> 콘텐츠 교체 ₩20,000부터, 재촬영 불필요</li>
+              </ul>
+            </div>
+          </div>
+
+          <div className="mt-8 text-center">
+            <p className="text-sm text-slate-500">
+              영상은 한 번 보고 끝나지만, <strong className="text-slate-800">실시간 AR은 매일 그 자리에 있습니다.</strong>
+            </p>
+          </div>
+        </Section>
+      </div>
+
       {/* SHOWCASE */}
       <Section id="showcase" className="py-16">
         <div className="text-center max-w-2xl mx-auto mb-6">
@@ -225,6 +282,36 @@ export default function Page() {
           </div>
         </div>
       </Section>
+
+      {/* LOCATION EXCLUSIVITY */}
+      <div className="bg-slate-800 text-white">
+        <Section className="py-16">
+          <div className="grid md:grid-cols-2 gap-10 items-center">
+            <div>
+              <span className="inline-flex items-center gap-2 rounded-full border border-slate-600 bg-slate-700 px-3 py-1 text-xs font-medium text-slate-300">위치 독점</span>
+              <h3 className="mt-4 text-3xl font-extrabold leading-snug">하나의 좌표에<br/>하나의 브랜드만</h3>
+              <p className="mt-3 text-slate-400 leading-relaxed text-sm">
+                계약한 GPS 좌표에는 계약 기간 동안 다른 광고주의 AR 콘텐츠가 절대 노출되지 않습니다.
+                오프라인 간판처럼, 그 자리는 오직 당신의 브랜드만을 위한 공간입니다.
+              </p>
+            </div>
+            <div className="grid grid-cols-2 gap-4">
+              {[
+                { icon: Shield, title: "경쟁사 원천 차단", desc: "동일 좌표에 타 브랜드 노출 불가" },
+                { icon: MapPin, title: "GPS ±2m 정밀도", desc: "정확한 위치에 정확한 광고" },
+                { icon: Clock, title: "365일 24시간", desc: "연중무휴 실시간 노출" },
+                { icon: Zap, title: "즉시 업데이트", desc: "콘텐츠 변경 요청 시 빠른 교체" },
+              ].map((item) => (
+                <div key={item.title} className="rounded-xl border border-slate-700 bg-slate-700/50 p-4">
+                  <item.icon className="h-5 w-5 text-blue-400 mb-2" />
+                  <p className="text-sm font-semibold">{item.title}</p>
+                  <p className="text-xs text-slate-400 mt-1">{item.desc}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+        </Section>
+      </div>
 
       {/* CASES */}
       <Section id="cases" className="py-16">
