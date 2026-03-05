@@ -65,7 +65,7 @@ function FaqAccordion() {
             <ChevronDown className={`h-4 w-4 text-slate-400 shrink-0 transition-transform ${open === i ? "rotate-180" : ""}`} />
           </button>
           {open === i && (
-            <div className="px-5 pt-1 pb-5 text-sm text-slate-600 leading-relaxed">
+            <div className="px-5 py-3 text-sm text-slate-600 leading-relaxed">
               {item.a}
             </div>
           )}
