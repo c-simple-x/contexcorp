@@ -101,7 +101,7 @@ export default function Page() {
             <div>
               <div className="pill">실시간 위치 기반 AR 광고</div>
               <h1 className="mt-5 text-4xl md:text-5xl font-extrabold leading-tight tracking-tight">
-                영상이 아닙니다.<br/><span className="text-blue-600">그 자리에 있습니다.</span>
+                영상이 아닙니다.<br/><span className="text-gradient">그 자리에 있습니다.</span>
               </h1>
               <p className="mt-4 text-slate-600 leading-relaxed">
                 GPS 좌표에 고정된 AR 배너가 24시간 실시간으로 노출됩니다.<br/>
@@ -125,23 +125,26 @@ export default function Page() {
               </div>
             </div>
 
-            <div className="card p-6">
-              <div className="rounded-xl h-64 grid place-items-center border bg-white overflow-hidden">
-                <img
-                  src="/banner-preview.png"
-                  alt="AR 배너 미리보기"
-                  className="w-full h-full object-cover"
-                />
-              </div>
-              <ul className="mt-4 grid grid-cols-2 gap-3 text-sm">
-                <li className="bullet"><CheckCircle2 className="icon" /> GPS 오차 ±2m</li>
-                <li className="bullet"><CheckCircle2 className="icon" /> 1년간 위치 독점</li>
-                <li className="bullet"><CheckCircle2 className="icon" /> 3D 모션 배너</li>
-                <li className="bullet"><CheckCircle2 className="icon" /> 간편 업데이트</li>
-              </ul>
-              <div className="mt-3 text-center">
-                <div className="inline-flex items-center gap-2 rounded-full bg-white px-3 py-1 border text-xs">
-                  <MapPin className="h-3.5 w-3.5" /> 실제 거리에서 체험 가능
+            <div className="relative">
+              <div className="absolute -inset-1 bg-gradient-to-r from-blue-600 to-indigo-600 rounded-2xl opacity-20 blur-lg" />
+              <div className="card p-6 relative">
+                <div className="rounded-xl h-64 grid place-items-center border bg-slate-900 overflow-hidden">
+                  <img
+                    src="/banner-preview.png"
+                    alt="AR 배너 미리보기"
+                    className="w-full h-full object-cover"
+                  />
+                </div>
+                <ul className="mt-4 grid grid-cols-2 gap-3 text-sm">
+                  <li className="bullet"><CheckCircle2 className="icon" /> GPS 오차 ±2m</li>
+                  <li className="bullet"><CheckCircle2 className="icon" /> 1년간 위치 독점</li>
+                  <li className="bullet"><CheckCircle2 className="icon" /> 3D 모션 배너</li>
+                  <li className="bullet"><CheckCircle2 className="icon" /> 앱 설치 불필요</li>
+                </ul>
+                <div className="mt-3 text-center">
+                  <div className="inline-flex items-center gap-2 rounded-full bg-blue-50 px-3 py-1.5 border border-blue-200 text-xs font-medium text-blue-700">
+                    <MapPin className="h-3.5 w-3.5" /> 실제 거리에서 체험 가능
+                  </div>
                 </div>
               </div>
             </div>
@@ -150,7 +153,7 @@ export default function Page() {
       </div>
 
       {/* SOCIAL PROOF */}
-      <div className="border-y bg-slate-50">
+      <div className="bg-gradient-to-r from-blue-600 to-indigo-600 text-white">
         <Section className="py-10">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-6 text-center">
             {[
@@ -160,8 +163,8 @@ export default function Page() {
               { value: "24h",   label: "평균 세팅 시간" },
             ].map((s) => (
               <div key={s.label}>
-                <p className="text-3xl md:text-4xl font-extrabold text-blue-600">{s.value}</p>
-                <p className="mt-1 text-sm text-slate-600">{s.label}</p>
+                <p className="text-3xl md:text-4xl font-extrabold">{s.value}</p>
+                <p className="mt-1 text-sm text-blue-100">{s.label}</p>
               </div>
             ))}
           </div>
@@ -204,41 +207,45 @@ export default function Page() {
 
           <div className="mt-10 grid md:grid-cols-2 gap-6">
             {/* 영상 합성 방식 */}
-            <div className="card p-6 border-slate-300 opacity-75">
-              <div className="flex items-center gap-2 mb-4">
-                <div className="w-8 h-8 rounded-full bg-slate-200 grid place-items-center">
-                  <XIcon className="h-4 w-4 text-slate-500" />
+            <div className="rounded-2xl border border-slate-200 bg-white/60 p-6">
+              <div className="flex items-center gap-3 mb-5">
+                <div className="w-10 h-10 rounded-full bg-red-100 grid place-items-center">
+                  <XIcon className="h-5 w-5 text-red-400" />
                 </div>
                 <div>
                   <p className="font-bold text-slate-500">일반 AR 광고 (영상 합성)</p>
                   <p className="text-xs text-slate-400">FOOH · CGI 합성 방식</p>
                 </div>
               </div>
-              <ul className="space-y-3 text-sm text-slate-500">
-                <li className="flex items-start gap-2"><XIcon className="h-4 w-4 shrink-0 mt-0.5" /> 촬영 후 3D를 영상에 합성 → SNS 배포</li>
-                <li className="flex items-start gap-2"><XIcon className="h-4 w-4 shrink-0 mt-0.5" /> 한 번 제작하면 끝, 현장 체험 불가</li>
-                <li className="flex items-start gap-2"><XIcon className="h-4 w-4 shrink-0 mt-0.5" /> 특정 위치와 무관, 아무 데서나 재생</li>
-                <li className="flex items-start gap-2"><XIcon className="h-4 w-4 shrink-0 mt-0.5" /> 촬영·편집에 수백만 원, 수정 시 재촬영</li>
+              <ul className="space-y-4 text-sm text-slate-500">
+                <li className="flex items-start gap-3"><span className="mt-0.5 w-5 h-5 rounded-full bg-red-50 grid place-items-center shrink-0"><XIcon className="h-3 w-3 text-red-400" /></span> 촬영 후 3D를 영상에 합성 → SNS 배포</li>
+                <li className="flex items-start gap-3"><span className="mt-0.5 w-5 h-5 rounded-full bg-red-50 grid place-items-center shrink-0"><XIcon className="h-3 w-3 text-red-400" /></span> 한 번 제작하면 끝, 현장 체험 불가</li>
+                <li className="flex items-start gap-3"><span className="mt-0.5 w-5 h-5 rounded-full bg-red-50 grid place-items-center shrink-0"><XIcon className="h-3 w-3 text-red-400" /></span> 특정 위치와 무관, 아무 데서나 재생</li>
+                <li className="flex items-start gap-3"><span className="mt-0.5 w-5 h-5 rounded-full bg-red-50 grid place-items-center shrink-0"><XIcon className="h-3 w-3 text-red-400" /></span> 촬영·편집에 수백만 원, 수정 시 재촬영</li>
               </ul>
             </div>
 
             {/* CONTEX 방식 */}
-            <div className="card p-6 border-blue-200 ring-2 ring-blue-100">
-              <div className="flex items-center gap-2 mb-4">
-                <div className="w-8 h-8 rounded-full bg-blue-100 grid place-items-center">
-                  <Check className="h-4 w-4 text-blue-600" />
+            <div className="relative">
+              <div className="absolute -inset-0.5 bg-gradient-to-br from-blue-500 to-indigo-500 rounded-2xl opacity-20 blur-sm" />
+              <div className="relative rounded-2xl border-2 border-blue-300 bg-white p-6 shadow-lg shadow-blue-100">
+                <div className="absolute -top-3 right-4 px-3 py-1 rounded-full bg-blue-600 text-white text-xs font-bold shadow">CONTEX</div>
+                <div className="flex items-center gap-3 mb-5">
+                  <div className="w-10 h-10 rounded-full bg-blue-100 grid place-items-center">
+                    <Check className="h-5 w-5 text-blue-600" />
+                  </div>
+                  <div>
+                    <p className="font-bold text-slate-800">실시간 AR 광고</p>
+                    <p className="text-xs text-slate-500">GPS 좌표 고정 · 현장 체험</p>
+                  </div>
                 </div>
-                <div>
-                  <p className="font-bold text-slate-800">CONTEX <span className="text-blue-600">(실시간 AR)</span></p>
-                  <p className="text-xs text-slate-500">GPS 좌표 고정 · 현장 체험</p>
-                </div>
+                <ul className="space-y-4 text-sm text-slate-700">
+                  <li className="flex items-start gap-3"><span className="mt-0.5 w-5 h-5 rounded-full bg-blue-100 grid place-items-center shrink-0"><Check className="h-3 w-3 text-blue-600" /></span> 현장에서 스마트폰을 들면 <strong>실시간</strong>으로 AR 노출</li>
+                  <li className="flex items-start gap-3"><span className="mt-0.5 w-5 h-5 rounded-full bg-blue-100 grid place-items-center shrink-0"><Check className="h-3 w-3 text-blue-600" /></span> 24시간 365일 해당 좌표에서 계속 작동</li>
+                  <li className="flex items-start gap-3"><span className="mt-0.5 w-5 h-5 rounded-full bg-blue-100 grid place-items-center shrink-0"><Check className="h-3 w-3 text-blue-600" /></span> GPS ±2m 정밀도로 위치 고정, <strong>좌표 독점</strong></li>
+                  <li className="flex items-start gap-3"><span className="mt-0.5 w-5 h-5 rounded-full bg-blue-100 grid place-items-center shrink-0"><Check className="h-3 w-3 text-blue-600" /></span> 콘텐츠 교체 ₩20,000부터, 재촬영 불필요</li>
+                </ul>
               </div>
-              <ul className="space-y-3 text-sm text-slate-700">
-                <li className="flex items-start gap-2"><Check className="h-4 w-4 text-blue-600 shrink-0 mt-0.5" /> 현장에서 스마트폰을 들면 <strong>실시간</strong>으로 AR 노출</li>
-                <li className="flex items-start gap-2"><Check className="h-4 w-4 text-blue-600 shrink-0 mt-0.5" /> 24시간 365일 해당 좌표에서 계속 작동</li>
-                <li className="flex items-start gap-2"><Check className="h-4 w-4 text-blue-600 shrink-0 mt-0.5" /> GPS ±2m 정밀도로 위치 고정, <strong>좌표 독점</strong></li>
-                <li className="flex items-start gap-2"><Check className="h-4 w-4 text-blue-600 shrink-0 mt-0.5" /> 콘텐츠 교체 ₩20,000부터, 재촬영 불필요</li>
-              </ul>
             </div>
           </div>
 
@@ -284,7 +291,7 @@ export default function Page() {
       </Section>
 
       {/* LOCATION EXCLUSIVITY */}
-      <div className="bg-slate-800 text-white">
+      <div className="bg-gradient-to-br from-slate-900 via-slate-800 to-blue-900 text-white">
         <Section className="py-16">
           <div className="grid md:grid-cols-2 gap-10 items-center">
             <div>
