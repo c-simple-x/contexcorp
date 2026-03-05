@@ -432,7 +432,7 @@ export default function Page() {
           <h3 className="mt-3 text-3xl font-extrabold">자주 묻는 질문</h3>
           <p className="mt-2 text-slate-600">궁금한 점을 빠르게 확인하세요.</p>
         </div>
-        <div className="mt-10 max-w-3xl mx-auto">
+        <div className="mt-10">
           <FaqAccordion />
         </div>
       </Section>
