@@ -39,6 +39,9 @@ export async function POST(req: Request, { params }: Params) {
     if (!name || !email) {
       return NextResponse.json({ ok: false, error: "missing_required" }, { status: 400 });
     }
+    if (!/^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/.test(email)) {
+      return NextResponse.json({ ok: false, error: "invalid_email" }, { status: 400 });
+    }
 
     // 3) 주민번호/사업자번호 암호화
     const id_number_encrypted = id_number ? encrypt(id_number) : null;
@@ -150,10 +153,13 @@ export async function POST(req: Request, { params }: Params) {
     }
 
     // 7) 토큰에 contract_id 연결
-    await supabaseAdmin
+    const { error: linkErr } = await supabaseAdmin
       .from("contract_tokens")
       .update({ contract_id: contractIns.id })
       .eq("id", tokenRow.id);
+    if (linkErr) {
+      console.error("[submit] token link update failed:", linkErr.message);
+    }
 
     return NextResponse.json({
       ok: true,

@@ -49,12 +49,14 @@ export default function AdminContractsPage() {
   }, [contracts, query, statusFilter]);
 
   const downloadCsv = useCallback(() => {
-    const header = ["고객명", "상호", "이메일", "금액(원)", "상태", "입금확인", "생성일", "메모"];
+    const header = ["고객명", "상호", "이메일", "금액(원)", "위치할인(%)", "프로모션(%)", "상태", "입금확인", "생성일", "메모"];
     const rows = filtered.map((c) => [
       c.client?.name ?? "",
       c.client?.company ?? "",
       c.client?.email ?? "",
       String(c.price ?? 0),
+      String(c.discount_percent ?? 0),
+      String(c.promo_percent ?? 0),
       STATUS_LABEL[c.status] ?? c.status,
       c.payment_confirmed ? "Y" : "N",
       new Date(c.created_at).toLocaleDateString("ko-KR"),

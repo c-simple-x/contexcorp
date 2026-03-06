@@ -3,6 +3,7 @@ export const runtime = "nodejs";
 import { NextResponse } from "next/server";
 import { supabaseAdmin } from "@/lib/supabase-admin";
 import { generateContractPdf } from "@/lib/contract-pdf";
+import { escapeHtml } from "@/lib/sanitize";
 
 type Params = { params: { token: string } };
 
@@ -140,7 +141,7 @@ export async function POST(req: Request, { params }: Params) {
         subject: "[CONTEX Corp.] 계약 완료 및 입금 안내",
         html: `
           <h2>계약이 완료되었습니다.</h2>
-          <p>안녕하세요, <b>${signer_name}</b> 님.</p>
+          <p>안녕하세요, <b>${escapeHtml(signer_name)}</b> 님.</p>
           <p>CONTEX Corp.와의 계약이 정상적으로 체결되었습니다.</p>
           <p>첨부된 PDF 계약서를 보관해 주세요.</p>
           <hr/>
@@ -161,7 +162,7 @@ export async function POST(req: Request, { params }: Params) {
           subject: `[CONTEX] 계약 서명 완료: ${signer_name}`,
           html: `
             <h2>서명 완료 알림</h2>
-            <p><b>${signer_name}</b> (${signer_email}) 님이 서명했습니다.</p>
+            <p><b>${escapeHtml(signer_name)}</b> (${escapeHtml(signer_email)}) 님이 서명했습니다.</p>
             <p>계약 ID: ${contract_id}</p>
             <p>금액: ₩${contract.price.toLocaleString("ko-KR")}</p>
           `,

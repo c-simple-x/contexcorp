@@ -2,6 +2,9 @@ export const runtime = "nodejs";
 
 import { NextResponse } from "next/server";
 import { supabaseAdmin } from "@/lib/supabase-admin";
+import { escapeHtml } from "@/lib/sanitize";
+
+const VALID_STATUSES = ["draft", "signed", "on_hold", "completed", "cancelled"];
 
 type Params = { params: { id: string } };
 
@@ -20,7 +23,12 @@ export async function PATCH(req: Request, { params }: Params) {
     const body = await req.json();
     const update: Record<string, unknown> = {};
     if (body.payment_confirmed !== undefined) update.payment_confirmed = body.payment_confirmed;
-    if (body.status !== undefined) update.status = body.status;
+    if (body.status !== undefined) {
+      if (!VALID_STATUSES.includes(body.status)) {
+        return NextResponse.json({ ok: false, error: "invalid_status" }, { status: 400 });
+      }
+      update.status = body.status;
+    }
     if (body.memo !== undefined) update.memo = body.memo;
     if (body.price !== undefined) update.price = Number(body.price);
 
@@ -91,8 +99,8 @@ async function sendPaymentConfirmedEmail(contractId: string) {
             <h2 style="margin:8px 0 0;font-size:20px">입금 확인 완료</h2>
           </div>
           <div style="background:#fff;border:1px solid #e2e8f0;border-top:none;padding:24px;border-radius:0 0 8px 8px">
-            <p>안녕하세요, <strong>${toName}</strong> 님.</p>
-            <p><strong>${contract.title}</strong>의 입금이 확인되어 <strong>작업을 시작</strong>합니다.</p>
+            <p>안녕하세요, <strong>${escapeHtml(toName)}</strong> 님.</p>
+            <p><strong>${escapeHtml(contract.title)}</strong>의 입금이 확인되어 <strong>작업을 시작</strong>합니다.</p>
             <table style="width:100%;border-collapse:collapse;margin:16px 0">
               ${itemsHtml}
               <tr style="border-top:1px solid #e2e8f0">

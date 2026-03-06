@@ -3,6 +3,7 @@ export const runtime = "nodejs";
 import { NextResponse } from "next/server";
 import { supabaseAdmin } from "@/lib/supabase-admin";
 import { generateContractPdf } from "@/lib/contract-pdf";
+import { escapeHtml } from "@/lib/sanitize";
 
 type Params = { params: { id: string } };
 
@@ -18,7 +19,7 @@ export async function POST(req: Request, { params }: Params) {
   try {
     const { data: contract, error: cErr } = await supabaseAdmin
       .from("contracts")
-      .select("id,title,terms,price,selected_items,client_id,created_at")
+      .select("id,title,terms,price,selected_items,client_id,created_at,discount_percent,promo_percent")
       .eq("id", params.id)
       .single();
     if (cErr || !contract)
@@ -84,7 +85,7 @@ export async function POST(req: Request, { params }: Params) {
         subject: "[CONTEX Corp.] 계약서 재발송",
         html: `
           <h2>계약서를 재발송드립니다.</h2>
-          <p>안녕하세요, <b>${toName}</b> 님.</p>
+          <p>안녕하세요, <b>${escapeHtml(toName)}</b> 님.</p>
           <p>요청하신 CONTEX Corp. 계약서를 첨부 파일로 보내드립니다.</p>
           <p>문의: contact@contexcorp.com | +82-10-3653-1987</p>
         `,

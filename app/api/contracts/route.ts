@@ -3,6 +3,7 @@ export const runtime = "nodejs";
 
 import { NextResponse } from "next/server";
 import { supabaseAdmin } from "@/lib/supabase-admin";
+import { escapeHtml } from "@/lib/sanitize";
 
 /** 공통: Resend로 알림메일 보내기 (옵션) */
 async function sendEmail(subject: string, html: string) {
@@ -32,7 +33,7 @@ export async function GET(req: Request) {
   try {
     const { data: contracts, error } = await supabaseAdmin
       .from("contracts")
-      .select("id,title,price,status,payment_confirmed,created_at,client_id,memo")
+      .select("id,title,price,status,payment_confirmed,created_at,client_id,memo,discount_percent,promo_percent")
       .order("created_at", { ascending: false });
 
     if (error) throw error;
@@ -77,6 +78,9 @@ export async function POST(req: Request) {
 
     if (!biz_name || !owner_name || !biz_number || !owner_phone || !owner_email) {
       return NextResponse.json({ ok: false, error: "missing_required" }, { status: 400 });
+    }
+    if (!/^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/.test(owner_email)) {
+      return NextResponse.json({ ok: false, error: "invalid_email" }, { status: 400 });
     }
     if (!body.agree_terms || !body.agree_privacy) {
       return NextResponse.json({ ok: false, error: "must_agree" }, { status: 400 });
@@ -147,11 +151,11 @@ export async function POST(req: Request) {
       "[CONTEX] 신규 계약(초안) 생성",
       `
         <h3>신규 계약 초안</h3>
-        <p><b>상호</b>: ${biz_name}</p>
-        <p><b>대표자</b>: ${owner_name}</p>
-        <p><b>연락처</b>: ${owner_phone}</p>
-        <p><b>이메일</b>: ${owner_email}</p>
-        <p><b>계약 제목</b>: ${title}</p>
+        <p><b>상호</b>: ${escapeHtml(biz_name)}</p>
+        <p><b>대표자</b>: ${escapeHtml(owner_name)}</p>
+        <p><b>연락처</b>: ${escapeHtml(owner_phone)}</p>
+        <p><b>이메일</b>: ${escapeHtml(owner_email)}</p>
+        <p><b>계약 제목</b>: ${escapeHtml(title)}</p>
         <p><b>금액</b>: ${total.toLocaleString()}원</p>
       `
     );

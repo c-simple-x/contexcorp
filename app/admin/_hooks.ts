@@ -11,7 +11,9 @@ export type ContractRow = {
   created_at: string;
   expires_at?: string | null;
   memo?: string | null;
-  client?: { company?: string | null; name?: string | null; email?: string | null };
+  discount_percent?: number | null;
+  promo_percent?: number | null;
+  client?: { company?: string | null; name?: string | null; email?: string | null; client_type?: string | null };
 };
 
 export type TokenRow = {

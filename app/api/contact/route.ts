@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { escapeHtml } from "@/lib/sanitize";
 
 /** 한국 전화번호 보정 (숫자만 → 하이픈 포함 문자열) */
 function normalizeKrPhone(raw: string) {
@@ -94,13 +95,13 @@ export async function POST(req: Request) {
           subject: `[CONTEX 문의] ${body.company || body.name}`,
           html: `
             <h2>새 문의가 접수되었습니다.</h2>
-            <p><b>회사/이름:</b> ${body.company || "-"}</p>
-            <p><b>담당자:</b> ${body.name || "-"}</p>
-            <p><b>이메일:</b> ${email}</p>
-            <p><b>연락처:</b> ${formattedPhone || "-"}</p>
+            <p><b>회사/이름:</b> ${escapeHtml(body.company || "-")}</p>
+            <p><b>담당자:</b> ${escapeHtml(body.name || "-")}</p>
+            <p><b>이메일:</b> ${escapeHtml(email)}</p>
+            <p><b>연락처:</b> ${escapeHtml(formattedPhone || "-")}</p>
             <hr/>
             <p><b>내용:</b></p>
-            <p>${(body.message || "").replace(/\n/g, "<br/>")}</p>
+            <p>${escapeHtml(body.message || "").replace(/\n/g, "<br/>")}</p>
           `,
         }),
       }).catch(() => {}); // 알림 실패해도 폼 제출은 성공 처리

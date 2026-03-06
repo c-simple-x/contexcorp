@@ -4,6 +4,7 @@ import { useState } from "react";
 import { Menu, X } from "lucide-react";
 
 const NAV_LINKS = [
+  { href: "/#why", label: "Why CONTEX" },
   { href: "/#solutions", label: "Use Cases" },
   { href: "/#showcase", label: "AR Preview" },
   { href: "/#pricing", label: "Pricing" },
