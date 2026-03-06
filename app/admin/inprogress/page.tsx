@@ -40,25 +40,25 @@ export default function InProgressPage() {
           <div className="flex gap-1 flex-wrap">
             <button
               className="text-xs px-2 py-1 rounded border border-slate-300 text-slate-600 hover:bg-slate-50 whitespace-nowrap"
-              onClick={() => markCompleted(c.id)}
+              onClick={() => confirm("완료 처리하시겠습니까?") && markCompleted(c.id)}
             >
               완료 처리
             </button>
             <button
               className="text-xs px-2 py-1 rounded border border-yellow-300 text-yellow-700 hover:bg-yellow-50 whitespace-nowrap"
-              onClick={() => markOnHold(c.id)}
+              onClick={() => confirm("보류 처리하시겠습니까?") && markOnHold(c.id)}
             >
               보류
             </button>
             <button
               className="text-xs px-2 py-1 rounded border border-red-200 text-red-600 hover:bg-red-50 whitespace-nowrap"
-              onClick={() => revokePayment(c.id)}
+              onClick={() => confirm("입금 확인을 취소하시겠습니까?") && revokePayment(c.id)}
             >
               입금 취소
             </button>
             <button
               className="text-xs px-2 py-1 rounded border border-red-400 text-red-700 hover:bg-red-50 whitespace-nowrap"
-              onClick={() => cancelContract(c.id)}
+              onClick={() => confirm("정말 계약을 취소하시겠습니까?") && cancelContract(c.id)}
             >
               계약 취소
             </button>

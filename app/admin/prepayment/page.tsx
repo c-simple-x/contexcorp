@@ -39,13 +39,13 @@ export default function PrepaymentPage() {
           <div className="flex gap-1 flex-wrap">
             <button
               className="text-xs px-2 py-1 rounded border border-orange-300 text-orange-700 hover:bg-orange-50 whitespace-nowrap"
-              onClick={() => confirmPayment(c.id)}
+              onClick={() => confirm("입금을 확인 처리하시겠습니까?") && confirmPayment(c.id)}
             >
               입금 확인
             </button>
             <button
               className="text-xs px-2 py-1 rounded border border-red-400 text-red-700 hover:bg-red-50 whitespace-nowrap"
-              onClick={() => cancelContract(c.id)}
+              onClick={() => confirm("정말 계약을 취소하시겠습니까?") && cancelContract(c.id)}
             >
               계약 취소
             </button>

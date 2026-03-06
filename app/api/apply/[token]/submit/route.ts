@@ -168,6 +168,8 @@ export async function POST(req: Request, { params }: Params) {
       terms: CONTRACT_TERMS,
       price: total,
       selected_items: selectedItems,
+      discount_percent: locationDiscount,
+      promo_percent: promoDiscount,
     });
   } catch (e: any) {
     return NextResponse.json({ ok: false, error: "route_exception", detail: e?.message }, { status: 500 });

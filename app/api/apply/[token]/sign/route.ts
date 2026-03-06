@@ -67,7 +67,7 @@ export async function POST(req: Request, { params }: Params) {
     // 2) 계약 + 고객 정보 조회
     const { data: contract, error: cErr } = await supabaseAdmin
       .from("contracts")
-      .select("id,title,terms,price,selected_items,client_id,created_at")
+      .select("id,title,terms,price,selected_items,client_id,created_at,discount_percent,promo_percent")
       .eq("id", contract_id)
       .single();
 
@@ -102,7 +102,7 @@ export async function POST(req: Request, { params }: Params) {
     let pdfBuffer: Buffer | null = null;
     let pdfError: string | undefined;
     try {
-      const selectedItems: { label: string; price: number }[] = Array.isArray(contract.selected_items)
+      const selectedItems: { label: string; price: number; original_price?: number }[] = Array.isArray(contract.selected_items)
         ? contract.selected_items
         : [];
       pdfBuffer = await generateContractPdf({
@@ -110,6 +110,8 @@ export async function POST(req: Request, { params }: Params) {
         title: contract.title,
         terms: contract.terms,
         price: contract.price,
+        discountPercent: contract.discount_percent ?? 0,
+        promoPercent: contract.promo_percent ?? 0,
         selectedItems,
         client: {
           client_type: client?.client_type ?? "business",
