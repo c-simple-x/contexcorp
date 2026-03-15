@@ -445,81 +445,80 @@ export default function GuidePage() {
               </p>
 
               <style>{`
-                @keyframes orbit-h {
-                  0% { transform: rotateY(0deg) translateX(90px) rotateY(0deg); }
-                  100% { transform: rotateY(360deg) translateX(90px) rotateY(-360deg); }
+                @keyframes orbit-horizontal {
+                  0% { transform: rotateY(0deg) translateZ(100px) rotateY(0deg); }
+                  100% { transform: rotateY(360deg) translateZ(100px) rotateY(-360deg); }
                 }
                 @keyframes float-cube {
                   0%, 100% { transform: translateY(0px); }
                   50% { transform: translateY(-8px); }
                 }
-                @keyframes whale-swim {
-                  0%, 100% { transform: rotate(-3deg); }
-                  50% { transform: rotate(3deg); }
+                @keyframes tail-flap {
+                  0%, 100% { transform: rotate(-8deg); }
+                  50% { transform: rotate(8deg); }
                 }
-                .orbit-whale-h { animation: orbit-h 8s linear infinite; }
-                .float-cube { animation: float-cube 3s ease-in-out infinite; }
-                .whale-swim { animation: whale-swim 2s ease-in-out infinite; }
               `}</style>
               <div className="flex justify-center">
                 <Phone caption="실제 거리 위에 3D 광고물 표시">
                   <div className="relative min-h-[460px] bg-gradient-to-b from-sky-400 via-sky-300 to-slate-400 overflow-hidden">
-                    {/* ★ 3D 큐브 광고 */}
-                    <div className="absolute top-12 left-1/2 -translate-x-1/2 float-cube" style={{perspective: "400px"}}>
-                      <div style={{transform: "rotateY(-20deg) rotateX(10deg)", transformStyle: "preserve-3d"}}>
-                        {/* 정면 (1:1.5 비율) */}
+                    {/* ★ 큐브 + 고래 통합 3D 공간 */}
+                    <div className="absolute top-16 left-1/2 -translate-x-1/2" style={{perspective: "500px", perspectiveOrigin: "50% 50%"}}>
+                      <div style={{transformStyle: "preserve-3d", transform: "rotateX(15deg) rotateY(-15deg)", animation: "float-cube 3s ease-in-out infinite"}}>
+                        {/* 큐브 정면 (1:1.5) */}
                         <div className="relative w-[80px] h-[120px] bg-gradient-to-b from-yellow-400 via-yellow-500 to-amber-600 flex flex-col items-center justify-center border border-yellow-600/50" style={{transformStyle: "preserve-3d"}}>
                           <p className="text-black text-[7px] font-black leading-tight text-center">CONTEX</p>
                           <p className="text-black text-[7px] font-black leading-tight text-center">Corp.</p>
                           <div className="w-12 h-[1px] bg-black/30 my-1" />
                           <p className="text-black text-[11px] font-black leading-tight text-center">AR 3D</p>
                           <p className="text-black text-[11px] font-black leading-tight text-center">광고</p>
-                          {/* 우측면 - 동일 비율 */}
+                          {/* 우측면 */}
                           <div className="absolute top-0 left-full w-[30px] h-full origin-left bg-gradient-to-r from-amber-700 to-amber-800" style={{transform: "rotateY(90deg)"}} />
-                          {/* 상단면 - 동일 비율 */}
+                          {/* 상단면 */}
                           <div className="absolute bottom-full left-0 w-full h-[30px] origin-bottom bg-gradient-to-t from-yellow-300 to-yellow-200" style={{transform: "rotateX(90deg)"}} />
-                        </div>
-                      </div>
-                    </div>
+                          {/* 좌측면 */}
+                          <div className="absolute top-0 right-full w-[30px] h-full origin-right bg-gradient-to-l from-amber-600 to-amber-700" style={{transform: "rotateY(-90deg)"}} />
+                          {/* 하단면 */}
+                          <div className="absolute top-full left-0 w-full h-[30px] origin-top bg-gradient-to-b from-amber-700 to-amber-800" style={{transform: "rotateX(-90deg)"}} />
 
-                    {/* ★ 고래 - 큐브 주변 수평 궤도 */}
-                    <div className="absolute top-[30px] left-1/2 -translate-x-1/2 w-[200px] h-[200px] flex items-center justify-center" style={{perspective: "600px", perspectiveOrigin: "50% 40%"}}>
-                      <div className="w-full h-full flex items-center justify-center" style={{transformStyle: "preserve-3d", transform: "rotateX(65deg)"}}>
-                        {/* 궤도 링 */}
-                        <div className="absolute w-[180px] h-[180px] rounded-full border border-dashed border-cyan-300/15" />
-                        {/* 고래 */}
-                        <div className="orbit-whale-h" style={{transformStyle: "preserve-3d"}}>
-                          <div className="whale-swim" style={{transform: "rotateX(-65deg)"}}>
-                            <svg width="48" height="28" viewBox="0 0 96 56" fill="none" style={{filter: "drop-shadow(0 6px 12px rgba(0,0,0,0.4))"}}>
-                              {/* 몸체 - 유선형 */}
-                              <path d="M12 28 Q12 12 36 10 Q56 8 72 22 Q76 26 72 32 Q56 46 36 44 Q12 42 12 28Z" fill="url(#wg2)" />
-                              {/* 배 - 밝은 부분 */}
-                              <path d="M18 30 Q20 40 38 40 Q54 40 66 32 Q54 42 38 42 Q22 42 18 30Z" fill="#bae6fd" opacity="0.5" />
-                              {/* 꼬리지느러미 - 넓고 갈래 */}
-                              <path d="M72 26 Q80 14 90 10 Q84 22 86 28 Q84 34 90 46 Q80 42 72 30Z" fill="#0284c7" />
-                              {/* 등지느러미 - 작고 뒤쪽 */}
-                              <path d="M50 12 Q46 4 54 10 Q56 12 54 14Z" fill="#0369a1" />
-                              {/* 가슴지느러미 */}
-                              <path d="M32 32 Q26 40 22 42 Q24 36 30 32Z" fill="#0369a1" opacity="0.7" />
-                              {/* 눈 */}
-                              <circle cx="22" cy="24" r="3" fill="white" />
-                              <circle cx="22" cy="24" r="1.5" fill="#1e293b" />
-                              <circle cx="21" cy="23" r="0.5" fill="white" opacity="0.8" />
-                              {/* 입 */}
-                              <path d="M12 30 Q16 34 22 32" stroke="#0c4a6e" strokeWidth="1" fill="none" />
-                              {/* 물줄기 */}
-                              <path d="M30 10 Q28 4 26 0" stroke="#7dd3fc" strokeWidth="1.5" fill="none" strokeLinecap="round" opacity="0.6" />
-                              <path d="M30 10 Q32 4 34 0" stroke="#7dd3fc" strokeWidth="1.5" fill="none" strokeLinecap="round" opacity="0.6" />
-                              <circle cx="26" cy="1" r="1" fill="#7dd3fc" opacity="0.4" />
-                              <circle cx="34" cy="1" r="1" fill="#7dd3fc" opacity="0.4" />
-                              <defs>
-                                <linearGradient id="wg2" x1="12" y1="12" x2="72" y2="44">
-                                  <stop offset="0%" stopColor="#38bdf8" />
-                                  <stop offset="50%" stopColor="#0ea5e9" />
-                                  <stop offset="100%" stopColor="#0369a1" />
-                                </linearGradient>
-                              </defs>
-                            </svg>
+                          {/* ★ 고래 수평 궤도 — 큐브 중심 기준 */}
+                          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2" style={{transformStyle: "preserve-3d"}}>
+                            <div style={{transformStyle: "preserve-3d", animation: "orbit-horizontal 6s linear infinite"}}>
+                              {/* 🐋 고래 SVG */}
+                              <svg width="56" height="36" viewBox="0 0 112 72" fill="none" style={{filter: "drop-shadow(0 4px 8px rgba(0,0,0,0.3))"}}>
+                                {/* 몸체 — 크고 둥근 머리, 유선형 */}
+                                <ellipse cx="40" cy="36" rx="32" ry="22" fill="url(#wg3)" />
+                                {/* 배 밝은 부분 */}
+                                <ellipse cx="38" cy="42" rx="22" ry="10" fill="#bae6fd" opacity="0.45" />
+                                {/* 꼬리 — 수평 갈래 */}
+                                <path d="M70 36 Q82 36 92 24 Q86 34 88 36 Q86 38 92 48 Q82 36 70 36Z" fill="#0284c7" />
+                                <g style={{transformOrigin: "70px 36px", animation: "tail-flap 1s ease-in-out infinite"}}>
+                                  <path d="M88 36 Q96 28 106 22 Q98 34 100 36 Q98 38 106 50 Q96 44 88 36Z" fill="#0369a1" />
+                                </g>
+                                {/* 등지느러미 */}
+                                <path d="M48 16 Q44 6 56 14 Q52 16 48 16Z" fill="#0369a1" />
+                                {/* 가슴지느러미 */}
+                                <path d="M30 44 Q22 56 18 58 Q20 50 28 44Z" fill="#0369a1" opacity="0.7" />
+                                {/* 눈 */}
+                                <circle cx="18" cy="30" r="4" fill="white" />
+                                <circle cx="18" cy="30" r="2" fill="#1e293b" />
+                                <circle cx="17" cy="29" r="0.8" fill="white" opacity="0.9" />
+                                {/* 입 — 부드러운 미소 */}
+                                <path d="M8 38 Q14 44 22 40" stroke="#0c4a6e" strokeWidth="1.2" fill="none" />
+                                {/* 물줄기 */}
+                                <path d="M28 14 Q26 6 22 0" stroke="#7dd3fc" strokeWidth="2" fill="none" strokeLinecap="round" opacity="0.5" />
+                                <path d="M28 14 Q30 6 34 0" stroke="#7dd3fc" strokeWidth="2" fill="none" strokeLinecap="round" opacity="0.5" />
+                                <circle cx="22" cy="1" r="1.5" fill="#7dd3fc" opacity="0.35" />
+                                <circle cx="34" cy="1" r="1.5" fill="#7dd3fc" opacity="0.35" />
+                                <circle cx="28" cy="4" r="1" fill="#7dd3fc" opacity="0.25" />
+                                <defs>
+                                  <linearGradient id="wg3" x1="8" y1="14" x2="72" y2="58">
+                                    <stop offset="0%" stopColor="#38bdf8" />
+                                    <stop offset="50%" stopColor="#0ea5e9" />
+                                    <stop offset="100%" stopColor="#0369a1" />
+                                  </linearGradient>
+                                </defs>
+                              </svg>
+                            </div>
                           </div>
                         </div>
                       </div>
