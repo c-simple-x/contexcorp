@@ -305,7 +305,7 @@ export default function GuidePage() {
                 <h3 className="font-bold text-slate-800">GPS 수신 대기 → 옵션 설정 → START AR</h3>
               </div>
               <p className="text-slate-600 mb-6">
-                AR 페이지에 접속하면 먼저 GPS 데이터를 수신합니다. 기본으로 Grid, Gaze Ring이 체크되어 있으므로 <b>모두 체크 해제</b>하고, <b>Sample Monument를 체크</b>한 후 <b className="text-blue-600">START AR</b>을 탭합니다.
+                AR 페이지에 접속하면 먼저 GPS 데이터를 수신합니다. 기본으로 Grid, Gaze Ring, Sample Monument가 체크되어 있으므로 <b>모두 체크 해제</b>한 후 <b className="text-blue-600">START AR</b>을 탭합니다.
               </p>
 
               <div className="flex flex-wrap justify-center gap-6">
@@ -332,7 +332,7 @@ export default function GuidePage() {
                       </div>
                     </div>
                     <p className="text-slate-500 text-[7px] mb-2">- Displayed location/direction may vary slightly due to GPS/compass offset</p>
-                    {/* Checkboxes - Grid/Gaze Ring 기본 체크됨, Sample Monument 해제 */}
+                    {/* Checkboxes - 초기 상태: Grid/Gaze Ring/Sample Monument 모두 체크됨 */}
                     <div className="space-y-1 mb-2 opacity-30">
                       <div className="flex items-center gap-2">
                         <span className="text-orange-400 text-[9px]">&#x25CF;</span>
@@ -347,7 +347,7 @@ export default function GuidePage() {
                       <div className="flex items-center gap-2">
                         <span className="text-[9px]">&#x25A0;</span>
                         <span className="text-orange-400 text-[8px] font-bold">Sample Monument :</span>
-                        <div className="w-3.5 h-3.5 rounded border border-slate-500" />
+                        <div className="w-3.5 h-3.5 rounded bg-blue-500 flex items-center justify-center text-white text-[7px]">&#10003;</div>
                       </div>
                     </div>
                     {/* GPS 수신 중 오버레이 - 아래 내용을 덮음 */}
@@ -366,7 +366,7 @@ export default function GuidePage() {
                 </Phone>
 
                 {/* 두 번째 폰: GPS 완료 + 체크박스 활성화 + START AR */}
-                <Phone caption="② Grid/Gaze 해제 → Monument 체크 → START AR">
+                <Phone caption="② 모두 체크 해제 → START AR">
                   <ChromeBar url="dns1.nin.earth/a?..." />
                   <div className="bg-slate-950 min-h-[400px] px-4 pt-3">
                     <p className="text-orange-400 font-bold text-[10px] mb-3">
@@ -390,7 +390,7 @@ export default function GuidePage() {
                       </div>
                     </div>
                     <p className="text-slate-500 text-[7px] mb-2">- Displayed location/direction may vary slightly due to GPS/compass offset</p>
-                    {/* Checkboxes - Grid/Gaze Ring 해제, Sample Monument만 체크 */}
+                    {/* Checkboxes - 모두 체크 해제 */}
                     <div className="space-y-1 mb-2">
                       <div className="flex items-center gap-2">
                         <span className="text-orange-400 text-[9px]">&#x25CF;</span>
@@ -407,8 +407,8 @@ export default function GuidePage() {
                       <div className="flex items-center gap-2">
                         <span className="text-[9px]">&#x25A0;</span>
                         <span className="text-orange-400 text-[8px] font-bold">Sample Monument :</span>
-                        <div className="w-3.5 h-3.5 rounded bg-blue-500 flex items-center justify-center text-white text-[7px]">&#10003;</div>
-                        <span className="text-green-400 text-[7px] font-bold">← 체크</span>
+                        <div className="w-3.5 h-3.5 rounded border border-slate-500" />
+                        <span className="text-red-400 text-[7px] font-bold">← 해제</span>
                       </div>
                     </div>
                     {/* GPS info */}
@@ -762,14 +762,14 @@ export default function GuidePage() {
             </div>
             <div className="grid md:grid-cols-2 gap-6">
               <div className="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden">
-                <video controls playsInline className="w-full aspect-[9/16] max-h-[500px] object-contain bg-black" src="/guide1.mp4" />
+                <video controls playsInline className="w-full aspect-[9/16] max-h-[500px] object-contain bg-black" src="/AR Contents check guide.mp4" />
                 <div className="p-4">
                   <h3 className="font-bold text-slate-800 mb-1">AR 접속 및 확인</h3>
                   <p className="text-sm text-slate-500">Chrome 접속 → NIN.Earth → AR 페이지 → 3D 광고 확인</p>
                 </div>
               </div>
               <div className="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden">
-                <video controls playsInline className="w-full aspect-[9/16] max-h-[500px] object-contain bg-black" src="/guide2.mp4" />
+                <video controls playsInline className="w-full aspect-[9/16] max-h-[500px] object-contain bg-black" src="/recording guide.mp4" />
                 <div className="p-4">
                   <h3 className="font-bold text-slate-800 mb-1">화면 녹화 방법</h3>
                   <p className="text-sm text-slate-500">빠른 설정 패널 → 화면 녹화 → 갤러리에서 확인</p>
