@@ -57,6 +57,8 @@ export default function GuidePage() {
           .guide-container { max-width: 100% !important; padding: 0 !important; }
           .step-card { break-inside: avoid; box-shadow: none !important; border: 1px solid #e2e8f0 !important; }
           video { display: none !important; }
+          .ar-3d-scene { display: none !important; }
+          .ar-3d-print { display: flex !important; }
         }
       `}</style>
 
@@ -461,8 +463,20 @@ export default function GuidePage() {
               <div className="flex justify-center">
                 <Phone caption="실제 거리 위에 3D 광고물 표시">
                   <div className="relative min-h-[460px] bg-gradient-to-b from-sky-400 via-sky-300 to-slate-400 overflow-hidden">
+                    {/* ★ 인쇄용 정적 대체 화면 */}
+                    <div className="ar-3d-print hidden absolute inset-0 flex-col items-center justify-center">
+                      <div className="w-[80px] h-[120px] bg-gradient-to-b from-yellow-400 via-yellow-500 to-amber-600 border border-yellow-600/50 flex flex-col items-center justify-center shadow-lg" style={{transform: "rotate(-8deg)"}}>
+                        <p className="text-black text-[7px] font-black leading-tight text-center">CONTEX</p>
+                        <p className="text-black text-[7px] font-black leading-tight text-center">Corp.</p>
+                        <div className="w-12 h-[1px] bg-black/30 my-1" />
+                        <p className="text-black text-[11px] font-black leading-tight text-center">AR 3D</p>
+                        <p className="text-black text-[11px] font-black leading-tight text-center">광고</p>
+                      </div>
+                      <p className="text-white text-[10px] mt-3 bg-black/30 rounded px-2 py-1">3D 큐브 + 고래 애니메이션 (웹에서 확인)</p>
+                    </div>
+
                     {/* ★ 큐브 + 고래 통합 3D 공간 */}
-                    <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2" style={{perspective: "500px", perspectiveOrigin: "50% 50%"}}>
+                    <div className="ar-3d-scene absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2" style={{perspective: "500px", perspectiveOrigin: "50% 50%"}}>
                       <div style={{transformStyle: "preserve-3d", animation: "float-cube 3s ease-in-out infinite"}}>
                         {/* 큐브 정6면체 — 80(W)×120(H)×80(D) */}
                         <div className="relative w-[80px] h-[120px]" style={{transformStyle: "preserve-3d"}}>
