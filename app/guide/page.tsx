@@ -449,7 +449,7 @@ export default function GuidePage() {
               <style>{`
                 @keyframes orbit-swim {
                   0%   { transform: rotateY(0deg)    translateZ(120px); }
-                  100% { transform: rotateY(-360deg) translateZ(120px); }
+                  100% { transform: rotateY(360deg) translateZ(120px); }
                 }
                 @keyframes float-cube {
                   0%, 100% { transform: rotateX(20deg) rotateY(-25deg) translateY(0px); }
@@ -507,40 +507,41 @@ export default function GuidePage() {
                           <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2" style={{transformStyle: "preserve-3d"}}>
                             {/* 궤도 회전 */}
                             <div style={{transformStyle: "preserve-3d", animation: "orbit-swim 7s linear infinite"}}>
-                              {/* 고래 방향: rotateY(90deg)로 접선 방향, rotateZ(-10deg) 뱅킹, bob 상하 출렁 */}
+                              {/* 접선 방향 + 뱅킹 + 출렁임 */}
                               <div style={{transformStyle: "preserve-3d", animation: "whale-bob 2.5s ease-in-out infinite"}}>
-                                {/* 앞면 (왼쪽에서 볼 때) */}
-                                <div style={{backfaceVisibility: "hidden"}}>
-                                  <svg width="64" height="40" viewBox="0 0 128 80" fill="none" style={{filter: "drop-shadow(0 6px 16px rgba(0,0,0,0.35))"}}>
-                                    <ellipse cx="48" cy="40" rx="36" ry="24" fill="url(#wg3a)" />
-                                    <ellipse cx="46" cy="48" rx="24" ry="11" fill="#bae6fd" opacity="0.4" />
-                                    <path d="M82 40 Q94 40 104 26 Q98 38 100 40 Q98 42 104 54 Q94 40 82 40Z" fill="#0284c7" />
-                                    <g style={{transformOrigin: "82px 40px", animation: "tail-flap 0.8s ease-in-out infinite"}}>
-                                      <path d="M100 40 Q108 30 118 24 Q110 38 112 40 Q110 42 118 56 Q108 50 100 40Z" fill="#0369a1" />
-                                    </g>
-                                    <path d="M56 18 Q52 6 64 16 Q60 18 56 18Z" fill="#0369a1" />
-                                    <path d="M34 50 Q26 62 22 64 Q24 56 32 50Z" fill="#0369a1" opacity="0.7" />
-                                    <circle cx="22" cy="34" r="4.5" fill="white" />
-                                    <circle cx="22" cy="34" r="2.2" fill="#1e293b" />
-                                    <circle cx="21" cy="33" r="1" fill="white" opacity="0.9" />
-                                    <path d="M10 44 Q16 50 24 46" stroke="#0c4a6e" strokeWidth="1.2" fill="none" />
-                                    <path d="M32 16 Q30 8 26 2" stroke="#7dd3fc" strokeWidth="2" fill="none" strokeLinecap="round" opacity="0.5" />
-                                    <path d="M32 16 Q34 8 38 2" stroke="#7dd3fc" strokeWidth="2" fill="none" strokeLinecap="round" opacity="0.5" />
-                                    <circle cx="26" cy="3" r="1.5" fill="#7dd3fc" opacity="0.3" />
-                                    <circle cx="38" cy="3" r="1.5" fill="#7dd3fc" opacity="0.3" />
-                                    <defs>
-                                      <linearGradient id="wg3a" x1="12" y1="16" x2="84" y2="64">
-                                        <stop offset="0%" stopColor="#38bdf8" />
-                                        <stop offset="50%" stopColor="#0ea5e9" />
-                                        <stop offset="100%" stopColor="#0369a1" />
-                                      </linearGradient>
-                                    </defs>
-                                  </svg>
-                                </div>
-                                {/* 뒷면 (반대쪽에서 볼 때 — 좌우 반전) */}
-                                <div className="absolute inset-0" style={{backfaceVisibility: "hidden", transform: "rotateY(180deg)"}}>
-                                  <svg width="64" height="40" viewBox="0 0 128 80" fill="none" style={{filter: "drop-shadow(0 6px 16px rgba(0,0,0,0.35))"}}>
-                                    <g transform="translate(128,0) scale(-1,1)">
+                                {/* 🐋 3D 고래 — 두께 12px, 양면 + 상/하/등/배 면 */}
+                                <div className="relative" style={{width: "64px", height: "40px", transformStyle: "preserve-3d"}}>
+                                  {/* 좌측면 (Z+6) */}
+                                  <div className="absolute inset-0" style={{transform: "translateZ(6px)"}}>
+                                    <svg width="64" height="40" viewBox="0 0 128 80" fill="none">
+                                      <ellipse cx="48" cy="40" rx="36" ry="24" fill="url(#wg3a)" />
+                                      <ellipse cx="46" cy="48" rx="24" ry="11" fill="#bae6fd" opacity="0.4" />
+                                      <path d="M82 40 Q94 40 104 26 Q98 38 100 40 Q98 42 104 54 Q94 40 82 40Z" fill="#0284c7" />
+                                      <g style={{transformOrigin: "82px 40px", animation: "tail-flap 0.8s ease-in-out infinite"}}>
+                                        <path d="M100 40 Q108 30 118 24 Q110 38 112 40 Q110 42 118 56 Q108 50 100 40Z" fill="#0369a1" />
+                                      </g>
+                                      <path d="M56 18 Q52 6 64 16 Q60 18 56 18Z" fill="#0369a1" />
+                                      <path d="M34 50 Q26 62 22 64 Q24 56 32 50Z" fill="#0369a1" opacity="0.7" />
+                                      <circle cx="22" cy="34" r="4.5" fill="white" />
+                                      <circle cx="22" cy="34" r="2.2" fill="#1e293b" />
+                                      <circle cx="21" cy="33" r="1" fill="white" opacity="0.9" />
+                                      <path d="M10 44 Q16 50 24 46" stroke="#0c4a6e" strokeWidth="1.2" fill="none" />
+                                      <path d="M32 16 Q30 8 26 2" stroke="#7dd3fc" strokeWidth="2" fill="none" strokeLinecap="round" opacity="0.5" />
+                                      <path d="M32 16 Q34 8 38 2" stroke="#7dd3fc" strokeWidth="2" fill="none" strokeLinecap="round" opacity="0.5" />
+                                      <circle cx="26" cy="3" r="1.5" fill="#7dd3fc" opacity="0.3" />
+                                      <circle cx="38" cy="3" r="1.5" fill="#7dd3fc" opacity="0.3" />
+                                      <defs>
+                                        <linearGradient id="wg3a" x1="12" y1="16" x2="84" y2="64">
+                                          <stop offset="0%" stopColor="#38bdf8" />
+                                          <stop offset="50%" stopColor="#0ea5e9" />
+                                          <stop offset="100%" stopColor="#0369a1" />
+                                        </linearGradient>
+                                      </defs>
+                                    </svg>
+                                  </div>
+                                  {/* 우측면 (Z-6, 좌우반전) */}
+                                  <div className="absolute inset-0" style={{transform: "translateZ(-6px) rotateY(180deg)"}}>
+                                    <svg width="64" height="40" viewBox="0 0 128 80" fill="none">
                                       <ellipse cx="48" cy="40" rx="36" ry="24" fill="url(#wg3b)" />
                                       <ellipse cx="46" cy="48" rx="24" ry="11" fill="#bae6fd" opacity="0.4" />
                                       <path d="M82 40 Q94 40 104 26 Q98 38 100 40 Q98 42 104 54 Q94 40 82 40Z" fill="#0284c7" />
@@ -551,15 +552,21 @@ export default function GuidePage() {
                                       <circle cx="22" cy="34" r="2.2" fill="#1e293b" />
                                       <circle cx="21" cy="33" r="1" fill="white" opacity="0.9" />
                                       <path d="M10 44 Q16 50 24 46" stroke="#0c4a6e" strokeWidth="1.2" fill="none" />
-                                    </g>
-                                    <defs>
-                                      <linearGradient id="wg3b" x1="12" y1="16" x2="84" y2="64">
-                                        <stop offset="0%" stopColor="#38bdf8" />
-                                        <stop offset="50%" stopColor="#0ea5e9" />
-                                        <stop offset="100%" stopColor="#0369a1" />
-                                      </linearGradient>
-                                    </defs>
-                                  </svg>
+                                      <defs>
+                                        <linearGradient id="wg3b" x1="12" y1="16" x2="84" y2="64">
+                                          <stop offset="0%" stopColor="#38bdf8" />
+                                          <stop offset="50%" stopColor="#0ea5e9" />
+                                          <stop offset="100%" stopColor="#0369a1" />
+                                        </linearGradient>
+                                      </defs>
+                                    </svg>
+                                  </div>
+                                  {/* 등 (상단 두께면) — 머리~꼬리 연결 */}
+                                  <div className="absolute left-[6px] w-[40px] h-[12px]" style={{top: "2px", transform: "rotateX(90deg)", transformOrigin: "center top", background: "linear-gradient(90deg, #0ea5e9, #0284c7, #0369a1)", borderRadius: "6px 6px 0 0"}} />
+                                  {/* 배 (하단 두께면) */}
+                                  <div className="absolute left-[6px] w-[40px] h-[12px]" style={{bottom: "4px", transform: "rotateX(-90deg)", transformOrigin: "center bottom", background: "linear-gradient(90deg, #7dd3fc, #bae6fd, #7dd3fc)", borderRadius: "0 0 6px 6px"}} />
+                                  {/* 머리 (앞면 두께) */}
+                                  <div className="absolute top-[8px] h-[24px] w-[12px]" style={{left: "0px", transform: "rotateY(-90deg)", transformOrigin: "left center", background: "linear-gradient(180deg, #0ea5e9, #38bdf8, #0ea5e9)", borderRadius: "6px 0 0 6px"}} />
                                 </div>
                               </div>
                             </div>
