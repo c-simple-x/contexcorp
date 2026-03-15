@@ -464,28 +464,20 @@ export default function GuidePage() {
               <div className="flex justify-center">
                 <Phone caption="실제 거리 위에 3D 광고물 표시">
                   <div className="relative min-h-[460px] bg-gradient-to-b from-sky-400 via-sky-300 to-slate-400 overflow-hidden">
-                    {/* Sky + power lines */}
-                    <div className="absolute top-6 left-0 right-0 h-[1px] bg-slate-600/40" />
-                    <div className="absolute top-9 left-0 right-0 h-[1px] bg-slate-600/30" />
-                    <div className="absolute top-12 left-0 right-0 h-[1px] bg-slate-600/20" />
-                    {/* Electric pole */}
-                    <div className="absolute left-5 top-0 w-[3px] h-[280px] bg-slate-700/60" />
-                    <div className="absolute left-3 top-12 w-[7px] h-[2px] bg-slate-600/60" />
-
                     {/* ★ 3D 큐브 광고 */}
                     <div className="absolute top-12 left-1/2 -translate-x-1/2 float-cube" style={{perspective: "400px"}}>
                       <div style={{transform: "rotateY(-20deg) rotateX(10deg)", transformStyle: "preserve-3d"}}>
-                        {/* 정면 */}
-                        <div className="relative w-[90px] h-[90px] bg-gradient-to-b from-yellow-400 via-yellow-500 to-amber-600 flex flex-col items-center justify-center border border-yellow-600/50" style={{transformStyle: "preserve-3d"}}>
+                        {/* 정면 (1:1.5 비율) */}
+                        <div className="relative w-[80px] h-[120px] bg-gradient-to-b from-yellow-400 via-yellow-500 to-amber-600 flex flex-col items-center justify-center border border-yellow-600/50" style={{transformStyle: "preserve-3d"}}>
                           <p className="text-black text-[7px] font-black leading-tight text-center">CONTEX</p>
                           <p className="text-black text-[7px] font-black leading-tight text-center">Corp.</p>
                           <div className="w-12 h-[1px] bg-black/30 my-1" />
                           <p className="text-black text-[11px] font-black leading-tight text-center">AR 3D</p>
                           <p className="text-black text-[11px] font-black leading-tight text-center">광고</p>
-                          {/* 우측면 */}
-                          <div className="absolute top-0 left-full w-[20px] h-full origin-left bg-gradient-to-r from-amber-700 to-amber-800" style={{transform: "rotateY(90deg)"}} />
-                          {/* 상단면 */}
-                          <div className="absolute bottom-full left-0 w-full h-[20px] origin-bottom bg-gradient-to-t from-yellow-300 to-yellow-200" style={{transform: "rotateX(90deg)"}} />
+                          {/* 우측면 - 동일 비율 */}
+                          <div className="absolute top-0 left-full w-[30px] h-full origin-left bg-gradient-to-r from-amber-700 to-amber-800" style={{transform: "rotateY(90deg)"}} />
+                          {/* 상단면 - 동일 비율 */}
+                          <div className="absolute bottom-full left-0 w-full h-[30px] origin-bottom bg-gradient-to-t from-yellow-300 to-yellow-200" style={{transform: "rotateX(90deg)"}} />
                         </div>
                       </div>
                     </div>
@@ -529,20 +521,6 @@ export default function GuidePage() {
                               </defs>
                             </svg>
                           </div>
-                        </div>
-                      </div>
-                    </div>
-
-                    {/* ★ 하단 NIN.Earth 배너 */}
-                    <div className="absolute top-[260px] left-1/2 -translate-x-[40%]" style={{perspective: "250px"}}>
-                      <div style={{transform: "rotateY(-12deg) rotateX(5deg)", transformStyle: "preserve-3d"}}>
-                        <div className="relative bg-white rounded px-4 py-2 shadow-[0_6px_24px_rgba(0,0,0,0.4)] border border-slate-200">
-                          <p className="text-orange-500 text-[12px] font-extrabold tracking-wide">NIN.Earth</p>
-                          <p className="text-[7px] text-slate-500 font-medium">
-                            <b className="text-blue-600">N</b>ext <b className="text-blue-600">I</b>nter<b className="text-blue-600">N</b>et{" "}
-                            <b className="text-green-600">o</b>n <b className="text-blue-600">E</b>arth
-                          </p>
-                          <div className="absolute top-0 -right-2 w-2 h-full bg-gradient-to-r from-slate-200 to-slate-100 rounded-r origin-left" style={{transform: "rotateY(70deg)"}} />
                         </div>
                       </div>
                     </div>
