@@ -442,6 +442,18 @@ export default function GuidePage() {
                 카메라를 통해 실제 거리 위에 <b>3D 광고물</b>이 떠 있는 것을 확인할 수 있습니다. 스마트폰을 좌우로 움직이며 광고가 올바르게 표시되는지 확인하세요.
               </p>
 
+              <style>{`
+                @keyframes orbit {
+                  0% { transform: rotate(0deg) translateX(70px) rotate(0deg); }
+                  100% { transform: rotate(360deg) translateX(70px) rotate(-360deg); }
+                }
+                @keyframes float-cube {
+                  0%, 100% { transform: rotateY(-15deg) rotateX(8deg) translateY(0px); }
+                  50% { transform: rotateY(-10deg) rotateX(5deg) translateY(-6px); }
+                }
+                .orbit-whale { animation: orbit 6s linear infinite; }
+                .float-cube { animation: float-cube 3s ease-in-out infinite; }
+              `}</style>
               <div className="flex justify-center">
                 <Phone caption="실제 거리 위에 3D 광고물 표시">
                   <div className="relative min-h-[460px] bg-gradient-to-b from-sky-400 via-sky-300 to-slate-400 overflow-hidden">
@@ -453,34 +465,63 @@ export default function GuidePage() {
                     <div className="absolute left-5 top-0 w-[3px] h-[280px] bg-slate-700/60" />
                     <div className="absolute left-3 top-12 w-[7px] h-[2px] bg-slate-600/60" />
 
-                    {/* ★ 3D Cube Ad - National Geographic (입체 큐브) */}
-                    <div className="absolute top-10 left-1/2 -translate-x-[45%]" style={{perspective: "300px"}}>
-                      <div style={{transform: "rotateY(-15deg) rotateX(8deg)", transformStyle: "preserve-3d"}}>
-                        {/* 정면 */}
-                        <div className="relative bg-slate-900 border-2 border-yellow-500/80 rounded px-4 py-3 shadow-[0_8px_32px_rgba(0,0,0,0.5)]">
-                          <div className="flex items-center gap-1 mb-1">
-                            <div className="w-3 h-3 border border-yellow-400 flex items-center justify-center text-[4px] text-yellow-400">&#9634;</div>
-                            <p className="text-[6px] text-white tracking-[0.15em] font-medium">NATIONAL GEOGRAPHIC</p>
-                          </div>
-                          <p className="text-white text-[10px] font-bold leading-tight">일산덕이점</p>
-                          <p className="text-yellow-400 text-[16px] font-black leading-none mt-1">기획전</p>
-                          <div className="flex items-baseline gap-1 mt-1">
-                            <span className="bg-red-600 text-white text-[5px] font-bold px-1 rounded">최대</span>
-                            <span className="text-yellow-400 text-[22px] font-black leading-none">50%</span>
-                            <span className="text-white text-[10px] font-bold">할인</span>
-                          </div>
-                          {/* 입체 그림자 효과 */}
-                          <div className="absolute -bottom-1 -right-1 w-full h-full bg-yellow-900/20 rounded -z-10" style={{transform: "translateZ(-4px) translateX(3px) translateY(3px)"}} />
+                    {/* ★ 3D 배너 큐브 + 고래 궤도 */}
+                    <div className="absolute top-16 left-1/2 -translate-x-1/2">
+                      {/* 고래 궤도 영역 */}
+                      <div className="relative w-[160px] h-[160px] flex items-center justify-center">
+                        {/* 궤도 링 (반투명) */}
+                        <div className="absolute inset-0 rounded-full border border-dashed border-cyan-300/20" />
+
+                        {/* 🐋 3D 고래 - 궤도 회전 */}
+                        <div className="absolute inset-0 flex items-center justify-center orbit-whale">
+                          <svg width="32" height="20" viewBox="0 0 64 40" fill="none" style={{filter: "drop-shadow(0 4px 8px rgba(0,0,0,0.3))"}}>
+                            {/* 몸체 */}
+                            <ellipse cx="30" cy="20" rx="22" ry="12" fill="url(#wg)" />
+                            {/* 배 */}
+                            <ellipse cx="28" cy="24" rx="14" ry="6" fill="#bae6fd" opacity="0.6" />
+                            {/* 꼬리 */}
+                            <path d="M52 20 Q58 10 64 12 Q60 20 64 28 Q58 30 52 20Z" fill="#0284c7" />
+                            {/* 지느러미 */}
+                            <path d="M24 12 Q20 2 28 8 Z" fill="#0369a1" />
+                            {/* 눈 */}
+                            <circle cx="14" cy="17" r="2" fill="white" />
+                            <circle cx="14" cy="17" r="1" fill="#1e293b" />
+                            {/* 입 */}
+                            <path d="M6 21 Q10 24 14 22" stroke="#0c4a6e" strokeWidth="1" fill="none" />
+                            {/* 물줄기 */}
+                            <path d="M18 8 Q16 2 14 0 M18 8 Q20 2 22 0" stroke="#7dd3fc" strokeWidth="1" fill="none" opacity="0.7" />
+                            <defs>
+                              <linearGradient id="wg" x1="8" y1="8" x2="52" y2="32">
+                                <stop offset="0%" stopColor="#0ea5e9" />
+                                <stop offset="100%" stopColor="#0369a1" />
+                              </linearGradient>
+                            </defs>
+                          </svg>
                         </div>
-                        {/* 우측면 (3D 느낌) */}
-                        <div className="absolute top-0 -right-3 w-3 h-full bg-gradient-to-r from-yellow-900/60 to-yellow-900/20 rounded-r origin-left" style={{transform: "rotateY(70deg)"}} />
-                        {/* 하단면 */}
-                        <div className="absolute -bottom-2 left-0 w-full h-2 bg-gradient-to-b from-slate-900/40 to-transparent origin-top" style={{transform: "rotateX(-60deg)"}} />
+
+                        {/* ★ 중앙 3D 큐브 배너 */}
+                        <div style={{perspective: "300px"}}>
+                          <div className="float-cube" style={{transformStyle: "preserve-3d"}}>
+                            <div className="relative bg-black border-2 border-cyan-400/60 rounded-lg px-3 py-2 shadow-[0_8px_32px_rgba(0,200,255,0.3)]">
+                              {/* CONTEX 배너 */}
+                              <p className="text-cyan-400 text-[7px] font-bold tracking-wider text-center mb-[2px]">CONTEX Corp.</p>
+                              <p className="text-white text-[10px] font-black text-center leading-tight">AR 3D</p>
+                              <p className="text-white text-[10px] font-black text-center leading-tight">광고</p>
+                              <div className="w-full h-[1px] bg-cyan-400/40 my-1" />
+                              <p className="text-cyan-300 text-[6px] text-center">위치 기반 광고 솔루션</p>
+                              {/* 측면 */}
+                              <div className="absolute top-0 -right-[6px] w-[6px] h-full bg-gradient-to-r from-cyan-900/80 to-cyan-950/40 rounded-r" />
+                              <div className="absolute top-0 -left-[6px] w-[6px] h-full bg-gradient-to-l from-cyan-900/60 to-cyan-950/20 rounded-l" />
+                              {/* 상단면 */}
+                              <div className="absolute -top-[4px] left-0 w-full h-[4px] bg-gradient-to-t from-cyan-800/50 to-cyan-600/30 rounded-t" />
+                            </div>
+                          </div>
+                        </div>
                       </div>
                     </div>
 
-                    {/* ★ 3D Ad - NIN.Earth (입체 박스) */}
-                    <div className="absolute top-52 left-1/2 -translate-x-[40%]" style={{perspective: "250px"}}>
+                    {/* ★ 하단 NIN.Earth 배너 */}
+                    <div className="absolute top-[260px] left-1/2 -translate-x-[40%]" style={{perspective: "250px"}}>
                       <div style={{transform: "rotateY(-12deg) rotateX(5deg)", transformStyle: "preserve-3d"}}>
                         <div className="relative bg-white rounded px-4 py-2 shadow-[0_6px_24px_rgba(0,0,0,0.4)] border border-slate-200">
                           <p className="text-orange-500 text-[12px] font-extrabold tracking-wide">NIN.Earth</p>
@@ -488,7 +529,6 @@ export default function GuidePage() {
                             <b className="text-blue-600">N</b>ext <b className="text-blue-600">I</b>nter<b className="text-blue-600">N</b>et{" "}
                             <b className="text-green-600">o</b>n <b className="text-blue-600">E</b>arth
                           </p>
-                          {/* 우측면 */}
                           <div className="absolute top-0 -right-2 w-2 h-full bg-gradient-to-r from-slate-200 to-slate-100 rounded-r origin-left" style={{transform: "rotateY(70deg)"}} />
                         </div>
                       </div>
@@ -496,12 +536,9 @@ export default function GuidePage() {
 
                     {/* Street / buildings */}
                     <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-slate-600 via-slate-500 to-slate-400/60" />
-                    {/* Road line */}
                     <div className="absolute bottom-12 left-0 right-0 h-[1px] bg-slate-400/40" />
-                    {/* Building silhouettes */}
                     <div className="absolute bottom-24 right-0 w-16 h-20 bg-slate-500/40 rounded-t" />
                     <div className="absolute bottom-24 right-14 w-10 h-14 bg-slate-500/30 rounded-t" />
-                    {/* Street lamp */}
                     <div className="absolute right-8 bottom-24 w-[2px] h-16 bg-slate-500/50" />
                     <div className="absolute right-5 bottom-[156px] w-8 h-[2px] bg-slate-500/40" />
 
