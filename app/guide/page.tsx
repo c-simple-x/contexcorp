@@ -810,6 +810,23 @@ export default function GuidePage() {
             </div>
           </section>
 
+          {/* NIN.Earth 바로가기 */}
+          <section className="mb-12 no-print">
+            <a
+              href="https://nin.earth/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="block bg-gradient-to-r from-slate-900 to-slate-800 rounded-2xl p-8 text-center hover:from-slate-800 hover:to-slate-700 transition-all group"
+            >
+              <p className="text-orange-400 font-extrabold text-2xl tracking-wide mb-2">NIN.Earth</p>
+              <p className="text-cyan-400 text-sm font-bold mb-4">Next InterNet on Earth</p>
+              <div className="inline-flex items-center gap-2 bg-blue-600 text-white px-6 py-3 rounded-xl font-bold group-hover:bg-blue-500 transition">
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+                nin.earth 바로가기
+              </div>
+            </a>
+          </section>
+
           {/* Footer */}
           <div className="text-center text-slate-400 text-sm pb-8">
             <p>CONTEX Corp. | contact@contexcorp.com | +82-10-3653-1987</p>
