@@ -448,20 +448,20 @@ export default function GuidePage() {
 
               <style>{`
                 @keyframes orbit-swim {
-                  0%   { transform: rotateY(0deg)    translateZ(120px); }
-                  100% { transform: rotateY(360deg) translateZ(120px); }
+                  0%   { transform: rotateY(0deg)   translateZ(120px) rotateY(0deg); }
+                  100% { transform: rotateY(360deg)  translateZ(120px) rotateY(-360deg); }
                 }
                 @keyframes float-cube {
                   0%, 100% { transform: rotateX(20deg) rotateY(-25deg) translateY(0px); }
                   50% { transform: rotateX(20deg) rotateY(-25deg) translateY(-8px); }
                 }
                 @keyframes whale-bob {
-                  0%, 100% { transform: rotateY(90deg) rotateZ(-10deg) translateY(0px); }
-                  50%      { transform: rotateY(90deg) rotateZ(-10deg) translateY(-6px); }
+                  0%, 100% { transform: translateY(0px); }
+                  50%      { transform: translateY(-6px); }
                 }
-                @keyframes tail-flap {
-                  0%, 100% { transform: rotate(-12deg); }
-                  50% { transform: rotate(12deg); }
+                @keyframes tail-wag {
+                  0%, 100% { transform: rotate(-10deg) scaleX(1); }
+                  50% { transform: rotate(10deg) scaleX(0.95); }
                 }
               `}</style>
               <div className="flex justify-center">
@@ -503,71 +503,64 @@ export default function GuidePage() {
                           {/* 하단면 */}
                           <div className="absolute bottom-0 left-0 w-full h-[80px] bg-gradient-to-b from-amber-700 to-amber-900" style={{transform: "translateY(40px) rotateX(-90deg)"}} />
 
-                          {/* ★ 고래 수평 궤도 — 큐브 중심 기준 */}
+                          {/* ★ 고래 수평 궤도 — 빌보드 방식 (항상 측면 보임) */}
                           <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2" style={{transformStyle: "preserve-3d"}}>
-                            {/* 궤도 회전 */}
                             <div style={{transformStyle: "preserve-3d", animation: "orbit-swim 7s linear infinite"}}>
-                              {/* 접선 방향 + 뱅킹 + 출렁임 */}
-                              <div style={{transformStyle: "preserve-3d", animation: "whale-bob 2.5s ease-in-out infinite"}}>
-                                {/* 🐋 3D 고래 — 두께 12px, 양면 + 상/하/등/배 면 */}
-                                <div className="relative" style={{width: "64px", height: "40px", transformStyle: "preserve-3d"}}>
-                                  {/* 좌측면 (Z+6) */}
-                                  <div className="absolute inset-0" style={{transform: "translateZ(6px)"}}>
-                                    <svg width="64" height="40" viewBox="0 0 128 80" fill="none">
-                                      <ellipse cx="48" cy="40" rx="36" ry="24" fill="url(#wg3a)" />
-                                      <ellipse cx="46" cy="48" rx="24" ry="11" fill="#bae6fd" opacity="0.4" />
-                                      <path d="M82 40 Q94 40 104 26 Q98 38 100 40 Q98 42 104 54 Q94 40 82 40Z" fill="#0284c7" />
-                                      <g style={{transformOrigin: "82px 40px", animation: "tail-flap 0.8s ease-in-out infinite"}}>
-                                        <path d="M100 40 Q108 30 118 24 Q110 38 112 40 Q110 42 118 56 Q108 50 100 40Z" fill="#0369a1" />
-                                      </g>
-                                      <path d="M56 18 Q52 6 64 16 Q60 18 56 18Z" fill="#0369a1" />
-                                      <path d="M34 50 Q26 62 22 64 Q24 56 32 50Z" fill="#0369a1" opacity="0.7" />
-                                      <circle cx="22" cy="34" r="4.5" fill="white" />
-                                      <circle cx="22" cy="34" r="2.2" fill="#1e293b" />
-                                      <circle cx="21" cy="33" r="1" fill="white" opacity="0.9" />
-                                      <path d="M10 44 Q16 50 24 46" stroke="#0c4a6e" strokeWidth="1.2" fill="none" />
-                                      <path d="M32 16 Q30 8 26 2" stroke="#7dd3fc" strokeWidth="2" fill="none" strokeLinecap="round" opacity="0.5" />
-                                      <path d="M32 16 Q34 8 38 2" stroke="#7dd3fc" strokeWidth="2" fill="none" strokeLinecap="round" opacity="0.5" />
-                                      <circle cx="26" cy="3" r="1.5" fill="#7dd3fc" opacity="0.3" />
-                                      <circle cx="38" cy="3" r="1.5" fill="#7dd3fc" opacity="0.3" />
-                                      <defs>
-                                        <linearGradient id="wg3a" x1="12" y1="16" x2="84" y2="64">
-                                          <stop offset="0%" stopColor="#38bdf8" />
-                                          <stop offset="50%" stopColor="#0ea5e9" />
-                                          <stop offset="100%" stopColor="#0369a1" />
-                                        </linearGradient>
-                                      </defs>
-                                    </svg>
-                                  </div>
-                                  {/* 우측면 (Z-6, 좌우반전) */}
-                                  <div className="absolute inset-0" style={{transform: "translateZ(-6px) rotateY(180deg)"}}>
-                                    <svg width="64" height="40" viewBox="0 0 128 80" fill="none">
-                                      <ellipse cx="48" cy="40" rx="36" ry="24" fill="url(#wg3b)" />
-                                      <ellipse cx="46" cy="48" rx="24" ry="11" fill="#bae6fd" opacity="0.4" />
-                                      <path d="M82 40 Q94 40 104 26 Q98 38 100 40 Q98 42 104 54 Q94 40 82 40Z" fill="#0284c7" />
-                                      <path d="M100 40 Q108 30 118 24 Q110 38 112 40 Q110 42 118 56 Q108 50 100 40Z" fill="#0369a1" />
-                                      <path d="M56 18 Q52 6 64 16 Q60 18 56 18Z" fill="#0369a1" />
-                                      <path d="M34 50 Q26 62 22 64 Q24 56 32 50Z" fill="#0369a1" opacity="0.7" />
-                                      <circle cx="22" cy="34" r="4.5" fill="white" />
-                                      <circle cx="22" cy="34" r="2.2" fill="#1e293b" />
-                                      <circle cx="21" cy="33" r="1" fill="white" opacity="0.9" />
-                                      <path d="M10 44 Q16 50 24 46" stroke="#0c4a6e" strokeWidth="1.2" fill="none" />
-                                      <defs>
-                                        <linearGradient id="wg3b" x1="12" y1="16" x2="84" y2="64">
-                                          <stop offset="0%" stopColor="#38bdf8" />
-                                          <stop offset="50%" stopColor="#0ea5e9" />
-                                          <stop offset="100%" stopColor="#0369a1" />
-                                        </linearGradient>
-                                      </defs>
-                                    </svg>
-                                  </div>
-                                  {/* 등 (상단 두께면) — 머리~꼬리 연결 */}
-                                  <div className="absolute left-[6px] w-[40px] h-[12px]" style={{top: "2px", transform: "rotateX(90deg)", transformOrigin: "center top", background: "linear-gradient(90deg, #0ea5e9, #0284c7, #0369a1)", borderRadius: "6px 6px 0 0"}} />
-                                  {/* 배 (하단 두께면) */}
-                                  <div className="absolute left-[6px] w-[40px] h-[12px]" style={{bottom: "4px", transform: "rotateX(-90deg)", transformOrigin: "center bottom", background: "linear-gradient(90deg, #7dd3fc, #bae6fd, #7dd3fc)", borderRadius: "0 0 6px 6px"}} />
-                                  {/* 머리 (앞면 두께) */}
-                                  <div className="absolute top-[8px] h-[24px] w-[12px]" style={{left: "0px", transform: "rotateY(-90deg)", transformOrigin: "left center", background: "linear-gradient(180deg, #0ea5e9, #38bdf8, #0ea5e9)", borderRadius: "6px 0 0 6px"}} />
-                                </div>
+                              <div style={{animation: "whale-bob 2.5s ease-in-out infinite"}}>
+                                <svg width="72" height="48" viewBox="0 0 144 96" fill="none" style={{filter: "drop-shadow(0 8px 20px rgba(0,0,0,0.4))"}}>
+                                  {/* 몸체 — 상단 진한 파랑 → 하단 밝은 파랑 */}
+                                  <ellipse cx="56" cy="48" rx="42" ry="28" fill="url(#whaleBody)" />
+                                  {/* 등 하이라이트 (빛 반사) */}
+                                  <ellipse cx="44" cy="30" rx="28" ry="8" fill="url(#whaleHighlight)" opacity="0.5" />
+                                  {/* 배 밝은 부분 */}
+                                  <ellipse cx="52" cy="60" rx="28" ry="14" fill="#e0f2fe" opacity="0.5" />
+                                  {/* 배 주름 */}
+                                  <path d="M30 56 Q44 62 62 56" stroke="#bae6fd" strokeWidth="0.5" fill="none" opacity="0.6" />
+                                  <path d="M32 60 Q44 65 60 60" stroke="#bae6fd" strokeWidth="0.5" fill="none" opacity="0.4" />
+                                  {/* 꼬리 연결부 */}
+                                  <path d="M96 48 Q104 44 108 40 Q106 48 108 56 Q104 52 96 48Z" fill="#0369a1" />
+                                  {/* 꼬리지느러미 — 위아래 갈래, 애니메이션 */}
+                                  <g style={{transformOrigin: "108px 48px", animation: "tail-wag 1s ease-in-out infinite"}}>
+                                    <path d="M106 48 Q114 36 126 28 Q118 42 120 48 Q118 54 126 68 Q114 60 106 48Z" fill="url(#whaleTail)" />
+                                  </g>
+                                  {/* 등지느러미 — 삼각형, 뒤쪽 */}
+                                  <path d="M64 22 Q58 8 74 18 Q70 22 64 22Z" fill="#0369a1" />
+                                  {/* 등지느러미 하이라이트 */}
+                                  <path d="M65 22 Q62 14 70 19" stroke="#38bdf8" strokeWidth="0.5" fill="none" opacity="0.4" />
+                                  {/* 가슴지느러미 */}
+                                  <path d="M38 56 Q28 70 24 74 Q26 64 34 56Z" fill="#0369a1" opacity="0.8" />
+                                  <path d="M36 58 Q30 66 28 70" stroke="#38bdf8" strokeWidth="0.5" fill="none" opacity="0.3" />
+                                  {/* 눈 — 큰 흰자 + 동공 + 반사광 */}
+                                  <ellipse cx="24" cy="40" rx="5" ry="5.5" fill="white" />
+                                  <ellipse cx="24" cy="40" rx="2.8" ry="3" fill="#0f172a" />
+                                  <circle cx="22.5" cy="38.5" r="1.2" fill="white" opacity="0.9" />
+                                  <circle cx="25" cy="41" r="0.6" fill="white" opacity="0.5" />
+                                  {/* 입 — 부드러운 곡선 미소 */}
+                                  <path d="M12 50 Q18 56 28 52" stroke="#0c4a6e" strokeWidth="1.5" fill="none" strokeLinecap="round" />
+                                  {/* 물줄기 — V자 스프레이 */}
+                                  <path d="M36 20 Q34 10 30 2" stroke="#7dd3fc" strokeWidth="2.5" fill="none" strokeLinecap="round" opacity="0.6" />
+                                  <path d="M36 20 Q38 10 42 2" stroke="#7dd3fc" strokeWidth="2.5" fill="none" strokeLinecap="round" opacity="0.6" />
+                                  <circle cx="30" cy="3" r="2" fill="#7dd3fc" opacity="0.35" />
+                                  <circle cx="42" cy="3" r="2" fill="#7dd3fc" opacity="0.35" />
+                                  <circle cx="36" cy="6" r="1.5" fill="#7dd3fc" opacity="0.25" />
+                                  <circle cx="28" cy="8" r="1" fill="#7dd3fc" opacity="0.2" />
+                                  <circle cx="44" cy="8" r="1" fill="#7dd3fc" opacity="0.2" />
+                                  <defs>
+                                    <linearGradient id="whaleBody" x1="14" y1="20" x2="98" y2="76">
+                                      <stop offset="0%" stopColor="#0ea5e9" />
+                                      <stop offset="40%" stopColor="#0284c7" />
+                                      <stop offset="100%" stopColor="#075985" />
+                                    </linearGradient>
+                                    <radialGradient id="whaleHighlight" cx="0.4" cy="0.3" r="0.6">
+                                      <stop offset="0%" stopColor="#7dd3fc" />
+                                      <stop offset="100%" stopColor="#0ea5e9" stopOpacity="0" />
+                                    </radialGradient>
+                                    <linearGradient id="whaleTail" x1="106" y1="28" x2="126" y2="68">
+                                      <stop offset="0%" stopColor="#0ea5e9" />
+                                      <stop offset="100%" stopColor="#075985" />
+                                    </linearGradient>
+                                  </defs>
+                                </svg>
                               </div>
                             </div>
                           </div>
