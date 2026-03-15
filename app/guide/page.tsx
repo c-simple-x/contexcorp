@@ -450,8 +450,8 @@ export default function GuidePage() {
                   100% { transform: rotateY(360deg) translateZ(100px) rotateY(-360deg); }
                 }
                 @keyframes float-cube {
-                  0%, 100% { transform: translateY(0px); }
-                  50% { transform: translateY(-8px); }
+                  0%, 100% { transform: rotateX(-25deg) rotateY(-35deg) translateY(0px); }
+                  50% { transform: rotateX(-25deg) rotateY(-35deg) translateY(-8px); }
                 }
                 @keyframes tail-flap {
                   0%, 100% { transform: rotate(-8deg); }
@@ -463,7 +463,7 @@ export default function GuidePage() {
                   <div className="relative min-h-[460px] bg-gradient-to-b from-sky-400 via-sky-300 to-slate-400 overflow-hidden">
                     {/* ★ 큐브 + 고래 통합 3D 공간 */}
                     <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2" style={{perspective: "500px", perspectiveOrigin: "50% 50%"}}>
-                      <div style={{transformStyle: "preserve-3d", transform: "rotateX(-25deg) rotateY(-35deg)", animation: "float-cube 3s ease-in-out infinite"}}>
+                      <div style={{transformStyle: "preserve-3d", animation: "float-cube 3s ease-in-out infinite"}}>
                         {/* 큐브 정6면체 — 80×120×40 */}
                         <div className="relative w-[80px] h-[120px]" style={{transformStyle: "preserve-3d", transform: "translateZ(20px)"}}>
                           {/* 정면 */}
