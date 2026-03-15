@@ -462,23 +462,28 @@ export default function GuidePage() {
                 <Phone caption="실제 거리 위에 3D 광고물 표시">
                   <div className="relative min-h-[460px] bg-gradient-to-b from-sky-400 via-sky-300 to-slate-400 overflow-hidden">
                     {/* ★ 큐브 + 고래 통합 3D 공간 */}
-                    <div className="absolute top-16 left-1/2 -translate-x-1/2" style={{perspective: "500px", perspectiveOrigin: "50% 50%"}}>
-                      <div style={{transformStyle: "preserve-3d", transform: "rotateX(15deg) rotateY(-15deg)", animation: "float-cube 3s ease-in-out infinite"}}>
-                        {/* 큐브 정면 (1:1.5) */}
-                        <div className="relative w-[80px] h-[120px] bg-gradient-to-b from-yellow-400 via-yellow-500 to-amber-600 flex flex-col items-center justify-center border border-yellow-600/50" style={{transformStyle: "preserve-3d"}}>
-                          <p className="text-black text-[7px] font-black leading-tight text-center">CONTEX</p>
-                          <p className="text-black text-[7px] font-black leading-tight text-center">Corp.</p>
-                          <div className="w-12 h-[1px] bg-black/30 my-1" />
-                          <p className="text-black text-[11px] font-black leading-tight text-center">AR 3D</p>
-                          <p className="text-black text-[11px] font-black leading-tight text-center">광고</p>
+                    <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2" style={{perspective: "500px", perspectiveOrigin: "50% 50%"}}>
+                      <div style={{transformStyle: "preserve-3d", transform: "rotateX(-25deg) rotateY(-35deg)", animation: "float-cube 3s ease-in-out infinite"}}>
+                        {/* 큐브 정6면체 — 80×120×40 */}
+                        <div className="relative w-[80px] h-[120px]" style={{transformStyle: "preserve-3d", transform: "translateZ(20px)"}}>
+                          {/* 정면 */}
+                          <div className="absolute inset-0 bg-gradient-to-b from-yellow-400 via-yellow-500 to-amber-600 flex flex-col items-center justify-center border border-yellow-600/50" style={{transform: "translateZ(0px)"}}>
+                            <p className="text-black text-[7px] font-black leading-tight text-center">CONTEX</p>
+                            <p className="text-black text-[7px] font-black leading-tight text-center">Corp.</p>
+                            <div className="w-12 h-[1px] bg-black/30 my-1" />
+                            <p className="text-black text-[11px] font-black leading-tight text-center">AR 3D</p>
+                            <p className="text-black text-[11px] font-black leading-tight text-center">광고</p>
+                          </div>
+                          {/* 뒷면 */}
+                          <div className="absolute inset-0 bg-gradient-to-b from-amber-700 to-amber-900" style={{transform: "translateZ(-40px) rotateY(180deg)"}} />
                           {/* 우측면 */}
-                          <div className="absolute top-0 left-full w-[30px] h-full origin-left bg-gradient-to-r from-amber-700 to-amber-800" style={{transform: "rotateY(90deg)"}} />
-                          {/* 상단면 */}
-                          <div className="absolute bottom-full left-0 w-full h-[30px] origin-bottom bg-gradient-to-t from-yellow-300 to-yellow-200" style={{transform: "rotateX(90deg)"}} />
+                          <div className="absolute top-0 right-0 w-[40px] h-full bg-gradient-to-r from-amber-600 to-amber-800 border-l border-yellow-600/30" style={{transformOrigin: "right center", transform: "rotateY(90deg)"}} />
                           {/* 좌측면 */}
-                          <div className="absolute top-0 right-full w-[30px] h-full origin-right bg-gradient-to-l from-amber-600 to-amber-700" style={{transform: "rotateY(-90deg)"}} />
+                          <div className="absolute top-0 left-0 w-[40px] h-full bg-gradient-to-l from-amber-600 to-amber-800 border-r border-yellow-600/30" style={{transformOrigin: "left center", transform: "rotateY(-90deg)"}} />
+                          {/* 상단면 */}
+                          <div className="absolute top-0 left-0 w-full h-[40px] bg-gradient-to-t from-yellow-400 to-yellow-200 border-b border-yellow-500/30" style={{transformOrigin: "top center", transform: "rotateX(90deg)"}} />
                           {/* 하단면 */}
-                          <div className="absolute top-full left-0 w-full h-[30px] origin-top bg-gradient-to-b from-amber-700 to-amber-800" style={{transform: "rotateX(-90deg)"}} />
+                          <div className="absolute bottom-0 left-0 w-full h-[40px] bg-gradient-to-b from-amber-700 to-amber-900" style={{transformOrigin: "bottom center", transform: "rotateX(-90deg)"}} />
 
                           {/* ★ 고래 수평 궤도 — 큐브 중심 기준 */}
                           <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2" style={{transformStyle: "preserve-3d"}}>
@@ -610,8 +615,8 @@ export default function GuidePage() {
                     </div>
 
                     {/* Arrow pointing to 화면 녹화 */}
-                    <div className="flex items-center gap-2 bg-purple-500/20 rounded-lg p-2">
-                      <span className="text-purple-400 text-lg">←</span>
+                    <div className="flex flex-col items-center gap-1 bg-purple-500/20 rounded-lg p-2">
+                      <span className="text-purple-400 text-lg">↑</span>
                       <span className="text-purple-300 text-[9px] font-bold">&quot;화면 녹화&quot; 버튼을 탭하세요</span>
                     </div>
                   </div>
@@ -752,14 +757,14 @@ export default function GuidePage() {
             </div>
             <div className="grid md:grid-cols-2 gap-6">
               <div className="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden">
-                <video controls className="w-full aspect-[9/16] max-h-[500px] object-contain bg-black cursor-pointer" src="/AR%20Contents%20check%20guide.mp4" />
+                <video controls preload="metadata" className="w-full aspect-[9/16] max-h-[500px] object-contain bg-black cursor-pointer" src="/ar-contents-check-guide.mp4" />
                 <div className="p-4">
                   <h3 className="font-bold text-slate-800 mb-1">AR 접속 및 확인</h3>
                   <p className="text-sm text-slate-500">Chrome 접속 → NIN.Earth → AR 페이지 → 3D 광고 확인</p>
                 </div>
               </div>
               <div className="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden">
-                <video controls className="w-full aspect-[9/16] max-h-[500px] object-contain bg-black cursor-pointer" src="/recording%20guide.mp4" />
+                <video controls preload="metadata" className="w-full aspect-[9/16] max-h-[500px] object-contain bg-black cursor-pointer" src="/recording-guide.mp4" />
                 <div className="p-4">
                   <h3 className="font-bold text-slate-800 mb-1">화면 녹화 방법</h3>
                   <p className="text-sm text-slate-500">빠른 설정 패널 → 화면 녹화 → 갤러리에서 확인</p>
