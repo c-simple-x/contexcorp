@@ -464,26 +464,26 @@ export default function GuidePage() {
                     {/* ★ 큐브 + 고래 통합 3D 공간 */}
                     <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2" style={{perspective: "500px", perspectiveOrigin: "50% 50%"}}>
                       <div style={{transformStyle: "preserve-3d", animation: "float-cube 3s ease-in-out infinite"}}>
-                        {/* 큐브 정6면체 — 80(W)×120(H)×40(D) */}
+                        {/* 큐브 정6면체 — 80(W)×120(H)×80(D) */}
                         <div className="relative w-[80px] h-[120px]" style={{transformStyle: "preserve-3d"}}>
-                          {/* 정면: Z+20 */}
-                          <div className="absolute inset-0 bg-gradient-to-b from-yellow-400 via-yellow-500 to-amber-600 flex flex-col items-center justify-center border border-yellow-600/50" style={{transform: "translateZ(20px)"}}>
+                          {/* 정면: Z+40 */}
+                          <div className="absolute inset-0 bg-gradient-to-b from-yellow-400 via-yellow-500 to-amber-600 flex flex-col items-center justify-center border border-yellow-600/50" style={{transform: "translateZ(40px)"}}>
                             <p className="text-black text-[7px] font-black leading-tight text-center">CONTEX</p>
                             <p className="text-black text-[7px] font-black leading-tight text-center">Corp.</p>
                             <div className="w-12 h-[1px] bg-black/30 my-1" />
                             <p className="text-black text-[11px] font-black leading-tight text-center">AR 3D</p>
                             <p className="text-black text-[11px] font-black leading-tight text-center">광고</p>
                           </div>
-                          {/* 뒷면: Z-20 */}
-                          <div className="absolute inset-0 bg-gradient-to-b from-amber-700 to-amber-900" style={{transform: "rotateY(180deg) translateZ(20px)"}} />
-                          {/* 우측면: X+40 */}
-                          <div className="absolute top-0 left-1/2 w-[40px] h-full bg-gradient-to-r from-amber-600 to-amber-800" style={{transform: "translateX(20px) rotateY(90deg)"}} />
-                          {/* 좌측면: X-40 */}
-                          <div className="absolute top-0 left-1/2 w-[40px] h-full bg-gradient-to-l from-amber-600 to-amber-800" style={{transform: "translateX(-60px) rotateY(-90deg)"}} />
-                          {/* 상단면: Y-60 */}
-                          <div className="absolute top-0 left-0 w-full h-[40px] bg-gradient-to-t from-yellow-400 to-yellow-200" style={{transform: "translateY(-20px) rotateX(90deg)"}} />
-                          {/* 하단면: Y+60 */}
-                          <div className="absolute bottom-0 left-0 w-full h-[40px] bg-gradient-to-b from-amber-700 to-amber-900" style={{transform: "translateY(20px) rotateX(-90deg)"}} />
+                          {/* 뒷면: Z-40 */}
+                          <div className="absolute inset-0 bg-gradient-to-b from-amber-700 to-amber-900" style={{transform: "rotateY(180deg) translateZ(40px)"}} />
+                          {/* 우측면 */}
+                          <div className="absolute top-0 left-1/2 w-[80px] h-full bg-gradient-to-r from-amber-600 to-amber-800" style={{transform: "translateX(-40px) translateX(40px) rotateY(90deg)"}} />
+                          {/* 좌측면 */}
+                          <div className="absolute top-0 left-1/2 w-[80px] h-full bg-gradient-to-l from-amber-600 to-amber-800" style={{transform: "translateX(-40px) translateX(-40px) rotateY(-90deg)"}} />
+                          {/* 상단면 */}
+                          <div className="absolute top-0 left-0 w-full h-[80px] bg-gradient-to-t from-yellow-400 to-yellow-200" style={{transform: "translateY(-40px) rotateX(90deg)"}} />
+                          {/* 하단면 */}
+                          <div className="absolute bottom-0 left-0 w-full h-[80px] bg-gradient-to-b from-amber-700 to-amber-900" style={{transform: "translateY(40px) rotateX(-90deg)"}} />
 
                           {/* ★ 고래 수평 궤도 — 큐브 중심 기준 */}
                           <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2" style={{transformStyle: "preserve-3d"}}>
