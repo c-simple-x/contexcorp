@@ -449,7 +449,7 @@ export default function GuidePage() {
               <style>{`
                 @keyframes orbit-horizontal {
                   0% { transform: rotateY(0deg) translateZ(120px) rotateY(0deg); }
-                  100% { transform: rotateY(360deg) translateZ(120px) rotateY(-360deg); }
+                  100% { transform: rotateY(-360deg) translateZ(120px) rotateY(360deg); }
                 }
                 @keyframes float-cube {
                   0%, 100% { transform: rotateX(20deg) rotateY(-25deg) translateY(0px); }
