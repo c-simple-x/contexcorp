@@ -710,88 +710,14 @@ export default function GuidePage() {
             <div className="step-card bg-white rounded-2xl shadow-sm border border-slate-100 p-6 mb-6">
               <div className="flex items-center gap-3 mb-4">
                 <span className="w-8 h-8 rounded-lg bg-orange-100 text-orange-700 flex items-center justify-center font-bold text-sm">4-1</span>
-                <h3 className="font-bold text-slate-800">자동 저장 &amp; 확인 위치</h3>
+                <h3 className="font-bold text-slate-800">저장된 녹화 확인하기</h3>
               </div>
-              <p className="text-slate-600 mb-6">
-                녹화가 종료되면 동영상이 <b>자동으로 저장</b>됩니다. 아래 앱에서 확인할 수 있습니다:
+              <p className="text-slate-600 mb-3">
+                녹화 종료 되면 동영상이 <b>자동으로 저장</b>됩니다.
               </p>
-
-              <div className="flex justify-center mb-6">
-                <Phone caption="갤러리 앱에서 녹화 영상 확인">
-                  <div className="bg-white min-h-[420px]">
-                    <div className="bg-slate-50 px-4 py-3 border-b border-slate-100">
-                      <p className="text-[11px] font-bold text-slate-800">갤러리</p>
-                      <p className="text-[8px] text-slate-400">화면 녹화 폴더</p>
-                    </div>
-                    {/* Video thumbnails */}
-                    <div className="grid grid-cols-3 gap-[2px] p-[2px]">
-                      {[
-                        { bg: "from-blue-900 to-blue-700", label: "AR 확인 영상", time: "2:42" },
-                        { bg: "from-slate-800 to-slate-600", label: "녹화 테스트", time: "0:36" },
-                        { bg: "from-emerald-900 to-teal-700", label: "현장 촬영", time: "1:15" },
-                      ].map((vid, i) => (
-                        <div key={i} className={`relative aspect-square bg-gradient-to-br ${vid.bg} flex items-center justify-center`}>
-                          <div className="w-6 h-6 rounded-full bg-white/20 flex items-center justify-center">
-                            <div className="w-0 h-0 border-t-4 border-b-4 border-l-6 border-t-transparent border-b-transparent border-l-white/80 ml-[2px]" />
-                          </div>
-                          <span className="absolute bottom-1 right-1 text-[7px] text-white bg-black/50 px-1 rounded">{vid.time}</span>
-                          {i === 0 && <span className="absolute top-1 left-1 text-[6px] text-white bg-blue-500 px-1 rounded">NEW</span>}
-                        </div>
-                      ))}
-                    </div>
-
-                    {/* Path info */}
-                    <div className="px-4 py-3 space-y-3 mt-2">
-                      <div className="flex items-center gap-2 bg-slate-50 rounded-lg p-3">
-                        <div className="w-8 h-8 rounded-lg bg-orange-100 flex items-center justify-center text-sm">&#127909;</div>
-                        <div>
-                          <p className="text-[9px] font-bold text-slate-800">갤러리 앱</p>
-                          <p className="text-[7px] text-slate-400">갤러리 &gt; 화면 녹화</p>
-                        </div>
-                      </div>
-                      <div className="flex items-center gap-2 bg-slate-50 rounded-lg p-3">
-                        <div className="w-8 h-8 rounded-lg bg-blue-100 flex items-center justify-center text-sm">&#128193;</div>
-                        <div>
-                          <p className="text-[9px] font-bold text-slate-800">내 파일 앱</p>
-                          <p className="text-[7px] text-slate-400">DCIM &gt; Screen recordings</p>
-                        </div>
-                      </div>
-                      <div className="flex items-center gap-2 bg-slate-50 rounded-lg p-3">
-                        <div className="w-8 h-8 rounded-lg bg-green-100 flex items-center justify-center text-sm">&#128247;</div>
-                        <div>
-                          <p className="text-[9px] font-bold text-slate-800">Google 포토</p>
-                          <p className="text-[7px] text-slate-400">라이브러리 &gt; 화면 녹화</p>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </Phone>
-              </div>
-            </div>
-
-            {/* Step 4-2: 영상 전달 */}
-            <div className="step-card bg-white rounded-2xl shadow-sm border border-slate-100 p-6 mb-6">
-              <div className="flex items-center gap-3 mb-4">
-                <span className="w-8 h-8 rounded-lg bg-orange-100 text-orange-700 flex items-center justify-center font-bold text-sm">4-2</span>
-                <h3 className="font-bold text-slate-800">녹화 영상 전달</h3>
-              </div>
-              <p className="text-slate-600 mb-4">
-                녹화된 영상을 CONTEX Corp. 담당자에게 전달하는 방법:
+              <p className="text-slate-600">
+                <b>갤러리(사진첩)</b>에서 확인할 수 있습니다.
               </p>
-              <div className="space-y-2">
-                <div className="flex items-center gap-3 text-slate-700">
-                  <span className="w-6 h-6 rounded-full bg-green-100 text-green-700 flex items-center justify-center text-xs font-bold">1</span>
-                  <span>갤러리에서 녹화 영상 선택</span>
-                </div>
-                <div className="flex items-center gap-3 text-slate-700">
-                  <span className="w-6 h-6 rounded-full bg-green-100 text-green-700 flex items-center justify-center text-xs font-bold">2</span>
-                  <span><b>공유</b> 버튼 탭</span>
-                </div>
-                <div className="flex items-center gap-3 text-slate-700">
-                  <span className="w-6 h-6 rounded-full bg-green-100 text-green-700 flex items-center justify-center text-xs font-bold">3</span>
-                  <span>카카오톡, 이메일, 또는 메시지로 전송</span>
-                </div>
-              </div>
             </div>
           </section>
 
