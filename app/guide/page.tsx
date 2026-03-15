@@ -447,17 +447,21 @@ export default function GuidePage() {
               </p>
 
               <style>{`
-                @keyframes orbit-horizontal {
-                  0% { transform: rotateY(0deg) translateZ(120px) rotateY(0deg); }
-                  100% { transform: rotateY(-360deg) translateZ(120px) rotateY(360deg); }
+                @keyframes orbit-swim {
+                  0%   { transform: rotateY(0deg)    translateZ(120px); }
+                  100% { transform: rotateY(-360deg) translateZ(120px); }
                 }
                 @keyframes float-cube {
                   0%, 100% { transform: rotateX(20deg) rotateY(-25deg) translateY(0px); }
                   50% { transform: rotateX(20deg) rotateY(-25deg) translateY(-8px); }
                 }
+                @keyframes whale-bob {
+                  0%, 100% { transform: rotateY(90deg) rotateZ(-10deg) translateY(0px); }
+                  50%      { transform: rotateY(90deg) rotateZ(-10deg) translateY(-6px); }
+                }
                 @keyframes tail-flap {
-                  0%, 100% { transform: rotate(-8deg); }
-                  50% { transform: rotate(8deg); }
+                  0%, 100% { transform: rotate(-12deg); }
+                  50% { transform: rotate(12deg); }
                 }
               `}</style>
               <div className="flex justify-center">
@@ -501,42 +505,63 @@ export default function GuidePage() {
 
                           {/* ★ 고래 수평 궤도 — 큐브 중심 기준 */}
                           <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2" style={{transformStyle: "preserve-3d"}}>
-                            <div style={{transformStyle: "preserve-3d", animation: "orbit-horizontal 6s linear infinite"}}>
-                              {/* 🐋 고래 SVG */}
-                              <svg width="56" height="36" viewBox="0 0 112 72" fill="none" style={{filter: "drop-shadow(0 4px 8px rgba(0,0,0,0.3))"}}>
-                                {/* 몸체 — 크고 둥근 머리, 유선형 */}
-                                <ellipse cx="40" cy="36" rx="32" ry="22" fill="url(#wg3)" />
-                                {/* 배 밝은 부분 */}
-                                <ellipse cx="38" cy="42" rx="22" ry="10" fill="#bae6fd" opacity="0.45" />
-                                {/* 꼬리 — 수평 갈래 */}
-                                <path d="M70 36 Q82 36 92 24 Q86 34 88 36 Q86 38 92 48 Q82 36 70 36Z" fill="#0284c7" />
-                                <g style={{transformOrigin: "70px 36px", animation: "tail-flap 1s ease-in-out infinite"}}>
-                                  <path d="M88 36 Q96 28 106 22 Q98 34 100 36 Q98 38 106 50 Q96 44 88 36Z" fill="#0369a1" />
-                                </g>
-                                {/* 등지느러미 */}
-                                <path d="M48 16 Q44 6 56 14 Q52 16 48 16Z" fill="#0369a1" />
-                                {/* 가슴지느러미 */}
-                                <path d="M30 44 Q22 56 18 58 Q20 50 28 44Z" fill="#0369a1" opacity="0.7" />
-                                {/* 눈 */}
-                                <circle cx="18" cy="30" r="4" fill="white" />
-                                <circle cx="18" cy="30" r="2" fill="#1e293b" />
-                                <circle cx="17" cy="29" r="0.8" fill="white" opacity="0.9" />
-                                {/* 입 — 부드러운 미소 */}
-                                <path d="M8 38 Q14 44 22 40" stroke="#0c4a6e" strokeWidth="1.2" fill="none" />
-                                {/* 물줄기 */}
-                                <path d="M28 14 Q26 6 22 0" stroke="#7dd3fc" strokeWidth="2" fill="none" strokeLinecap="round" opacity="0.5" />
-                                <path d="M28 14 Q30 6 34 0" stroke="#7dd3fc" strokeWidth="2" fill="none" strokeLinecap="round" opacity="0.5" />
-                                <circle cx="22" cy="1" r="1.5" fill="#7dd3fc" opacity="0.35" />
-                                <circle cx="34" cy="1" r="1.5" fill="#7dd3fc" opacity="0.35" />
-                                <circle cx="28" cy="4" r="1" fill="#7dd3fc" opacity="0.25" />
-                                <defs>
-                                  <linearGradient id="wg3" x1="8" y1="14" x2="72" y2="58">
-                                    <stop offset="0%" stopColor="#38bdf8" />
-                                    <stop offset="50%" stopColor="#0ea5e9" />
-                                    <stop offset="100%" stopColor="#0369a1" />
-                                  </linearGradient>
-                                </defs>
-                              </svg>
+                            {/* 궤도 회전 */}
+                            <div style={{transformStyle: "preserve-3d", animation: "orbit-swim 7s linear infinite"}}>
+                              {/* 고래 방향: rotateY(90deg)로 접선 방향, rotateZ(-10deg) 뱅킹, bob 상하 출렁 */}
+                              <div style={{transformStyle: "preserve-3d", animation: "whale-bob 2.5s ease-in-out infinite"}}>
+                                {/* 앞면 (왼쪽에서 볼 때) */}
+                                <div style={{backfaceVisibility: "hidden"}}>
+                                  <svg width="64" height="40" viewBox="0 0 128 80" fill="none" style={{filter: "drop-shadow(0 6px 16px rgba(0,0,0,0.35))"}}>
+                                    <ellipse cx="48" cy="40" rx="36" ry="24" fill="url(#wg3a)" />
+                                    <ellipse cx="46" cy="48" rx="24" ry="11" fill="#bae6fd" opacity="0.4" />
+                                    <path d="M82 40 Q94 40 104 26 Q98 38 100 40 Q98 42 104 54 Q94 40 82 40Z" fill="#0284c7" />
+                                    <g style={{transformOrigin: "82px 40px", animation: "tail-flap 0.8s ease-in-out infinite"}}>
+                                      <path d="M100 40 Q108 30 118 24 Q110 38 112 40 Q110 42 118 56 Q108 50 100 40Z" fill="#0369a1" />
+                                    </g>
+                                    <path d="M56 18 Q52 6 64 16 Q60 18 56 18Z" fill="#0369a1" />
+                                    <path d="M34 50 Q26 62 22 64 Q24 56 32 50Z" fill="#0369a1" opacity="0.7" />
+                                    <circle cx="22" cy="34" r="4.5" fill="white" />
+                                    <circle cx="22" cy="34" r="2.2" fill="#1e293b" />
+                                    <circle cx="21" cy="33" r="1" fill="white" opacity="0.9" />
+                                    <path d="M10 44 Q16 50 24 46" stroke="#0c4a6e" strokeWidth="1.2" fill="none" />
+                                    <path d="M32 16 Q30 8 26 2" stroke="#7dd3fc" strokeWidth="2" fill="none" strokeLinecap="round" opacity="0.5" />
+                                    <path d="M32 16 Q34 8 38 2" stroke="#7dd3fc" strokeWidth="2" fill="none" strokeLinecap="round" opacity="0.5" />
+                                    <circle cx="26" cy="3" r="1.5" fill="#7dd3fc" opacity="0.3" />
+                                    <circle cx="38" cy="3" r="1.5" fill="#7dd3fc" opacity="0.3" />
+                                    <defs>
+                                      <linearGradient id="wg3a" x1="12" y1="16" x2="84" y2="64">
+                                        <stop offset="0%" stopColor="#38bdf8" />
+                                        <stop offset="50%" stopColor="#0ea5e9" />
+                                        <stop offset="100%" stopColor="#0369a1" />
+                                      </linearGradient>
+                                    </defs>
+                                  </svg>
+                                </div>
+                                {/* 뒷면 (반대쪽에서 볼 때 — 좌우 반전) */}
+                                <div className="absolute inset-0" style={{backfaceVisibility: "hidden", transform: "rotateY(180deg)"}}>
+                                  <svg width="64" height="40" viewBox="0 0 128 80" fill="none" style={{filter: "drop-shadow(0 6px 16px rgba(0,0,0,0.35))"}}>
+                                    <g transform="translate(128,0) scale(-1,1)">
+                                      <ellipse cx="48" cy="40" rx="36" ry="24" fill="url(#wg3b)" />
+                                      <ellipse cx="46" cy="48" rx="24" ry="11" fill="#bae6fd" opacity="0.4" />
+                                      <path d="M82 40 Q94 40 104 26 Q98 38 100 40 Q98 42 104 54 Q94 40 82 40Z" fill="#0284c7" />
+                                      <path d="M100 40 Q108 30 118 24 Q110 38 112 40 Q110 42 118 56 Q108 50 100 40Z" fill="#0369a1" />
+                                      <path d="M56 18 Q52 6 64 16 Q60 18 56 18Z" fill="#0369a1" />
+                                      <path d="M34 50 Q26 62 22 64 Q24 56 32 50Z" fill="#0369a1" opacity="0.7" />
+                                      <circle cx="22" cy="34" r="4.5" fill="white" />
+                                      <circle cx="22" cy="34" r="2.2" fill="#1e293b" />
+                                      <circle cx="21" cy="33" r="1" fill="white" opacity="0.9" />
+                                      <path d="M10 44 Q16 50 24 46" stroke="#0c4a6e" strokeWidth="1.2" fill="none" />
+                                    </g>
+                                    <defs>
+                                      <linearGradient id="wg3b" x1="12" y1="16" x2="84" y2="64">
+                                        <stop offset="0%" stopColor="#38bdf8" />
+                                        <stop offset="50%" stopColor="#0ea5e9" />
+                                        <stop offset="100%" stopColor="#0369a1" />
+                                      </linearGradient>
+                                    </defs>
+                                  </svg>
+                                </div>
+                              </div>
                             </div>
                           </div>
                         </div>
