@@ -248,51 +248,43 @@ export default function GuidePage() {
                       ))}
                     </div>
 
+                    {/* Seamless + cube icons - 첫번째 파란 큐브가 AR 접속 버튼 */}
                     <div className="flex items-center gap-1 mt-4">
                       <span className="text-cyan-400 text-[8px]">Seamless</span>
-                      <div className="flex gap-1">{[1,2,3].map(i=><div key={i} className="w-4 h-4 rounded bg-gradient-to-br from-green-400 to-purple-400"/>)}</div>
+                      <div className="flex gap-1">
+                        <div className="w-5 h-5 rounded bg-blue-500 ring-2 ring-yellow-400 ring-offset-1 ring-offset-black shadow-lg shadow-yellow-400/30 flex items-center justify-center text-[7px] text-white font-bold">AR</div>
+                        <div className="w-4 h-4 rounded bg-gradient-to-br from-green-400 to-purple-400" />
+                        <div className="w-4 h-4 rounded bg-gradient-to-br from-purple-400 to-green-400" />
+                      </div>
                       <span className="text-cyan-400 text-[8px]">Experience</span>
                     </div>
+                    <p className="text-yellow-400 text-[7px] font-bold mt-1 animate-pulse">↑ 이 파란 버튼을 탭!</p>
                   </div>
                 </Phone>
               </div>
             </div>
 
-            {/* Step 1-3: 스크롤 → AR 버튼 */}
+            {/* Step 1-3: Seamless 파란 버튼 = AR 접속 */}
             <div className="step-card bg-white rounded-2xl shadow-sm border border-slate-100 p-6 mb-6">
               <div className="flex items-center gap-3 mb-4">
                 <span className="w-8 h-8 rounded-lg bg-blue-100 text-blue-700 flex items-center justify-center font-bold text-sm">1-3</span>
-                <h3 className="font-bold text-slate-800">AR 접속 버튼 찾기</h3>
+                <h3 className="font-bold text-slate-800">AR 접속 버튼 탭</h3>
               </div>
-              <p className="text-slate-600 mb-6">
-                NIN.Earth 홈페이지에서 <b>아래로 스크롤</b>하면 중간에 AR 접속 버튼이 있습니다.
+              <p className="text-slate-600 mb-4">
+                홈페이지 하단의 <b>&quot;Seamless Experience&quot;</b> 영역에서 큐브 아이콘 3개 중 <b className="text-blue-600">첫 번째 파란색 큐브</b>를 탭하면 AR 페이지로 이동합니다.
               </p>
-              <div className="flex justify-center">
-                <Phone caption="스크롤 후 AR 버튼 탭">
-                  <ChromeBar url="nin.earth" />
-                  <div className="bg-black min-h-[400px] px-4 pt-4">
-                    <p className="text-orange-400 font-bold text-sm mb-3">Brief Introduction</p>
-                    <p className="text-white text-[9px] font-bold mb-1">For Web service:</p>
-                    <p className="text-slate-400 text-[8px] mb-3">You need an address - a Domain Name.</p>
-                    <p className="text-white text-[9px] font-bold mb-1">For Metaverse:</p>
-                    <p className="text-slate-400 text-[8px] mb-4">You need a location - a Domain Space.</p>
-
-                    <div className="border border-slate-600 rounded-xl p-3 mb-4">
-                      <p className="text-orange-400 text-[9px] font-bold mb-2">Experience AR Now</p>
-                      <p className="text-slate-400 text-[8px] mb-3">아래 버튼을 눌러 AR 콘텐츠를 확인하세요</p>
-                      <div className="bg-blue-500 text-white text-center py-2 rounded-lg text-[10px] font-bold animate-pulse">
-                        AR 체험하기 →
-                      </div>
-                    </div>
-
-                    {/* Scroll indicator */}
-                    <div className="flex flex-col items-center mt-2">
-                      <div className="w-[2px] h-12 bg-gradient-to-b from-blue-400 to-transparent" />
-                      <p className="text-blue-400 text-[8px] mt-1">스크롤</p>
-                    </div>
+              <div className="flex justify-center items-center gap-4 bg-slate-900 rounded-xl p-6">
+                <span className="text-cyan-400 text-sm font-medium">Seamless</span>
+                <div className="flex gap-2 items-center">
+                  <div className="w-10 h-10 rounded-lg bg-blue-500 flex items-center justify-center ring-2 ring-yellow-400 shadow-lg shadow-yellow-400/30 cursor-pointer">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg>
                   </div>
-                </Phone>
+                  <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-green-400 to-purple-500 opacity-50" />
+                  <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-purple-400 to-green-500 opacity-50" />
+                </div>
+                <span className="text-cyan-400 text-sm font-medium">Experience</span>
               </div>
+              <p className="text-center text-sm text-blue-600 font-bold mt-3">↑ 첫 번째 파란색 큐브 = AR 페이지 접속</p>
             </div>
           </section>
 
