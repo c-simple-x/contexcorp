@@ -252,7 +252,9 @@ export default function GuidePage() {
                     <div className="flex items-center gap-1 mt-4">
                       <span className="text-cyan-400 text-[8px]">Seamless</span>
                       <div className="flex gap-1">
-                        <div className="w-5 h-5 rounded bg-blue-500 ring-2 ring-yellow-400 ring-offset-1 ring-offset-black shadow-lg shadow-yellow-400/30 flex items-center justify-center text-[7px] text-white font-bold">AR</div>
+                        <div className="w-5 h-5 rounded bg-blue-500 ring-2 ring-yellow-400 ring-offset-1 ring-offset-black shadow-lg shadow-yellow-400/30 flex items-center justify-center">
+                          <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg>
+                        </div>
                         <div className="w-4 h-4 rounded bg-gradient-to-br from-green-400 to-purple-400" />
                         <div className="w-4 h-4 rounded bg-gradient-to-br from-purple-400 to-green-400" />
                       </div>
