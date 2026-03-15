@@ -715,9 +715,44 @@ export default function GuidePage() {
               <p className="text-slate-600 mb-3">
                 녹화 종료 되면 동영상이 <b>자동으로 저장</b>됩니다.
               </p>
-              <p className="text-slate-600">
+              <p className="text-slate-600 mb-6">
                 <b>갤러리(사진첩)</b>에서 확인할 수 있습니다.
               </p>
+
+              <div className="flex justify-center">
+                <Phone caption="갤러리 앱에서 녹화 영상 확인">
+                  <div className="bg-white min-h-[420px]">
+                    <div className="bg-slate-50 px-4 py-3 border-b border-slate-100">
+                      <p className="text-[11px] font-bold text-slate-800">갤러리</p>
+                      <p className="text-[8px] text-slate-400">화면 녹화 폴더</p>
+                    </div>
+                    <div className="grid grid-cols-3 gap-[2px] p-[2px]">
+                      {[
+                        { bg: "from-blue-900 to-blue-700", label: "AR 확인 영상", time: "2:42" },
+                        { bg: "from-slate-800 to-slate-600", label: "녹화 테스트", time: "0:36" },
+                        { bg: "from-emerald-900 to-teal-700", label: "현장 촬영", time: "1:15" },
+                      ].map((vid, i) => (
+                        <div key={i} className={`relative aspect-square bg-gradient-to-br ${vid.bg} flex items-center justify-center`}>
+                          <div className="w-6 h-6 rounded-full bg-white/20 flex items-center justify-center">
+                            <div className="w-0 h-0 border-t-4 border-b-4 border-l-6 border-t-transparent border-b-transparent border-l-white/80 ml-[2px]" />
+                          </div>
+                          <span className="absolute bottom-1 right-1 text-[7px] text-white bg-black/50 px-1 rounded">{vid.time}</span>
+                          {i === 0 && <span className="absolute top-1 left-1 text-[6px] text-white bg-blue-500 px-1 rounded">NEW</span>}
+                        </div>
+                      ))}
+                    </div>
+                    <div className="px-4 py-3 mt-2">
+                      <div className="flex items-center gap-2 bg-slate-50 rounded-lg p-3">
+                        <div className="w-8 h-8 rounded-lg bg-orange-100 flex items-center justify-center text-sm">&#127909;</div>
+                        <div>
+                          <p className="text-[9px] font-bold text-slate-800">갤러리 앱</p>
+                          <p className="text-[7px] text-slate-400">갤러리 &gt; 화면 녹화</p>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </Phone>
+              </div>
             </div>
           </section>
 
