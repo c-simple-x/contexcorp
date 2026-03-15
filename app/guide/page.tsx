@@ -295,29 +295,30 @@ export default function GuidePage() {
               <h2 className="text-2xl font-bold text-slate-900">AR 콘텐츠 확인하기</h2>
             </div>
 
-            {/* Step 2-1: GPS 수신 대기 */}
+            {/* Step 2-1: GPS 수신 → 옵션 설정 → START AR (한 화면) */}
             <div className="step-card bg-white rounded-2xl shadow-sm border border-slate-100 p-6 mb-6">
               <div className="flex items-center gap-3 mb-4">
                 <span className="w-8 h-8 rounded-lg bg-emerald-100 text-emerald-700 flex items-center justify-center font-bold text-sm">2-1</span>
-                <h3 className="font-bold text-slate-800">GPS 데이터 수신 대기</h3>
+                <h3 className="font-bold text-slate-800">GPS 수신 대기 → 옵션 설정 → START AR</h3>
               </div>
               <p className="text-slate-600 mb-6">
-                AR 페이지에 접속하면 <b>&quot;Receiving GPS, Compass data... Please wait.&quot;</b> 메시지가 표시됩니다.
+                AR 페이지에 접속하면 먼저 GPS 데이터를 수신합니다. 처음에 Grid, Gaze Ring이 체크되어 있으면 <b>모두 체크 해제</b>하고, <b>Sample Monument만 체크</b>한 후 <b className="text-blue-600">START AR</b>을 탭합니다.
               </p>
 
               <div className="flex flex-wrap justify-center gap-6">
-                <Phone caption="GPS 수신 중... 잠시 대기">
+                {/* 첫 번째 폰: GPS 수신 중 */}
+                <Phone caption="① GPS 수신 중... 잠시 대기">
                   <ChromeBar url="dns1.nin.earth/a?..." />
                   <div className="bg-slate-950 min-h-[400px] px-4 pt-3">
                     <p className="text-orange-400 font-bold text-[10px] mb-3">
                       <span className="text-red-400">&#169;</span> Domain Space Monuments within ~200m
                     </p>
                     {/* Radar */}
-                    <div className="flex items-center gap-3 mb-3">
-                      <div className="relative w-28 h-28">
+                    <div className="flex items-center gap-3 mb-2">
+                      <div className="relative w-24 h-24">
                         <div className="absolute inset-0 rounded-full border border-slate-600" />
-                        <div className="absolute inset-4 rounded-full border border-slate-700" />
-                        <div className="absolute inset-8 rounded-full border border-slate-700" />
+                        <div className="absolute inset-3 rounded-full border border-slate-700" />
+                        <div className="absolute inset-6 rounded-full border border-slate-700" />
                         <div className="absolute inset-0 flex items-center justify-center">
                           <div className="w-2 h-2 rounded-full bg-white/60" />
                         </div>
@@ -327,10 +328,28 @@ export default function GuidePage() {
                         START<br/>AR
                       </div>
                     </div>
-                    <p className="text-slate-500 text-[7px] mb-3">- Displayed location/direction may vary slightly due to GPS/compass offset</p>
+                    <p className="text-slate-500 text-[7px] mb-2">- Displayed location/direction may vary slightly due to GPS/compass offset</p>
+                    {/* Checkboxes - Grid/Gaze Ring 기본 체크됨 */}
+                    <div className="space-y-1 mb-2">
+                      <div className="flex items-center gap-2">
+                        <span className="text-orange-400 text-[9px]">&#x25CF;</span>
+                        <span className="text-orange-400 text-[8px] font-bold">Grid :</span>
+                        <div className="w-3.5 h-3.5 rounded bg-blue-500 flex items-center justify-center text-white text-[7px]">&#10003;</div>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <span className="text-orange-400 text-[9px]">&#x25CF;</span>
+                        <span className="text-orange-400 text-[8px] font-bold">Gaze Ring :</span>
+                        <div className="w-3.5 h-3.5 rounded bg-blue-500 flex items-center justify-center text-white text-[7px]">&#10003;</div>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <span className="text-[9px]">&#x25A0;</span>
+                        <span className="text-orange-400 text-[8px] font-bold">Sample Monument :</span>
+                        <div className="w-3.5 h-3.5 rounded border border-slate-500" />
+                      </div>
+                    </div>
                     {/* Loading message */}
-                    <div className="bg-yellow-900/30 rounded-lg p-3 mb-3">
-                      <p className="text-yellow-300 text-[10px] font-bold text-center">⏳ Receiving GPS, Compass data... Please wait.</p>
+                    <div className="bg-yellow-900/30 rounded-lg p-2 mb-2">
+                      <p className="text-yellow-300 text-[9px] font-bold text-center">⏳ Receiving GPS, Compass data...</p>
                     </div>
                     <div className="text-[8px] space-y-[2px]">
                       <p className="text-red-400 font-bold">&#128205; Your Location</p>
@@ -341,33 +360,54 @@ export default function GuidePage() {
                   </div>
                 </Phone>
 
-                <Phone caption="GPS 수신 완료!">
+                {/* 두 번째 폰: GPS 완료 + 체크박스 활성화 + START AR */}
+                <Phone caption="② Grid/Gaze 해제 → Monument 체크 → START AR">
                   <ChromeBar url="dns1.nin.earth/a?..." />
                   <div className="bg-slate-950 min-h-[400px] px-4 pt-3">
                     <p className="text-orange-400 font-bold text-[10px] mb-3">
                       <span className="text-red-400">&#169;</span> Domain Space Monuments within ~200m
                     </p>
                     {/* Radar with signal */}
-                    <div className="flex items-center gap-3 mb-3">
-                      <div className="relative w-28 h-28">
+                    <div className="flex items-center gap-3 mb-2">
+                      <div className="relative w-24 h-24">
                         <div className="absolute inset-0 rounded-full border border-slate-600" />
-                        <div className="absolute inset-4 rounded-full border border-slate-700" />
-                        <div className="absolute inset-8 rounded-full border border-slate-700" />
+                        <div className="absolute inset-3 rounded-full border border-slate-700" />
+                        <div className="absolute inset-6 rounded-full border border-slate-700" />
                         <div className="absolute inset-0 flex items-center justify-center">
                           <div className="w-2 h-2 rounded-full bg-yellow-400 shadow-[0_0_8px_rgba(250,204,21,0.6)]" />
                         </div>
-                        {/* Direction cone */}
-                        <div className="absolute top-3 left-1/2 -translate-x-1/2 w-0 h-0 border-l-[12px] border-r-[12px] border-b-[24px] border-l-transparent border-r-transparent border-b-green-500/30" />
-                        <div className="absolute top-3 right-8 w-1.5 h-1.5 bg-slate-400 rounded-full" />
+                        <div className="absolute top-2 left-1/2 -translate-x-1/2 w-0 h-0 border-l-[10px] border-r-[10px] border-b-[20px] border-l-transparent border-r-transparent border-b-green-500/30" />
+                        <div className="absolute top-3 right-6 w-1.5 h-1.5 bg-slate-400 rounded-full" />
                         <p className="absolute bottom-1 left-1/2 -translate-x-1/2 text-[7px] text-slate-400">N</p>
                       </div>
-                      <div className="bg-blue-500 text-white font-bold text-[10px] px-3 py-3 rounded-lg text-center leading-tight shadow-lg shadow-blue-500/30">
+                      <div className="bg-blue-500 text-white font-bold text-[11px] px-4 py-4 rounded-lg text-center leading-tight shadow-xl shadow-blue-500/40 ring-2 ring-blue-300">
                         START<br/>AR
                       </div>
                     </div>
-                    <p className="text-slate-500 text-[7px] mb-3">- Displayed location/direction may vary slightly due to GPS/compass offset</p>
-
-                    <div className="text-[8px] space-y-[2px]">
+                    <p className="text-slate-500 text-[7px] mb-2">- Displayed location/direction may vary slightly due to GPS/compass offset</p>
+                    {/* Checkboxes - Grid/Gaze Ring 해제, Sample Monument만 체크 */}
+                    <div className="space-y-1 mb-2">
+                      <div className="flex items-center gap-2">
+                        <span className="text-orange-400 text-[9px]">&#x25CF;</span>
+                        <span className="text-orange-400 text-[8px] font-bold">Grid :</span>
+                        <div className="w-3.5 h-3.5 rounded border border-slate-500" />
+                        <span className="text-red-400 text-[7px] font-bold">← 해제</span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <span className="text-orange-400 text-[9px]">&#x25CF;</span>
+                        <span className="text-orange-400 text-[8px] font-bold">Gaze Ring :</span>
+                        <div className="w-3.5 h-3.5 rounded border border-slate-500" />
+                        <span className="text-red-400 text-[7px] font-bold">← 해제</span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <span className="text-[9px]">&#x25A0;</span>
+                        <span className="text-orange-400 text-[8px] font-bold">Sample Monument :</span>
+                        <div className="w-3.5 h-3.5 rounded bg-blue-500 flex items-center justify-center text-white text-[7px]">&#10003;</div>
+                        <span className="text-green-400 text-[7px] font-bold">← 체크</span>
+                      </div>
+                    </div>
+                    {/* GPS info */}
+                    <div className="text-[7px] space-y-[1px]">
                       <p className="text-red-400 font-bold">&#128205; Your Location</p>
                       <p className="text-slate-300">- Latitude: 37.692383</p>
                       <p className="text-slate-300">- Longitude: 126.756342</p>
@@ -382,76 +422,7 @@ export default function GuidePage() {
               <div className="bg-blue-50 rounded-xl p-4 text-sm text-blue-700 mt-6">
                 <b>Note:</b> GPS 수신까지 10~30초 정도 소요될 수 있습니다. 실외에서 하늘이 보이는 곳에서 시도하세요.
               </div>
-            </div>
-
-            {/* Step 2-2: 옵션 설정 + START AR */}
-            <div className="step-card bg-white rounded-2xl shadow-sm border border-slate-100 p-6 mb-6">
-              <div className="flex items-center gap-3 mb-4">
-                <span className="w-8 h-8 rounded-lg bg-emerald-100 text-emerald-700 flex items-center justify-center font-bold text-sm">2-2</span>
-                <h3 className="font-bold text-slate-800">옵션 설정 &amp; START AR</h3>
-              </div>
-              <p className="text-slate-600 mb-6">
-                Grid, Gaze Ring, Sample Monument <b>체크박스를 모두 활성화</b>한 후 <b className="text-blue-600">START AR</b> 버튼을 탭합니다.
-              </p>
-
-              <div className="flex justify-center">
-                <Phone caption="체크박스 활성화 → START AR 탭">
-                  <ChromeBar url="dns1.nin.earth/a?..." />
-                  <div className="bg-slate-950 min-h-[400px] px-4 pt-3">
-                    <p className="text-orange-400 font-bold text-[10px] mb-3">
-                      <span className="text-red-400">&#169;</span> Domain Space Monuments within ~200m
-                    </p>
-                    <div className="flex items-center gap-3 mb-3">
-                      <div className="relative w-28 h-28">
-                        <div className="absolute inset-0 rounded-full border border-slate-600" />
-                        <div className="absolute inset-4 rounded-full border border-slate-700" />
-                        <div className="absolute inset-8 rounded-full border border-slate-700" />
-                        <div className="absolute inset-0 flex items-center justify-center">
-                          <div className="w-2 h-2 rounded-full bg-yellow-400" />
-                        </div>
-                        {/* Wide cone */}
-                        <div className="absolute top-0 left-1/4 w-1/2 h-1/2 bg-green-500/20 rounded-t-full" style={{clipPath: "polygon(50% 100%, 0% 0%, 100% 0%)"}} />
-                        <p className="absolute bottom-1 right-3 text-[7px] text-slate-400">N</p>
-                      </div>
-                      <div className="bg-blue-500 text-white font-bold text-[11px] px-4 py-4 rounded-lg text-center leading-tight shadow-xl shadow-blue-500/40 ring-2 ring-blue-300">
-                        START<br/>AR
-                      </div>
-                    </div>
-
-                    {/* Checkboxes */}
-                    <div className="space-y-2 mb-4">
-                      <div className="flex items-center gap-2">
-                        <span className="text-orange-400 text-[10px]">&#x25CF;</span>
-                        <span className="text-orange-400 text-[9px] font-bold">Grid :</span>
-                        <div className="w-4 h-4 rounded bg-blue-500 flex items-center justify-center text-white text-[8px]">&#10003;</div>
-                        <div className="w-3 h-3 rounded border border-red-400 bg-red-500/30" />
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <span className="text-orange-400 text-[10px]">&#x25CF;</span>
-                        <span className="text-orange-400 text-[9px] font-bold">Gaze Ring :</span>
-                        <div className="w-4 h-4 rounded bg-blue-500 flex items-center justify-center text-white text-[8px]">&#10003;</div>
-                        <div className="w-3 h-3 rounded-full border border-slate-400" />
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <span className="text-[10px]">&#x25A0;</span>
-                        <span className="text-orange-400 text-[9px] font-bold">Sample Monument :</span>
-                        <div className="w-4 h-4 rounded bg-blue-500 flex items-center justify-center text-white text-[8px]">&#10003;</div>
-                        <div className="w-3 h-3 rounded bg-amber-600" />
-                      </div>
-                    </div>
-
-                    <div className="text-[8px] space-y-[2px]">
-                      <p className="text-red-400 font-bold">&#128205; Your Location</p>
-                      <p className="text-slate-300">- Latitude: 37.692408</p>
-                      <p className="text-slate-300">- Longitude: 126.756377</p>
-                      <p className="text-slate-300">- Altitude: 38.70</p>
-                      <p className="text-red-400 font-bold mt-1">&#10148; Distance to Monuments</p>
-                    </div>
-                  </div>
-                </Phone>
-              </div>
-
-              <div className="bg-amber-50 rounded-xl p-4 text-sm text-amber-700 mt-6">
+              <div className="bg-amber-50 rounded-xl p-4 text-sm text-amber-700 mt-3">
                 <b>Note:</b> 카메라 접근 권한을 요청하면 반드시 <b>&quot;허용&quot;</b>을 눌러주세요.
               </div>
             </div>
