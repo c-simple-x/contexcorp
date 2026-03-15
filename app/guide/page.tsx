@@ -285,6 +285,9 @@ export default function GuidePage() {
                 <span className="text-cyan-400 text-sm font-medium">Experience</span>
               </div>
               <p className="text-center text-sm text-blue-600 font-bold mt-3">↑ 첫 번째 파란색 큐브 = AR 페이지 접속</p>
+              <div className="bg-amber-50 rounded-xl p-4 text-sm text-amber-700 mt-4">
+                <b>Note:</b> AR 페이지 접속 시 <b>&quot;위치 정보 접근&quot;</b> 권한 요청 팝업이 나타납니다. 반드시 <b>&quot;허용&quot;</b>을 눌러주세요. 위치를 허용하지 않으면 AR 기능을 사용할 수 없습니다.
+              </div>
             </div>
           </section>
 
@@ -302,7 +305,7 @@ export default function GuidePage() {
                 <h3 className="font-bold text-slate-800">GPS 수신 대기 → 옵션 설정 → START AR</h3>
               </div>
               <p className="text-slate-600 mb-6">
-                AR 페이지에 접속하면 먼저 GPS 데이터를 수신합니다. 처음에 Grid, Gaze Ring이 체크되어 있으면 <b>모두 체크 해제</b>하고, <b>Sample Monument만 체크</b>한 후 <b className="text-blue-600">START AR</b>을 탭합니다.
+                AR 페이지에 접속하면 먼저 GPS 데이터를 수신합니다. 기본으로 Grid, Gaze Ring이 체크되어 있으므로 <b>모두 체크 해제</b>하고, <b>Sample Monument를 체크</b>한 후 <b className="text-blue-600">START AR</b>을 탭합니다.
               </p>
 
               <div className="flex flex-wrap justify-center gap-6">
@@ -329,8 +332,8 @@ export default function GuidePage() {
                       </div>
                     </div>
                     <p className="text-slate-500 text-[7px] mb-2">- Displayed location/direction may vary slightly due to GPS/compass offset</p>
-                    {/* Checkboxes - Grid/Gaze Ring 기본 체크됨 */}
-                    <div className="space-y-1 mb-2">
+                    {/* Checkboxes - Grid/Gaze Ring 기본 체크됨, Sample Monument 해제 */}
+                    <div className="space-y-1 mb-2 opacity-30">
                       <div className="flex items-center gap-2">
                         <span className="text-orange-400 text-[9px]">&#x25CF;</span>
                         <span className="text-orange-400 text-[8px] font-bold">Grid :</span>
@@ -347,15 +350,17 @@ export default function GuidePage() {
                         <div className="w-3.5 h-3.5 rounded border border-slate-500" />
                       </div>
                     </div>
-                    {/* Loading message */}
-                    <div className="bg-yellow-900/30 rounded-lg p-2 mb-2">
-                      <p className="text-yellow-300 text-[9px] font-bold text-center">⏳ Receiving GPS, Compass data...</p>
-                    </div>
-                    <div className="text-[8px] space-y-[2px]">
-                      <p className="text-red-400 font-bold">&#128205; Your Location</p>
-                      <p className="text-slate-500">- Latitude: -</p>
-                      <p className="text-slate-500">- Longitude: -</p>
-                      <p className="text-slate-500">- Altitude: -</p>
+                    {/* GPS 수신 중 오버레이 - 아래 내용을 덮음 */}
+                    <div className="relative">
+                      <div className="absolute inset-0 bg-black/70 rounded-lg flex items-center justify-center z-10">
+                        <p className="text-yellow-300 text-[10px] font-bold text-center px-2">⏳ Receiving GPS, Compass<br/>data... Please wait.</p>
+                      </div>
+                      <div className="text-[8px] space-y-[2px] opacity-20 py-3">
+                        <p className="text-red-400 font-bold">&#128205; Your Location</p>
+                        <p className="text-slate-500">- Latitude: -</p>
+                        <p className="text-slate-500">- Longitude: -</p>
+                        <p className="text-slate-500">- Altitude: -</p>
+                      </div>
                     </div>
                   </div>
                 </Phone>
@@ -439,44 +444,69 @@ export default function GuidePage() {
 
               <div className="flex justify-center">
                 <Phone caption="실제 거리 위에 3D 광고물 표시">
-                  <div className="relative min-h-[460px] bg-gradient-to-b from-sky-300 via-sky-200 to-slate-400">
-                    {/* Sky + wires */}
-                    <div className="absolute top-8 left-0 right-0 h-[1px] bg-slate-500/30" />
-                    <div className="absolute top-12 left-0 right-0 h-[1px] bg-slate-500/20" />
+                  <div className="relative min-h-[460px] bg-gradient-to-b from-sky-400 via-sky-300 to-slate-400 overflow-hidden">
+                    {/* Sky + power lines */}
+                    <div className="absolute top-6 left-0 right-0 h-[1px] bg-slate-600/40" />
+                    <div className="absolute top-9 left-0 right-0 h-[1px] bg-slate-600/30" />
+                    <div className="absolute top-12 left-0 right-0 h-[1px] bg-slate-600/20" />
                     {/* Electric pole */}
-                    <div className="absolute left-6 top-16 w-[3px] h-[200px] bg-slate-600/70" />
+                    <div className="absolute left-5 top-0 w-[3px] h-[280px] bg-slate-700/60" />
+                    <div className="absolute left-3 top-12 w-[7px] h-[2px] bg-slate-600/60" />
 
-                    {/* ★ 3D Ad - National Geographic */}
-                    <div className="absolute top-14 left-1/2 -translate-x-1/2 transform rotate-[-3deg]">
-                      <div className="bg-slate-900 border border-yellow-500 rounded-md px-3 py-2 shadow-2xl" style={{transform: "perspective(400px) rotateY(-10deg) rotateX(5deg)"}}>
-                        <div className="flex items-center gap-1 mb-[2px]">
-                          <div className="w-2 h-2 border border-yellow-400" />
-                          <p className="text-[6px] text-white tracking-wider">NATIONAL GEOGRAPHIC</p>
+                    {/* ★ 3D Cube Ad - National Geographic (입체 큐브) */}
+                    <div className="absolute top-10 left-1/2 -translate-x-[45%]" style={{perspective: "300px"}}>
+                      <div style={{transform: "rotateY(-15deg) rotateX(8deg)", transformStyle: "preserve-3d"}}>
+                        {/* 정면 */}
+                        <div className="relative bg-slate-900 border-2 border-yellow-500/80 rounded px-4 py-3 shadow-[0_8px_32px_rgba(0,0,0,0.5)]">
+                          <div className="flex items-center gap-1 mb-1">
+                            <div className="w-3 h-3 border border-yellow-400 flex items-center justify-center text-[4px] text-yellow-400">&#9634;</div>
+                            <p className="text-[6px] text-white tracking-[0.15em] font-medium">NATIONAL GEOGRAPHIC</p>
+                          </div>
+                          <p className="text-white text-[10px] font-bold leading-tight">일산덕이점</p>
+                          <p className="text-yellow-400 text-[16px] font-black leading-none mt-1">기획전</p>
+                          <div className="flex items-baseline gap-1 mt-1">
+                            <span className="bg-red-600 text-white text-[5px] font-bold px-1 rounded">최대</span>
+                            <span className="text-yellow-400 text-[22px] font-black leading-none">50%</span>
+                            <span className="text-white text-[10px] font-bold">할인</span>
+                          </div>
+                          {/* 입체 그림자 효과 */}
+                          <div className="absolute -bottom-1 -right-1 w-full h-full bg-yellow-900/20 rounded -z-10" style={{transform: "translateZ(-4px) translateX(3px) translateY(3px)"}} />
                         </div>
-                        <p className="text-white text-[8px] font-bold">일산덕이점</p>
-                        <p className="text-yellow-400 text-[12px] font-black">기획전</p>
-                        <div className="flex items-baseline gap-1">
-                          <span className="text-red-500 text-[6px] font-bold">최대</span>
-                          <span className="text-yellow-400 text-[16px] font-black">50%</span>
-                          <span className="text-white text-[8px] font-bold">할인</span>
+                        {/* 우측면 (3D 느낌) */}
+                        <div className="absolute top-0 -right-3 w-3 h-full bg-gradient-to-r from-yellow-900/60 to-yellow-900/20 rounded-r origin-left" style={{transform: "rotateY(70deg)"}} />
+                        {/* 하단면 */}
+                        <div className="absolute -bottom-2 left-0 w-full h-2 bg-gradient-to-b from-slate-900/40 to-transparent origin-top" style={{transform: "rotateX(-60deg)"}} />
+                      </div>
+                    </div>
+
+                    {/* ★ 3D Ad - NIN.Earth (입체 박스) */}
+                    <div className="absolute top-52 left-1/2 -translate-x-[40%]" style={{perspective: "250px"}}>
+                      <div style={{transform: "rotateY(-12deg) rotateX(5deg)", transformStyle: "preserve-3d"}}>
+                        <div className="relative bg-white rounded px-4 py-2 shadow-[0_6px_24px_rgba(0,0,0,0.4)] border border-slate-200">
+                          <p className="text-orange-500 text-[12px] font-extrabold tracking-wide">NIN.Earth</p>
+                          <p className="text-[7px] text-slate-500 font-medium">
+                            <b className="text-blue-600">N</b>ext <b className="text-blue-600">I</b>nter<b className="text-blue-600">N</b>et{" "}
+                            <b className="text-green-600">o</b>n <b className="text-blue-600">E</b>arth
+                          </p>
+                          {/* 우측면 */}
+                          <div className="absolute top-0 -right-2 w-2 h-full bg-gradient-to-r from-slate-200 to-slate-100 rounded-r origin-left" style={{transform: "rotateY(70deg)"}} />
                         </div>
                       </div>
                     </div>
 
-                    {/* ★ 3D Ad - NIN.Earth */}
-                    <div className="absolute top-48 left-1/2 -translate-x-1/2 transform rotate-[2deg]">
-                      <div className="bg-white rounded-md px-3 py-2 shadow-2xl" style={{transform: "perspective(400px) rotateY(5deg) rotateX(-3deg)"}}>
-                        <p className="text-orange-500 text-[10px] font-extrabold">NIN.Earth</p>
-                        <p className="text-[6px] text-slate-600"><b className="text-blue-600">N</b>ext <b className="text-blue-600">I</b>nter<b className="text-blue-600">N</b>et <b className="text-green-600">o</b>n <b className="text-blue-600">E</b>arth</p>
-                      </div>
-                    </div>
-
-                    {/* Street level */}
-                    <div className="absolute bottom-0 left-0 right-0 h-28 bg-gradient-to-t from-slate-500 to-slate-400/80" />
-                    <div className="absolute bottom-8 left-2 right-2 h-[1px] bg-slate-600/30" />
+                    {/* Street / buildings */}
+                    <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-slate-600 via-slate-500 to-slate-400/60" />
+                    {/* Road line */}
+                    <div className="absolute bottom-12 left-0 right-0 h-[1px] bg-slate-400/40" />
+                    {/* Building silhouettes */}
+                    <div className="absolute bottom-24 right-0 w-16 h-20 bg-slate-500/40 rounded-t" />
+                    <div className="absolute bottom-24 right-14 w-10 h-14 bg-slate-500/30 rounded-t" />
+                    {/* Street lamp */}
+                    <div className="absolute right-8 bottom-24 w-[2px] h-16 bg-slate-500/50" />
+                    <div className="absolute right-5 bottom-[156px] w-8 h-[2px] bg-slate-500/40" />
 
                     {/* X close button */}
-                    <div className="absolute top-3 right-4 w-6 h-6 rounded-full bg-black/30 flex items-center justify-center text-white text-[10px]">&times;</div>
+                    <div className="absolute top-3 right-4 w-6 h-6 rounded-full bg-black/40 flex items-center justify-center text-white text-[12px] font-bold backdrop-blur-sm">&times;</div>
                   </div>
                 </Phone>
               </div>
