@@ -77,27 +77,54 @@ export default function GuidePage() {
         inserted.push(br);
       });
 
-      const worker = html2pdf()
-        .set({
-          margin: [10, 8, 10, 8],
-          filename: "CONTEX_AR가이드.pdf",
-          image: { type: "jpeg", quality: 0.85 },
-          html2canvas: { scale: 2, useCORS: true, scrollY: 0, windowWidth: 800 },
-          jsPDF: { unit: "mm", format: "a4", orientation: "portrait" },
-          pagebreak: { mode: ["legacy"], avoid: [".step-card", ".bg-amber-50"] },
-        })
-        .from(element);
+      // 각 step-card 앞에도 페이지 브레이크 삽입 (각 섹션의 첫 번째 제외)
+      sections.forEach((sec) => {
+        const cards = sec.querySelectorAll<HTMLElement>(".step-card");
+        cards.forEach((card, i) => {
+          if (i === 0) return;
+          const br = document.createElement("div");
+          br.className = "html2pdf__page-break";
+          card.parentNode?.insertBefore(br, card);
+          inserted.push(br);
+        });
+      });
 
-      // blob → 새 탭에서 PDF 뷰어로 열기
-      const blob = await worker.outputPdf("blob");
-      const blobUrl = URL.createObjectURL(new Blob([blob], { type: "application/pdf" }));
-      window.open(blobUrl, "_blank");
-      setTimeout(() => URL.revokeObjectURL(blobUrl), 60000);
+      const pdfBlob: Blob = await new Promise((resolve, reject) => {
+        html2pdf()
+          .set({
+            margin: [10, 8, 10, 8],
+            filename: "CONTEX_AR가이드.pdf",
+            image: { type: "jpeg", quality: 0.85 },
+            html2canvas: { scale: 2, useCORS: true, scrollY: 0, windowWidth: 800 },
+            jsPDF: { unit: "mm", format: "a4", orientation: "portrait" },
+            pagebreak: { mode: ["legacy"] },
+          })
+          .from(element)
+          .toPdf()
+          .output("blob")
+          .then(resolve)
+          .catch(reject);
+      });
+
+      // 인앱 브라우저: navigator.share로 공유 시트 열기
+      const ua = navigator.userAgent;
+      const isInApp = /KAKAOTALK|NAVER|Line|Instagram|FBAN|FBAV/i.test(ua);
+      const file = new File([pdfBlob], "CONTEX_AR가이드.pdf", { type: "application/pdf" });
+
+      if (isInApp && navigator.canShare?.({ files: [file] })) {
+        await navigator.share({ files: [file], title: "AR 광고 확인 가이드" });
+      } else {
+        // 일반 브라우저: 새 탭에서 PDF 뷰어로 열기
+        const blobUrl = URL.createObjectURL(pdfBlob);
+        window.open(blobUrl, "_blank");
+        setTimeout(() => URL.revokeObjectURL(blobUrl), 60000);
+      }
     } catch (e) {
+      // share 취소는 무시
+      if (e instanceof Error && e.name === "AbortError") return;
       console.error("PDF 생성 실패:", e);
       alert("PDF 다운로드에 실패했습니다. 다시 시도해주세요.");
     } finally {
-      // 임시 삽입한 페이지 브레이크 제거 + no-print 복원
       inserted.forEach((br) => br.remove());
       element.querySelectorAll<HTMLElement>(".no-print").forEach((el) => (el.style.display = ""));
       setDownloading(false);
