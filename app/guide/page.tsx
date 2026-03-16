@@ -56,43 +56,40 @@ export default function GuidePage() {
     if (!contentRef.current || downloading) return;
     setDownloading(true);
 
+    const element = contentRef.current;
+    const inserted: HTMLElement[] = [];
+
     try {
       const html2pdf = (await import("html2pdf.js")).default;
 
-      // PDF용 클론 생성 — no-print 요소 제거, 페이지 브레이크 삽입
-      const clone = contentRef.current.cloneNode(true) as HTMLElement;
-      clone.querySelectorAll(".no-print").forEach((el) => el.remove());
+      // no-print 요소 임시 숨김
+      const noPrintEls = element.querySelectorAll<HTMLElement>(".no-print");
+      noPrintEls.forEach((el) => (el.style.display = "none"));
 
       // 각 section 앞에 페이지 브레이크 삽입 (첫 번째 제외)
-      const sections = clone.querySelectorAll(":scope > section");
+      const sections = element.querySelectorAll<HTMLElement>(":scope > section");
       sections.forEach((sec, i) => {
         if (i === 0) return;
+        if (sec.classList.contains("no-print")) return;
         const br = document.createElement("div");
         br.className = "html2pdf__page-break";
         sec.parentNode?.insertBefore(br, sec);
+        inserted.push(br);
       });
-
-      // 화면 밖에 임시 배치
-      clone.style.position = "absolute";
-      clone.style.left = "-9999px";
-      clone.style.width = "800px";
-      document.body.appendChild(clone);
 
       const worker = html2pdf()
         .set({
           margin: [10, 8, 10, 8],
           filename: "CONTEX_AR가이드.pdf",
           image: { type: "jpeg", quality: 0.85 },
-          html2canvas: { scale: 2, useCORS: true, scrollY: 0, width: 800 },
+          html2canvas: { scale: 2, useCORS: true, scrollY: 0, windowWidth: 800 },
           jsPDF: { unit: "mm", format: "a4", orientation: "portrait" },
           pagebreak: { mode: ["legacy"], avoid: [".step-card", ".bg-amber-50"] },
         })
-        .from(clone);
+        .from(element);
 
-      // blob으로 생성 후 새 탭에서 열기 (다운로드 확인 가능)
+      // blob → 새 탭에서 PDF 뷰어로 열기
       const blob = await worker.outputPdf("blob");
-      document.body.removeChild(clone);
-
       const blobUrl = URL.createObjectURL(new Blob([blob], { type: "application/pdf" }));
       window.open(blobUrl, "_blank");
       setTimeout(() => URL.revokeObjectURL(blobUrl), 60000);
@@ -100,6 +97,9 @@ export default function GuidePage() {
       console.error("PDF 생성 실패:", e);
       alert("PDF 다운로드에 실패했습니다. 다시 시도해주세요.");
     } finally {
+      // 임시 삽입한 페이지 브레이크 제거 + no-print 복원
+      inserted.forEach((br) => br.remove());
+      element.querySelectorAll<HTMLElement>(".no-print").forEach((el) => (el.style.display = ""));
       setDownloading(false);
     }
   }, [downloading]);
