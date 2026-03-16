@@ -1,5 +1,7 @@
 "use client";
 
+import { useCallback, useRef, useState } from "react";
+
 /* ── Phone mockup wrapper ── */
 function Phone({ children, caption }: { children: React.ReactNode; caption?: string }) {
   return (
@@ -47,6 +49,44 @@ function ChromeBar({ url }: { url: string }) {
 }
 
 export default function GuidePage() {
+  const contentRef = useRef<HTMLDivElement>(null);
+  const [downloading, setDownloading] = useState(false);
+
+  const isMobile = useCallback(() => {
+    if (typeof window === "undefined") return false;
+    return /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+  }, []);
+
+  const handleDownloadPdf = useCallback(async () => {
+    if (!isMobile()) {
+      window.print();
+      return;
+    }
+
+    if (!contentRef.current || downloading) return;
+    setDownloading(true);
+
+    try {
+      const html2pdf = (await import("html2pdf.js")).default;
+      await html2pdf()
+        .set({
+          margin: [10, 5, 10, 5],
+          filename: "CONTEX_AR가이드.pdf",
+          image: { type: "jpeg", quality: 0.92 },
+          html2canvas: { scale: 2, useCORS: true, scrollY: 0 },
+          jsPDF: { unit: "mm", format: "a4", orientation: "portrait" },
+          pagebreak: { mode: ["css", "legacy"], avoid: ".step-card" },
+        })
+        .from(contentRef.current)
+        .save();
+    } catch {
+      // Fallback to window.print() if html2pdf fails
+      window.print();
+    } finally {
+      setDownloading(false);
+    }
+  }, [downloading, isMobile]);
+
   return (
     <>
       <style>{`
@@ -70,16 +110,21 @@ export default function GuidePage() {
               CONTEX<span className="text-blue-600">Corp.</span>
             </a>
             <button
-              onClick={() => window.print()}
-              className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition text-sm font-medium"
+              onClick={handleDownloadPdf}
+              disabled={downloading}
+              className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition text-sm font-medium disabled:opacity-50"
             >
-              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-              PDF 다운로드
+              {downloading ? (
+                <svg className="animate-spin" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M21 12a9 9 0 1 1-6.219-8.56"/></svg>
+              ) : (
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+              )}
+              {downloading ? "다운로드 중..." : "PDF 다운로드"}
             </button>
           </div>
         </header>
 
-        <main className="guide-container max-w-4xl mx-auto px-6 py-12">
+        <main ref={contentRef} className="guide-container max-w-4xl mx-auto px-6 py-12">
           {/* Title */}
           <div className="text-center mb-12">
             <div className="inline-block px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-xs font-semibold mb-4">
