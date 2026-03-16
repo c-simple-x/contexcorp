@@ -52,14 +52,24 @@ export default function GuidePage() {
   const contentRef = useRef<HTMLDivElement>(null);
   const [downloading, setDownloading] = useState(false);
 
-  const isMobile = useCallback(() => {
+  const isInAppBrowser = useCallback(() => {
     if (typeof window === "undefined") return false;
-    return /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+    const ua = navigator.userAgent;
+    return /KAKAOTALK|NAVER|Line|Instagram|FBAN|FBAV/i.test(ua);
   }, []);
 
   const handleDownloadPdf = useCallback(async () => {
-    if (!isMobile()) {
-      window.print();
+    // 카카오톡 등 인앱 브라우저: 외부 브라우저로 열기
+    if (isInAppBrowser()) {
+      const url = window.location.href;
+      // Android 카카오톡 인앱브라우저 외부 열기
+      if (/android/i.test(navigator.userAgent)) {
+        window.location.href = `intent://${url.replace(/https?:\/\//, "")}#Intent;scheme=https;package=com.android.chrome;end`;
+        return;
+      }
+      // iOS: Safari로 열기 시도
+      window.open(url, "_blank");
+      alert("외부 브라우저에서 열린 페이지에서 PDF 다운로드를 눌러주세요.");
       return;
     }
 
@@ -79,13 +89,13 @@ export default function GuidePage() {
         })
         .from(contentRef.current)
         .save();
-    } catch {
-      // Fallback to window.print() if html2pdf fails
-      window.print();
+    } catch (e) {
+      console.error("PDF 생성 실패:", e);
+      alert("PDF 다운로드에 실패했습니다. 다시 시도해주세요.");
     } finally {
       setDownloading(false);
     }
-  }, [downloading, isMobile]);
+  }, [downloading, isInAppBrowser]);
 
   return (
     <>
