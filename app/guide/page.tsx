@@ -57,7 +57,6 @@ export default function GuidePage() {
     setDownloading(true);
 
     const element = contentRef.current;
-    const inserted: HTMLElement[] = [];
 
     try {
       const html2pdf = (await import("html2pdf.js")).default;
@@ -65,29 +64,6 @@ export default function GuidePage() {
       // no-print 요소 임시 숨김
       const noPrintEls = element.querySelectorAll<HTMLElement>(".no-print");
       noPrintEls.forEach((el) => (el.style.display = "none"));
-
-      // 각 section 앞에 페이지 브레이크 삽입 (첫 번째 제외)
-      const sections = element.querySelectorAll<HTMLElement>(":scope > section");
-      sections.forEach((sec, i) => {
-        if (i === 0) return;
-        if (sec.classList.contains("no-print")) return;
-        const br = document.createElement("div");
-        br.className = "html2pdf__page-break";
-        sec.parentNode?.insertBefore(br, sec);
-        inserted.push(br);
-      });
-
-      // 각 step-card 앞에도 페이지 브레이크 삽입 (각 섹션의 첫 번째 제외)
-      sections.forEach((sec) => {
-        const cards = sec.querySelectorAll<HTMLElement>(".step-card");
-        cards.forEach((card, i) => {
-          if (i === 0) return;
-          const br = document.createElement("div");
-          br.className = "html2pdf__page-break";
-          card.parentNode?.insertBefore(br, card);
-          inserted.push(br);
-        });
-      });
 
       const pdfBlob: Blob = await new Promise((resolve, reject) => {
         html2pdf()
@@ -97,7 +73,7 @@ export default function GuidePage() {
             image: { type: "jpeg", quality: 0.85 },
             html2canvas: { scale: 2, useCORS: true, scrollY: 0, windowWidth: 800 },
             jsPDF: { unit: "mm", format: "a4", orientation: "portrait" },
-            pagebreak: { mode: ["legacy"] },
+            pagebreak: { mode: ["avoid-all", "css"] },
           })
           .from(element)
           .toPdf()
@@ -125,7 +101,6 @@ export default function GuidePage() {
       console.error("PDF 생성 실패:", e);
       alert("PDF 다운로드에 실패했습니다. 다시 시도해주세요.");
     } finally {
-      inserted.forEach((br) => br.remove());
       element.querySelectorAll<HTMLElement>(".no-print").forEach((el) => (el.style.display = ""));
       setDownloading(false);
     }
