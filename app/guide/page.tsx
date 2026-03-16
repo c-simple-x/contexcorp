@@ -52,60 +52,74 @@ export default function GuidePage() {
   const contentRef = useRef<HTMLDivElement>(null);
   const [downloading, setDownloading] = useState(false);
 
-  const isInAppBrowser = useCallback(() => {
-    if (typeof window === "undefined") return false;
-    const ua = navigator.userAgent;
-    return /KAKAOTALK|NAVER|Line|Instagram|FBAN|FBAV/i.test(ua);
-  }, []);
-
   const handleDownloadPdf = useCallback(async () => {
-    // 카카오톡 등 인앱 브라우저: 외부 브라우저로 열기
-    if (isInAppBrowser()) {
-      const url = window.location.href;
-      // Android 카카오톡 인앱브라우저 외부 열기
-      if (/android/i.test(navigator.userAgent)) {
-        window.location.href = `intent://${url.replace(/https?:\/\//, "")}#Intent;scheme=https;package=com.android.chrome;end`;
-        return;
-      }
-      // iOS: Safari로 열기 시도
-      window.open(url, "_blank");
-      alert("외부 브라우저에서 열린 페이지에서 PDF 다운로드를 눌러주세요.");
-      return;
-    }
-
     if (!contentRef.current || downloading) return;
     setDownloading(true);
 
     try {
       const html2pdf = (await import("html2pdf.js")).default;
-      await html2pdf()
+      const element = contentRef.current;
+
+      // 인앱 브라우저(카카오톡 등)에서는 blob으로 변환 후 새 탭에서 열기
+      const ua = navigator.userAgent;
+      const isInApp = /KAKAOTALK|NAVER|Line|Instagram|FBAN|FBAV/i.test(ua);
+
+      const worker = html2pdf()
         .set({
-          margin: [10, 5, 10, 5],
+          margin: [10, 8, 10, 8],
           filename: "CONTEX_AR가이드.pdf",
-          image: { type: "jpeg", quality: 0.92 },
-          html2canvas: { scale: 2, useCORS: true, scrollY: 0 },
+          image: { type: "jpeg", quality: 0.85 },
+          html2canvas: { scale: 2, useCORS: true, scrollY: 0, windowWidth: 800 },
           jsPDF: { unit: "mm", format: "a4", orientation: "portrait" },
-          pagebreak: { mode: ["css", "legacy"], avoid: ".step-card" },
+          pagebreak: { mode: ["css", "legacy"], avoid: [".step-card", ".bg-amber-50", ".flex.items-center.gap-3.mb-8"] },
         })
-        .from(contentRef.current)
-        .save();
+        .from(element);
+
+      if (isInApp) {
+        const blob = await worker.outputPdf("blob");
+        const blobUrl = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = blobUrl;
+        a.download = "CONTEX_AR가이드.pdf";
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        setTimeout(() => URL.revokeObjectURL(blobUrl), 5000);
+      } else {
+        await worker.save();
+      }
     } catch (e) {
       console.error("PDF 생성 실패:", e);
       alert("PDF 다운로드에 실패했습니다. 다시 시도해주세요.");
     } finally {
       setDownloading(false);
     }
-  }, [downloading, isInAppBrowser]);
+  }, [downloading]);
 
   return (
     <>
       <style>{`
+        .step-card {
+          page-break-inside: avoid;
+          break-inside: avoid;
+        }
+        .bg-amber-50 {
+          page-break-inside: avoid;
+          break-inside: avoid;
+        }
+        section > .flex.items-center.gap-3.mb-8 {
+          page-break-after: avoid;
+          break-after: avoid;
+        }
+        .print-break {
+          page-break-before: always;
+          break-before: page;
+        }
         @media print {
           .no-print { display: none !important; }
-          .print-break { page-break-before: always; }
           body { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
           .guide-container { max-width: 100% !important; padding: 0 !important; }
-          .step-card { break-inside: avoid; box-shadow: none !important; border: 1px solid #e2e8f0 !important; }
+          .step-card { box-shadow: none !important; border: 1px solid #e2e8f0 !important; }
           video { display: none !important; }
           .ar-3d-scene { display: none !important; }
           .ar-3d-print { display: flex !important; }
@@ -122,14 +136,19 @@ export default function GuidePage() {
             <button
               onClick={handleDownloadPdf}
               disabled={downloading}
-              className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition text-sm font-medium disabled:opacity-50"
+              className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition text-sm font-medium disabled:opacity-50 whitespace-nowrap shrink-0"
             >
               {downloading ? (
-                <svg className="animate-spin" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M21 12a9 9 0 1 1-6.219-8.56"/></svg>
+                <>
+                  <svg className="animate-spin shrink-0" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M21 12a9 9 0 1 1-6.219-8.56"/></svg>
+                  <span>PDF 저장 중</span>
+                </>
               ) : (
-                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                <>
+                  <svg className="shrink-0" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                  <span>PDF 다운로드</span>
+                </>
               )}
-              {downloading ? "다운로드 중..." : "PDF 다운로드"}
             </button>
           </div>
         </header>
