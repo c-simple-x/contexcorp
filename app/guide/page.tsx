@@ -58,36 +58,44 @@ export default function GuidePage() {
 
     try {
       const html2pdf = (await import("html2pdf.js")).default;
-      const element = contentRef.current;
 
-      // 인앱 브라우저(카카오톡 등)에서는 blob으로 변환 후 새 탭에서 열기
-      const ua = navigator.userAgent;
-      const isInApp = /KAKAOTALK|NAVER|Line|Instagram|FBAN|FBAV/i.test(ua);
+      // PDF용 클론 생성 — no-print 요소 제거, 페이지 브레이크 삽입
+      const clone = contentRef.current.cloneNode(true) as HTMLElement;
+      clone.querySelectorAll(".no-print").forEach((el) => el.remove());
+
+      // 각 section 앞에 페이지 브레이크 삽입 (첫 번째 제외)
+      const sections = clone.querySelectorAll(":scope > section");
+      sections.forEach((sec, i) => {
+        if (i === 0) return;
+        const br = document.createElement("div");
+        br.className = "html2pdf__page-break";
+        sec.parentNode?.insertBefore(br, sec);
+      });
+
+      // 화면 밖에 임시 배치
+      clone.style.position = "absolute";
+      clone.style.left = "-9999px";
+      clone.style.width = "800px";
+      document.body.appendChild(clone);
 
       const worker = html2pdf()
         .set({
           margin: [10, 8, 10, 8],
           filename: "CONTEX_AR가이드.pdf",
           image: { type: "jpeg", quality: 0.85 },
-          html2canvas: { scale: 2, useCORS: true, scrollY: 0, windowWidth: 800 },
+          html2canvas: { scale: 2, useCORS: true, scrollY: 0, width: 800 },
           jsPDF: { unit: "mm", format: "a4", orientation: "portrait" },
-          pagebreak: { mode: ["css", "legacy"], avoid: [".step-card", ".bg-amber-50", ".flex.items-center.gap-3.mb-8"] },
+          pagebreak: { mode: ["legacy"], avoid: [".step-card", ".bg-amber-50"] },
         })
-        .from(element);
+        .from(clone);
 
-      if (isInApp) {
-        const blob = await worker.outputPdf("blob");
-        const blobUrl = URL.createObjectURL(blob);
-        const a = document.createElement("a");
-        a.href = blobUrl;
-        a.download = "CONTEX_AR가이드.pdf";
-        document.body.appendChild(a);
-        a.click();
-        document.body.removeChild(a);
-        setTimeout(() => URL.revokeObjectURL(blobUrl), 5000);
-      } else {
-        await worker.save();
-      }
+      // blob으로 생성 후 새 탭에서 열기 (다운로드 확인 가능)
+      const blob = await worker.outputPdf("blob");
+      document.body.removeChild(clone);
+
+      const blobUrl = URL.createObjectURL(new Blob([blob], { type: "application/pdf" }));
+      window.open(blobUrl, "_blank");
+      setTimeout(() => URL.revokeObjectURL(blobUrl), 60000);
     } catch (e) {
       console.error("PDF 생성 실패:", e);
       alert("PDF 다운로드에 실패했습니다. 다시 시도해주세요.");
@@ -99,27 +107,12 @@ export default function GuidePage() {
   return (
     <>
       <style>{`
-        .step-card {
-          page-break-inside: avoid;
-          break-inside: avoid;
-        }
-        .bg-amber-50 {
-          page-break-inside: avoid;
-          break-inside: avoid;
-        }
-        section > .flex.items-center.gap-3.mb-8 {
-          page-break-after: avoid;
-          break-after: avoid;
-        }
-        .print-break {
-          page-break-before: always;
-          break-before: page;
-        }
         @media print {
           .no-print { display: none !important; }
+          .print-break { page-break-before: always; }
           body { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
           .guide-container { max-width: 100% !important; padding: 0 !important; }
-          .step-card { box-shadow: none !important; border: 1px solid #e2e8f0 !important; }
+          .step-card { break-inside: avoid; box-shadow: none !important; border: 1px solid #e2e8f0 !important; }
           video { display: none !important; }
           .ar-3d-scene { display: none !important; }
           .ar-3d-print { display: flex !important; }
@@ -139,16 +132,11 @@ export default function GuidePage() {
               className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition text-sm font-medium disabled:opacity-50 whitespace-nowrap shrink-0"
             >
               {downloading ? (
-                <>
-                  <svg className="animate-spin shrink-0" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M21 12a9 9 0 1 1-6.219-8.56"/></svg>
-                  <span>PDF 저장 중</span>
-                </>
+                <svg className="animate-spin" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M21 12a9 9 0 1 1-6.219-8.56"/></svg>
               ) : (
-                <>
-                  <svg className="shrink-0" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-                  <span>PDF 다운로드</span>
-                </>
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
               )}
+              PDF 다운로드
             </button>
           </div>
         </header>
