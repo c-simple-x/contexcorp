@@ -77,7 +77,7 @@ export default function GuidePage() {
         inserted.push(br);
       });
 
-      const worker = html2pdf()
+      await html2pdf()
         .set({
           margin: [10, 8, 10, 8],
           filename: "CONTEX_AR가이드.pdf",
@@ -86,22 +86,8 @@ export default function GuidePage() {
           jsPDF: { unit: "mm", format: "a4", orientation: "portrait" },
           pagebreak: { mode: ["legacy"], avoid: [".step-card", ".bg-amber-50"] },
         })
-        .from(element);
-
-      // blob → PDF 열기
-      const blob = await worker.outputPdf("blob");
-      const blobUrl = URL.createObjectURL(new Blob([blob], { type: "application/pdf" }));
-
-      // 인앱 브라우저(카카오톡 등)에서는 window.open이 차단되므로 현재 탭에서 열기
-      const ua = navigator.userAgent;
-      const isInApp = /KAKAOTALK|NAVER|Line|Instagram|FBAN|FBAV/i.test(ua);
-
-      if (isInApp) {
-        location.href = blobUrl;
-      } else {
-        window.open(blobUrl, "_blank");
-        setTimeout(() => URL.revokeObjectURL(blobUrl), 60000);
-      }
+        .from(element)
+        .save();
     } catch (e) {
       console.error("PDF 생성 실패:", e);
       alert("PDF 다운로드에 실패했습니다. 다시 시도해주세요.");
