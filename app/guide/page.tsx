@@ -88,11 +88,20 @@ export default function GuidePage() {
         })
         .from(element);
 
-      // blob → 새 탭에서 PDF 뷰어로 열기
+      // blob → PDF 열기
       const blob = await worker.outputPdf("blob");
       const blobUrl = URL.createObjectURL(new Blob([blob], { type: "application/pdf" }));
-      window.open(blobUrl, "_blank");
-      setTimeout(() => URL.revokeObjectURL(blobUrl), 60000);
+
+      // 인앱 브라우저(카카오톡 등)에서는 window.open이 차단되므로 현재 탭에서 열기
+      const ua = navigator.userAgent;
+      const isInApp = /KAKAOTALK|NAVER|Line|Instagram|FBAN|FBAV/i.test(ua);
+
+      if (isInApp) {
+        location.href = blobUrl;
+      } else {
+        window.open(blobUrl, "_blank");
+        setTimeout(() => URL.revokeObjectURL(blobUrl), 60000);
+      }
     } catch (e) {
       console.error("PDF 생성 실패:", e);
       alert("PDF 다운로드에 실패했습니다. 다시 시도해주세요.");
