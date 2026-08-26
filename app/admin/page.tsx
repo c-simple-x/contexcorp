@@ -38,25 +38,33 @@ export default function AdminPage() {
   } = useAdminContracts();
 
   async function loadTokens(s: string) {
-    const res = await fetch("/api/admin/tokens", {
-      headers: { "x-admin-secret": s },
-    });
-    if (res.status === 401) {
-      setAuthError("비밀번호가 틀렸습니다.");
-      setSecret("");
-      sessionStorage.removeItem("admin_secret");
-      setChecking(false);
-      return;
-    }
-    const data = await res.json();
-    if (data.ok) {
+    try {
+      const res = await fetch("/api/admin/tokens", {
+        headers: { "x-admin-secret": s },
+      });
+      if (res.status === 401) {
+        setAuthError("비밀번호가 틀렸습니다.");
+        setSecret("");
+        sessionStorage.removeItem("admin_secret");
+        return;
+      }
+      const data = await res.json().catch(() => null);
+      if (!res.ok || !data?.ok) {
+        setAuthError(
+          `서버 오류로 로그인에 실패했습니다. (${res.status}) 잠시 후 다시 시도해 주세요.`
+        );
+        return;
+      }
       setTokens(data.tokens);
       setAuthed(true);
       setAuthError("");
       load(s);
       window.dispatchEvent(new Event("adminAuthChange"));
+    } catch {
+      setAuthError("서버에 연결할 수 없습니다. 네트워크 상태를 확인해 주세요.");
+    } finally {
+      setChecking(false);
     }
-    setChecking(false);
   }
 
   function handleLogin(e: React.FormEvent) {
