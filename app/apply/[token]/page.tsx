@@ -6,6 +6,13 @@ import StepProducts, { SelectedProducts } from "./StepProducts";
 import StepPreview from "./StepPreview";
 import StepSign from "./StepSign";
 import StepComplete from "./StepComplete";
+import { Catalog } from "@/lib/products";
+
+const SUBMIT_ERRORS: Record<string, string> = {
+  catalog_unavailable: "상품 정보를 불러오지 못했습니다. 잠시 후 다시 시도해 주세요.",
+  location_unavailable: "선택한 위치 사용권은 현재 신청할 수 없습니다. 다시 선택해 주세요.",
+  no_items: "서비스를 하나 이상 선택해 주세요.",
+};
 
 const STEPS = ["기본 정보", "서비스 선택", "계약서 확인", "서명", "완료"];
 
@@ -24,6 +31,15 @@ export default function ApplyPage({ params }: { params: { token: string } }) {
   const [state, setState] = useState<State>({ step: 1 });
   const [submitting, setSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState("");
+  const [catalog, setCatalog] = useState<Catalog | null>(null);
+  const [catalogError, setCatalogError] = useState(false);
+
+  useEffect(() => {
+    fetch("/api/products")
+      .then((r) => r.json())
+      .then((d) => (d.ok ? setCatalog(d.catalog) : setCatalogError(true)))
+      .catch(() => setCatalogError(true));
+  }, []);
 
   useEffect(() => {
     fetch(`/api/apply/${token}`)
@@ -72,11 +88,18 @@ export default function ApplyPage({ params }: { params: { token: string } }) {
     setSubmitting(false);
 
     if (!res.ok || !data.ok) {
-      setSubmitError(data.error || "처리 중 오류가 발생했습니다. 다시 시도해주세요.");
+      setSubmitError(SUBMIT_ERRORS[data.error] || data.error || "처리 중 오류가 발생했습니다. 다시 시도해주세요.");
       return;
     }
 
-    setState({ step: 3, info: state.info, products, contractId: data.contract_id });
+    // 미리보기·완료 화면은 서버가 확정한 금액을 사용 (계약서에 저장된 금액과 항상 일치)
+    const confirmed: SelectedProducts = {
+      ...products,
+      items: data.selected_items.map((i: any) => ({ key: i.key, label: i.label, price: i.price, originalPrice: i.original_price })),
+      keys: data.selected_items.map((i: any) => i.key),
+      total: data.price,
+    };
+    setState({ step: 3, info: state.info, products: confirmed, contractId: data.contract_id });
   }
 
   function handlePreviewNext() {
@@ -166,8 +189,14 @@ export default function ApplyPage({ params }: { params: { token: string } }) {
             {!submitting && currentStep === 1 && (
               <StepInfo onNext={handleInfoNext} />
             )}
-            {!submitting && currentStep === 2 && state.step === 2 && (
+            {!submitting && currentStep === 2 && state.step === 2 && !catalog && (
+              catalogError
+                ? <p className="text-sm text-red-600 text-center py-8">상품 정보를 불러오지 못했습니다. 새로고침해 주세요.</p>
+                : <p className="text-sm text-slate-500 text-center py-8">상품 정보를 불러오는 중…</p>
+            )}
+            {!submitting && currentStep === 2 && state.step === 2 && catalog && (
               <StepProducts
+                catalog={catalog}
                 discountPercent={discountPercent}
                 promoPercent={promoPercent}
                 onNext={handleProductsNext}

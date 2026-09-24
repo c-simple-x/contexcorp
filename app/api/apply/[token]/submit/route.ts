@@ -4,6 +4,8 @@ import { NextResponse } from "next/server";
 import { supabaseAdmin } from "@/lib/supabase-admin";
 import { encrypt } from "@/lib/encrypt";
 import { CONTRACT_TERMS } from "@/lib/contract-terms";
+import { LOCATION_KEYS, buildQuote, clampDays } from "@/lib/products";
+import { loadCatalogForPricing } from "@/lib/products-server";
 
 type Params = { params: { token: string } };
 
@@ -46,60 +48,36 @@ export async function POST(req: Request, { params }: Params) {
     // 3) 주민번호/사업자번호 암호화
     const id_number_encrypted = id_number ? encrypt(id_number) : null;
 
-    // 4) 상품 선택 파싱 및 금액 계산
+    // 4) 상품 선택 파싱 및 금액 계산 (금액은 DB 카탈로그 기준, 클라이언트가 보낸 금액은 사용하지 않음)
     const purchase_type: "new" | "renewal" = body.purchase_type === "renewal" ? "renewal" : "new";
     const location_type: "annual" | "daily" = body.location_type === "daily" ? "daily" : "annual";
-    const location_days = Math.max(1, Math.min(365, Number(body.location_days) || 1));
+    const location_days = clampDays(body.location_days);
 
-    const CONTENT_PRICES: Record<string, number> = {
-      design_change: 20000,
-      design_create: 150000,
-      banner_3d_replace: 60000,
-      banner_3d_5s: 550000,
-      banner_3d_10s: 1067000,
-      banner_3d_15s: 1567500,
-    };
-    const CONTENT_LABELS: Record<string, string> = {
-      design_change: "디자인 단순 변경",
-      design_create: "디자인 제작",
-      banner_3d_replace: "3D 모션 배너 교체",
-      banner_3d_5s: "3D 모션 배너 제작 (5초)",
-      banner_3d_10s: "3D 모션 배너 제작 (10초)",
-      banner_3d_15s: "3D 모션 배너 제작 (15초)",
-    };
+    let catalog;
+    try {
+      catalog = await loadCatalogForPricing();
+    } catch (e: any) {
+      console.error("[submit] catalog load failed:", e?.message);
+      return NextResponse.json({ ok: false, error: "catalog_unavailable" }, { status: 503 });
+    }
 
-    // 위치 항목 (신규 구매 시에만)
-    const locationItem = purchase_type === "new"
-      ? location_type === "annual"
-        ? { key: "location", label: "일반 GPS 위치 사용권 (연간)", price: 100000 }
-        : { key: "location_daily", label: `대중집합공간 위치 사용권 (${location_days}일)`, price: location_days * 100000 }
-      : null;
-
-    // 콘텐츠 항목
-    const selectedKeys: string[] = Array.isArray(body.selected) ? body.selected : [];
-    const contentItems = selectedKeys
-      .filter((k) => CONTENT_PRICES[k])
-      .map((k) => ({ key: k, label: CONTENT_LABELS[k] || k, price: CONTENT_PRICES[k] }));
-
-    // 할인 적용 (위치 할인: 위치 항목만, 프로모션 할인: 전체)
     const locationDiscount = Math.max(0, Math.min(50, Number(tokenRow.discount_percent) || 0));
     const promoDiscount = Math.max(0, Math.min(50, Number(tokenRow.promo_percent) || 0));
-    const applyLocationDiscount = (price: number) =>
-      locationDiscount > 0 ? Math.round(price * (100 - locationDiscount) / 100) : price;
-    const applyPromoDiscount = (price: number) =>
-      promoDiscount > 0 ? Math.round(price * (100 - promoDiscount) / 100) : price;
 
-    // 위치 항목: 위치 할인 + 프로모션 할인 적용
-    const locationItems = locationItem
-      ? [{ ...locationItem, original_price: locationItem.price, price: applyPromoDiscount(applyLocationDiscount(locationItem.price)) }]
-      : [];
-    // 콘텐츠 항목: 프로모션 할인만 적용
-    const discountedContent = contentItems.map((i) => ({
-      ...i,
-      original_price: i.price,
-      price: applyPromoDiscount(i.price),
-    }));
-    const selectedItems = [...locationItems, ...discountedContent];
+    // 위치 항목은 신규 구매 시에만
+    const selectedItems = buildQuote(catalog, {
+      locationType: purchase_type === "new" ? location_type : "none",
+      locationDays: location_days,
+      selectedKeys: Array.isArray(body.selected) ? body.selected.map(String) : [],
+      discountPercent: locationDiscount,
+      promoPercent: promoDiscount,
+    });
+    if (purchase_type === "new" && !selectedItems.some((i) => LOCATION_KEYS.includes(i.key))) {
+      return NextResponse.json({ ok: false, error: "location_unavailable" }, { status: 400 });
+    }
+    if (selectedItems.length === 0) {
+      return NextResponse.json({ ok: false, error: "no_items" }, { status: 400 });
+    }
     const total = selectedItems.reduce((s, i) => s + i.price, 0);
 
     // expires_at: 연간 GPS 계약인 경우 1년 후 만료

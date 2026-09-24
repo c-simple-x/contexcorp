@@ -1,0 +1,555 @@
+"use client";
+
+import { useState, useRef, useEffect } from "react";
+import {
+  MapPin, Phone, Mail, CheckCircle2,
+  Store, Building2, Calendar, Smartphone, Zap, Users,
+  ChevronDown, Shield, Eye, Clock, X as XIcon, Check,
+} from "lucide-react";
+import ContactForm from "./components/ContactForm";
+import Header from "./components/Header";
+import PriceCalculator from "./components/PriceCalculator";
+import {
+  Catalog, CONTENT_CATEGORIES, Product, activeProducts, badgeClass, findGroup, findProduct, fmtWon,
+} from "@/lib/products";
+
+function Section({ id, className = "", children }: {
+  id?: string; className?: string; children: React.ReactNode;
+}) {
+  return <section id={id} className={`container ${className}`}>{children}</section>;
+}
+
+const FAQ_DATA: { q: string; a: string | ((c: Catalog) => string) }[] = [
+  {
+    q: "AR 광고는 어떻게 보나요?",
+    a: "nin.earth 사이트에 접속하면 등록된 위치 근처에서 카메라를 통해 AR 배너를 바로 확인할 수 있습니다. 별도 앱 설치 없이 GPS 좌표 기반으로 작동합니다.",
+  },
+  {
+    q: "위치 독점이란 무엇인가요?",
+    a: "계약 기간 동안 해당 GPS 좌표에는 다른 광고주의 AR 배너가 노출되지 않습니다. 하나의 좌표에 하나의 브랜드만 운영되어 독점적인 광고 효과를 보장합니다.",
+  },
+  {
+    q: "배너 디자인을 직접 만들어 올릴 수 있나요?",
+    a: (c: Catalog) => {
+      const p = findProduct(c, "design_change");
+      return `네, ${p ? `${p.label} 서비스(${fmtWon(p.price)})` : "배너 파일 교체 서비스"}를 이용하면 직접 만든 이미지를 등록할 수 있습니다. 파일 규격은 1:1.5 비율, 50KB 미만이어야 합니다.`;
+    },
+  },
+  {
+    q: "계약 후 배너 내용을 바꿀 수 있나요?",
+    a: "네, 운영 기간 내에 배너 파일 교체 또는 디자인 재제작을 요청할 수 있습니다. 변경 시 해당 서비스 비용이 별도 발생합니다.",
+  },
+  {
+    q: "3D 모션 배너와 기본 배너의 차이는?",
+    a: "기본 배너는 정적 이미지 기반이고, 3D 모션 배너는 이동·회전·파티클 등 애니메이션 효과가 포함된 입체 배너입니다. 더 높은 몰입감과 주목도를 제공합니다.",
+  },
+  {
+    q: "결제는 어떻게 하나요?",
+    a: "전자계약 체결 후 안내된 계좌로 선입금하시면 됩니다. 입금 확인 후 제작 및 세팅이 시작됩니다. 모든 금액은 부가세(10%) 별도입니다.",
+  },
+  {
+    q: "계약 기간은 어떻게 되나요?",
+    a: "일반 GPS 위치 사용권은 1년 단위이며, 대중집합공간 위치 사용권은 원하는 일수만큼 자유롭게 설정 가능합니다. 만료 전 갱신하면 동일 좌표를 계속 유지할 수 있습니다.",
+  },
+  {
+    q: "여러 위치에 동시에 광고할 수 있나요?",
+    a: "네, 각 위치별로 사용권을 별도로 구매하면 됩니다. 다수 위치 운영 시 별도 상담을 통해 할인을 제공해 드립니다.",
+  },
+];
+
+function FaqAccordion({ catalog }: { catalog: Catalog }) {
+  const [open, setOpen] = useState<number | null>(null);
+  return (
+    <div className="divide-y rounded-xl border overflow-hidden">
+      {FAQ_DATA.map((item, i) => (
+        <div key={i}>
+          <button
+            className="w-full flex items-center justify-between gap-4 px-5 py-4 text-left hover:bg-slate-50 transition"
+            onClick={() => setOpen(open === i ? null : i)}
+          >
+            <span className="text-sm font-semibold text-slate-800">{item.q}</span>
+            <ChevronDown className={`h-4 w-4 text-slate-400 shrink-0 transition-transform ${open === i ? "rotate-180" : ""}`} />
+          </button>
+          {open === i && (
+            <div className="px-5 py-3 text-sm text-slate-600 leading-relaxed">
+              {typeof item.a === "function" ? item.a(catalog) : item.a}
+            </div>
+          )}
+        </div>
+      ))}
+    </div>
+  );
+}
+
+function gridCols(count: number) {
+  if (count >= 4) return "md:grid-cols-2 lg:grid-cols-4";
+  if (count === 3) return "md:grid-cols-3";
+  if (count === 2) return "md:grid-cols-2";
+  return "";
+}
+
+/** "3D 모션 배너 제작 (5초)" → 그룹 제목("3D 모션 배너")을 뺀 "제작 (5초)" */
+function shortLabel(label: string, groupTitle: string) {
+  return label.startsWith(groupTitle + " ") ? label.slice(groupTitle.length + 1) : label;
+}
+
+function BannerSpecTooltip() {
+  return (
+    <span className="group/tip relative">
+      <span className="w-4 h-4 rounded-full bg-slate-100 border border-slate-300 text-slate-400 text-[10px] font-bold inline-flex items-center justify-center cursor-help hover:bg-blue-50 hover:border-blue-300 hover:text-blue-500 transition">?</span>
+      <span className="pointer-events-none absolute bottom-full left-1/2 -translate-x-1/2 mb-2.5 hidden group-hover/tip:block w-52 rounded-xl bg-slate-800 text-white text-xs px-3.5 py-3 shadow-2xl z-20">
+        <span className="block font-semibold text-slate-200 mb-2">배너 파일 규격</span>
+        <span className="flex justify-between items-center"><span className="text-slate-400">비율</span><span className="font-medium">1 : 1.5</span></span>
+        <span className="flex justify-between items-center mt-1"><span className="text-slate-400">용량</span><span className="font-medium">50 KB 미만</span></span>
+        <span className="absolute top-full left-1/2 -translate-x-1/2 border-[5px] border-transparent border-t-slate-800" />
+      </span>
+    </span>
+  );
+}
+
+function ProductCard({ product: p, title }: { product: Product; title?: string }) {
+  const isBest = /best/i.test(p.badge);
+  return (
+    <div className={`card hover-card ${isBest ? "border-blue-200" : ""}`}>
+      <div className="p-5 border-b text-lg font-semibold flex items-center gap-2">
+        {title ?? p.label}
+        {p.badge && <span className={`text-xs font-normal border rounded-full px-2 py-0.5 ${badgeClass(p.badge)}`}>{p.badge}</span>}
+        {p.key === "design_change" && <BannerSpecTooltip />}
+      </div>
+      <div className="p-5">
+        <div className="text-3xl font-extrabold">
+          {fmtWon(p.price)} {p.unit && <span className="text-base font-medium">/ {p.unit}</span>}
+        </div>
+        <p className="text-xs text-slate-400 mt-1">VAT 별도</p>
+        {p.note && <p className={`mt-1 text-xs font-medium ${isBest ? "text-blue-600" : "text-slate-500"}`}>{p.note}</p>}
+        {p.description && <p className="mt-2 text-sm text-slate-600">{p.description}</p>}
+        {p.features.length > 0 && (
+          <ul className="mt-4 space-y-2 text-sm text-slate-600">
+            {p.features.map((f) => (
+              <li key={f} className="bullet"><CheckCircle2 className="icon" /> {f}</li>
+            ))}
+          </ul>
+        )}
+      </div>
+    </div>
+  );
+}
+
+function LazyVideo({ src, className }: { src: string; className?: string }) {
+  const ref = useRef<HTMLVideoElement>(null);
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    const io = new IntersectionObserver(
+      ([entry]) => { entry.isIntersecting ? el.play() : el.pause(); },
+      { threshold: 0.3 },
+    );
+    io.observe(el);
+    return () => io.disconnect();
+  }, []);
+  return <video ref={ref} className={className} src={src} muted loop playsInline preload="metadata" />;
+}
+
+export default function HomeClient({ catalog }: { catalog: Catalog }) {
+  const contentGroups = CONTENT_CATEGORIES
+    .map((c) => ({ ...findGroup(catalog, c), products: activeProducts(catalog, c) }))
+    .filter((g) => g.products.length > 0);
+  const contentPrices = contentGroups.flatMap((g) => g.products.map((p) => p.price));
+  const minContentPrice = contentPrices.length ? Math.min(...contentPrices) : null;
+  return (
+    <div className="min-h-screen">
+      <Header />
+      {/* HERO */}
+      <div id="hero" className="hero-bg">
+        <Section className="py-16 sm:py-20">
+          <div className="grid lg:grid-cols-2 gap-12 items-center">
+            <div>
+              <div className="pill">실시간 위치 기반 AR 광고</div>
+              <h1 className="mt-5 text-4xl md:text-5xl font-extrabold leading-tight tracking-tight">
+                영상이 아닙니다.<br/><span className="text-gradient">그 자리에 있습니다.</span>
+              </h1>
+              <p className="mt-4 text-slate-600 leading-relaxed">
+                GPS 좌표에 고정된 AR 배너가 24시간 실시간으로 노출됩니다.<br/>
+                앱 설치 없이, 촬영·편집 없이. 스마트폰을 들면 바로 보이는 공간 광고.
+              </p>
+              <div className="mt-6 flex flex-wrap gap-3">
+                <a href="#contact" className="btn">문의하기</a>
+                <a href="#showcase" className="btn-outline">AR 미리보기</a>
+              </div>
+              <div className="mt-8 grid grid-cols-2 sm:grid-cols-4 gap-4 text-sm">
+                {[
+                  { icon: Shield,     label: "좌표 독점" },
+                  { icon: Eye,        label: "실시간 AR" },
+                  { icon: Zap,        label: "앱 설치 불필요" },
+                  { icon: Clock,      label: "24시간 노출" },
+                ].map((f) => (
+                  <div key={f.label} className="feature-chip">
+                    <f.icon className="h-4 w-4 text-blue-600" /> {f.label}
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            <div className="relative">
+              <div className="absolute -inset-1 bg-gradient-to-r from-blue-600 to-indigo-600 rounded-2xl opacity-20 blur-lg" />
+              <div className="card p-6 relative">
+                <div className="rounded-xl h-64 grid place-items-center border bg-slate-900 overflow-hidden">
+                  <img
+                    src="/banner-preview.png"
+                    alt="AR 배너 미리보기"
+                    className="w-full h-full object-cover"
+                  />
+                </div>
+                <ul className="mt-4 grid grid-cols-2 gap-3 text-sm">
+                  <li className="bullet"><CheckCircle2 className="icon" /> GPS 오차 ±2m</li>
+                  <li className="bullet"><CheckCircle2 className="icon" /> 1년간 위치 독점</li>
+                  <li className="bullet"><CheckCircle2 className="icon" /> 3D 모션 배너</li>
+                  <li className="bullet"><CheckCircle2 className="icon" /> 앱 설치 불필요</li>
+                </ul>
+                <div className="mt-3 text-center">
+                  <div className="inline-flex items-center gap-2 rounded-full bg-blue-50 px-3 py-1.5 border border-blue-200 text-xs font-medium text-blue-700">
+                    <MapPin className="h-3.5 w-3.5" /> 실제 거리에서 체험 가능
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </Section>
+      </div>
+
+      {/* SOCIAL PROOF */}
+      <div className="bg-gradient-to-r from-blue-600 to-indigo-600 text-white">
+        <Section className="py-10">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-6 text-center">
+            {[
+              { value: "±2m",   label: "GPS 위치 정밀도" },
+              { value: "24/7",  label: "연중무휴 AR 노출" },
+              { value: "0원",   label: "앱 설치 비용" },
+              { value: "24h",   label: "평균 세팅 시간" },
+            ].map((s) => (
+              <div key={s.label}>
+                <p className="text-3xl md:text-4xl font-extrabold">{s.value}</p>
+                <p className="mt-1 text-sm text-blue-100">{s.label}</p>
+              </div>
+            ))}
+          </div>
+        </Section>
+      </div>
+
+      {/* SOLUTIONS */}
+      <Section id="solutions" className="py-16">
+        <div className="text-center max-w-2xl mx-auto">
+          <span className="pill">활용 대상</span>
+          <h2 className="mt-3 text-3xl md:text-4xl font-extrabold">누구에게 필요할까요?</h2>
+          <p className="mt-2 text-slate-600">온라인에서 오프라인으로, 공간 마케팅의 새로운 기준을 제시합니다.</p>
+        </div>
+
+        <div className="mt-10 grid md:grid-cols-2 lg:grid-cols-4 gap-5">
+          {[
+            { icon: Store,     title: "소상공인 · 자영업자", desc: "내 가게 앞 거리에 AR 배너를 세우세요. 지나가는 고객이 스마트폰으로 메뉴, 이벤트, 할인을 바로 확인합니다." },
+            { icon: Building2, title: "브랜드 · 프랜차이즈",  desc: "전국 가맹점을 동시에. 본사 캠페인을 모든 지점에 일괄 배포하고, 지점별 맞춤 운영도 가능합니다." },
+            { icon: Calendar,  title: "이벤트 · 팝업",        desc: "팝업스토어, 전시, 공연, 개인 행사. 특별한 장소에 AR 경험을 더해 자연스러운 바이럴을 만드세요." },
+            { icon: MapPin,    title: "관광 · 부동산",         desc: "관광지, 분양 현장, 상업지구. 위치 기반 AR로 현장을 방문한 사람에게 바로 정보와 경험을 제공합니다." },
+          ].map((c) => (
+            <div key={c.title} className="card hover-card">
+              <div className="p-5 border-b text-lg font-semibold flex items-center gap-2">
+                <c.icon className="h-4 w-4" /> {c.title}
+              </div>
+              <div className="p-5 text-sm text-slate-600">{c.desc}</div>
+            </div>
+          ))}
+        </div>
+      </Section>
+
+      {/* WHY REAL-TIME AR */}
+      <div className="bg-slate-50 border-y">
+        <Section id="why" className="py-16">
+          <div className="text-center max-w-2xl mx-auto">
+            <span className="pill">Why CONTEX</span>
+            <h3 className="mt-3 text-3xl font-extrabold">영상 합성이 아닌, 실시간 AR</h3>
+            <p className="mt-2 text-slate-600">같은 AR 광고라도 방식이 다릅니다. CONTEX는 실제 현장에서 작동하는 실시간 AR입니다.</p>
+          </div>
+
+          <div className="mt-10 grid md:grid-cols-2 gap-6">
+            {/* 영상 합성 방식 */}
+            <div className="rounded-2xl border border-slate-200 bg-white/60 p-6">
+              <div className="flex items-center gap-3 mb-5">
+                <div className="w-10 h-10 rounded-full bg-red-100 grid place-items-center">
+                  <XIcon className="h-5 w-5 text-red-400" />
+                </div>
+                <div>
+                  <p className="font-bold text-slate-500">일반 AR 광고 (영상 합성)</p>
+                  <p className="text-xs text-slate-400">FOOH · CGI 합성 방식</p>
+                </div>
+              </div>
+              <ul className="space-y-4 text-sm text-slate-500">
+                <li className="flex items-start gap-3"><span className="mt-0.5 w-5 h-5 rounded-full bg-red-50 grid place-items-center shrink-0"><XIcon className="h-3 w-3 text-red-400" /></span> 촬영 후 3D를 영상에 합성 → SNS 배포</li>
+                <li className="flex items-start gap-3"><span className="mt-0.5 w-5 h-5 rounded-full bg-red-50 grid place-items-center shrink-0"><XIcon className="h-3 w-3 text-red-400" /></span> 한 번 제작하면 끝, 현장 체험 불가</li>
+                <li className="flex items-start gap-3"><span className="mt-0.5 w-5 h-5 rounded-full bg-red-50 grid place-items-center shrink-0"><XIcon className="h-3 w-3 text-red-400" /></span> 특정 위치와 무관, 아무 데서나 재생</li>
+                <li className="flex items-start gap-3"><span className="mt-0.5 w-5 h-5 rounded-full bg-red-50 grid place-items-center shrink-0"><XIcon className="h-3 w-3 text-red-400" /></span> 촬영·편집에 수백만 원, 수정 시 재촬영</li>
+              </ul>
+            </div>
+
+            {/* CONTEX 방식 */}
+            <div className="relative">
+              <div className="absolute -inset-0.5 bg-gradient-to-br from-blue-500 to-indigo-500 rounded-2xl opacity-20 blur-sm" />
+              <div className="relative rounded-2xl border-2 border-blue-300 bg-white p-6 shadow-lg shadow-blue-100">
+                <div className="absolute -top-3 right-4 px-3 py-1 rounded-full bg-blue-600 text-white text-xs font-bold shadow">CONTEX</div>
+                <div className="flex items-center gap-3 mb-5">
+                  <div className="w-10 h-10 rounded-full bg-blue-100 grid place-items-center">
+                    <Check className="h-5 w-5 text-blue-600" />
+                  </div>
+                  <div>
+                    <p className="font-bold text-slate-800">실시간 AR 광고</p>
+                    <p className="text-xs text-slate-500">GPS 좌표 고정 · 현장 체험</p>
+                  </div>
+                </div>
+                <ul className="space-y-4 text-sm text-slate-700">
+                  <li className="flex items-start gap-3"><span className="mt-0.5 w-5 h-5 rounded-full bg-blue-100 grid place-items-center shrink-0"><Check className="h-3 w-3 text-blue-600" /></span> 현장에서 스마트폰을 들면 <strong>실시간</strong>으로 AR 노출</li>
+                  <li className="flex items-start gap-3"><span className="mt-0.5 w-5 h-5 rounded-full bg-blue-100 grid place-items-center shrink-0"><Check className="h-3 w-3 text-blue-600" /></span> 24시간 365일 해당 좌표에서 계속 작동</li>
+                  <li className="flex items-start gap-3"><span className="mt-0.5 w-5 h-5 rounded-full bg-blue-100 grid place-items-center shrink-0"><Check className="h-3 w-3 text-blue-600" /></span> GPS ±2m 정밀도로 위치 고정, <strong>좌표 독점</strong></li>
+                  <li className="flex items-start gap-3"><span className="mt-0.5 w-5 h-5 rounded-full bg-blue-100 grid place-items-center shrink-0"><Check className="h-3 w-3 text-blue-600" /></span> {minContentPrice !== null ? <>콘텐츠 교체 {fmtWon(minContentPrice)}부터, 재촬영 불필요</> : <>콘텐츠 교체 시 재촬영 불필요</>}</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+
+          <div className="mt-8 text-center">
+            <p className="text-sm text-slate-500">
+              영상은 한 번 보고 끝나지만, <strong className="text-slate-800">실시간 AR은 매일 그 자리에 있습니다.</strong>
+            </p>
+          </div>
+        </Section>
+      </div>
+
+      {/* SHOWCASE */}
+      <Section id="showcase" className="py-16">
+        <div className="text-center max-w-2xl mx-auto mb-6">
+          <span className="pill">AR 체험</span>
+          <h3 className="mt-3 text-3xl font-extrabold">이런 모습으로 보입니다</h3>
+          <p className="mt-2 text-slate-600">실제 거리에서 스마트폰으로 체험하는 AR 배너입니다.</p>
+        </div>
+        <div className="card p-6">
+          <div className="grid lg:grid-cols-3 gap-6 items-center">
+            <div className="lg:col-span-2">
+              <div className="rounded-xl h-72 md:h-80 border bg-black overflow-hidden">
+                <video
+                  className="w-full h-full object-cover"
+                  src="/ar-preview.mp4"
+                  controls
+                  autoPlay
+                  muted
+                  loop
+                  playsInline
+                  preload="metadata"
+                />
+              </div>
+            </div>
+            <ul className="space-y-3 text-sm text-slate-700">
+              <li className="bullet"><CheckCircle2 className="icon" /> 실제 거리에서 스마트폰으로 체험</li>
+              <li className="bullet"><CheckCircle2 className="icon" /> GPS ±2m 정밀도로 위치 고정</li>
+              <li className="bullet"><CheckCircle2 className="icon" /> 3D 이동·회전·파티클 효과</li>
+              <li className="bullet"><CheckCircle2 className="icon" /> 가벼운 리소스, 빠른 로딩</li>
+            </ul>
+          </div>
+        </div>
+      </Section>
+
+      {/* LOCATION EXCLUSIVITY */}
+      <div className="bg-gradient-to-br from-slate-900 via-slate-800 to-blue-900 text-white">
+        <Section className="py-16">
+          <div className="grid md:grid-cols-2 gap-10 items-center">
+            <div>
+              <span className="inline-flex items-center gap-2 rounded-full border border-slate-600 bg-slate-700 px-3 py-1 text-xs font-medium text-slate-300">위치 독점</span>
+              <h3 className="mt-4 text-3xl font-extrabold leading-snug">하나의 좌표에<br/>하나의 브랜드만</h3>
+              <p className="mt-3 text-slate-400 leading-relaxed text-sm">
+                계약한 GPS 좌표에는 계약 기간 동안 다른 광고주의 AR 콘텐츠가 절대 노출되지 않습니다.
+                오프라인 간판처럼, 그 자리는 오직 당신의 브랜드만을 위한 공간입니다.
+              </p>
+            </div>
+            <div className="grid grid-cols-2 gap-4">
+              {[
+                { icon: Shield, title: "경쟁사 원천 차단", desc: "동일 좌표에 타 브랜드 노출 불가" },
+                { icon: MapPin, title: "GPS ±2m 정밀도", desc: "정확한 위치에 정확한 광고" },
+                { icon: Clock, title: "365일 24시간", desc: "연중무휴 실시간 노출" },
+                { icon: Zap, title: "즉시 업데이트", desc: "콘텐츠 변경 요청 시 빠른 교체" },
+              ].map((item) => (
+                <div key={item.title} className="rounded-xl border border-slate-700 bg-slate-700/50 p-4">
+                  <item.icon className="h-5 w-5 text-blue-400 mb-2" />
+                  <p className="text-sm font-semibold">{item.title}</p>
+                  <p className="text-xs text-slate-400 mt-1">{item.desc}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+        </Section>
+      </div>
+
+      {/* CASES */}
+      <Section id="cases" className="py-16">
+        <div className="text-center max-w-2xl mx-auto">
+          <span className="pill">실제 활용 사례</span>
+          <h3 className="mt-3 text-3xl font-extrabold">현장에서 만나는 AR</h3>
+          <p className="mt-2 text-slate-600">실제 거리와 공간에서 촬영한 AR 광고 운영 영상입니다.</p>
+        </div>
+        <div className="mt-10 grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
+          {[
+            { name: "ex1", label: "라스트라벨 일산덕이점" },
+            { name: "ex2", label: "101수산" },
+            { name: "ex3", label: "상추네 장작불 닭볶음탕" },
+            { name: "ex4", label: "내셔널지오그래픽 일산덕이점" },
+            { name: "ex5", label: "라스트라벨 일산덕이점" },
+          ].map((item) => (
+            <div key={item.name} className="card overflow-hidden">
+              <div className="aspect-[9/16] bg-black">
+                <LazyVideo
+                  className="w-full h-full object-cover"
+                  src={`https://pub-4d204982c58e47eeb7eef39ac8c94010.r2.dev/${item.name}.MP4`}
+                />
+              </div>
+              <p className="text-xs text-center text-slate-600 py-2 px-1 truncate">{item.label}</p>
+            </div>
+          ))}
+        </div>
+      </Section>
+
+      {/* PROCESS */}
+      <Section id="process" className="py-16">
+        <div className="text-center max-w-2xl mx-auto">
+          <span className="pill">진행 절차</span>
+          <h3 className="mt-3 text-3xl font-extrabold">이렇게 진행됩니다</h3>
+          <p className="mt-2 text-slate-600">위치 선정부터 AR 노출까지, 복잡한 과정은 저희가 처리합니다.</p>
+        </div>
+        <div className="mt-10 grid md:grid-cols-5 gap-4">
+          {[
+            { n: 1, t: "위치 · 목적 상담",   d: "원하는 위치, 활용 목적, 예산을 편하게 공유해주세요." },
+            { n: 2, t: "위치 확정 및 계약",   d: "GPS 좌표를 확정하고 1년 위치 독점 운영 계약을 체결합니다." },
+            { n: 3, t: "콘텐츠 제작",         d: "브랜드에 맞는 AR 배너 또는 3D 모션 배너를 제작합니다." },
+            { n: 4, t: "AR 배포 · 세팅",      d: "지정 좌표에 AR 콘텐츠를 등록하고 노출을 시작합니다." },
+            { n: 5, t: "운영 · 업데이트",     d: "서면 요청 한 번으로 내용 변경, 지속적인 운영 관리를 제공합니다." },
+          ].map(s => (
+            <div key={s.n} className="card hover-card">
+              <div className="p-5 border-b text-lg font-semibold">{s.n}. {s.t}</div>
+              <div className="p-5 text-sm text-slate-600">{s.d}</div>
+            </div>
+          ))}
+        </div>
+      </Section>
+
+      {/* PRICING */}
+      <Section id="pricing" className="py-16">
+        <div className="text-center max-w-2xl mx-auto">
+          <span className="pill">Pricing</span>
+          <h3 className="mt-3 text-3xl font-extrabold">상품별 금액</h3>
+          <p className="mt-2 text-slate-600">위치 독점권을 확보하고, 필요할 때만 추가 비용을 쓰는 합리적인 구조.</p>
+        </div>
+
+        {/* 위치 사용권 */}
+        <div className="mt-10 grid md:grid-cols-2 gap-6">
+          {activeProducts(catalog, "location").map((p) => (
+            <ProductCard key={p.key} product={p} />
+          ))}
+        </div>
+
+        {/* 콘텐츠 요금 (기본 배너, 3D 모션 배너) */}
+        {contentGroups.map((g) => (
+          <div key={g.key} className="mt-10">
+            <h4 className={`text-xl font-extrabold ${g.subtitle ? "mb-2" : "mb-4"}`}>{g.title} 관련 요금</h4>
+            {g.subtitle && <p className="text-sm text-slate-500 mb-4">{g.subtitle}</p>}
+            <div className={`grid gap-6 ${gridCols(g.products.length)}`}>
+              {g.products.map((p) => (
+                <ProductCard key={p.key} product={p} title={shortLabel(p.label, g.title)} />
+              ))}
+            </div>
+          </div>
+        ))}
+
+        {/* 갱신/재구매 안내 */}
+        <div className="mt-10 rounded-xl border border-blue-100 bg-blue-50/50 p-5">
+          <h4 className="text-lg font-extrabold mb-2">변경 / 재구매 안내</h4>
+          <p className="text-sm text-slate-600 leading-relaxed">
+            이미 위치 사용권을 보유하고 계신가요? 배너 디자인 변경이나 3D 모션 배너 추가 제작만 별도로 신청할 수 있습니다.
+            위치 사용권 비용 없이 <span className="font-semibold text-slate-800">콘텐츠 제작비만</span> 결제하면 됩니다.
+          </p>
+          <div className="mt-3 grid grid-cols-2 gap-2 text-xs">
+            {contentGroups.flatMap((g) => g.products).map((item) => (
+              <div key={item.key} className="flex flex-col items-center justify-center rounded-xl border border-blue-200 bg-white text-blue-700 px-3 py-2.5 text-center">
+                <span>{item.label}</span>
+                <span className="font-semibold">{fmtWon(item.price)}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* 견적 계산기 */}
+        <div className="mt-16">
+          <div className="text-center max-w-2xl mx-auto mb-8">
+            <span className="pill">견적 계산기</span>
+            <h3 className="mt-3 text-2xl font-extrabold">원하는 항목을 선택하면 견적을 바로 확인하세요</h3>
+          </div>
+          <PriceCalculator catalog={catalog} />
+        </div>
+      </Section>
+
+      {/* FAQ */}
+      <Section id="faq" className="py-16">
+        <div className="text-center max-w-2xl mx-auto">
+          <span className="pill">FAQ</span>
+          <h3 className="mt-3 text-3xl font-extrabold">자주 묻는 질문</h3>
+          <p className="mt-2 text-slate-600">궁금한 점을 빠르게 확인하세요.</p>
+        </div>
+        <div className="mt-10">
+          <FaqAccordion catalog={catalog} />
+        </div>
+      </Section>
+
+      {/* CONTACT */}
+      <Section id="contact" className="py-16">
+        <div className="grid lg:grid-cols-2 gap-8">
+          <div>
+            <span className="pill">Contact</span>
+            <h3 className="mt-3 text-3xl font-extrabold">문의하기</h3>
+            <p className="mt-2 text-slate-600">어떤 위치에, 어떤 목적으로 활용하고 싶은지 편하게 알려주세요. 빠르게 연락드립니다.</p>
+            <div className="mt-6 space-y-3 text-sm">
+              <div className="flex items-center gap-2"><Phone className="h-4 w-4" /> +82-10-3653-1987</div>
+              <div className="flex items-center gap-2"><Mail className="h-4 w-4" /> contact@c-simple-x.com</div>
+            </div>
+          </div>
+          <div className="card">
+            <div className="p-5 border-b text-lg font-semibold">빠른 상담 신청</div>
+            <div className="p-5">
+              <ContactForm />
+              <p className="text-xs text-slate-500 mt-3">* 모든 금액은 부가세 별도. 작업은 비용 선납 확인 후 진행됩니다.</p>
+            </div>
+          </div>
+        </div>
+      </Section>
+
+      {/* FOOTER */}
+      <footer className="border-t bg-white/80">
+        <Section className="py-10">
+          <div className="grid md:grid-cols-3 gap-6 items-start">
+            <div>
+              <div className="font-bold text-lg">CONTEX Corp.</div>
+              <p className="text-sm text-slate-600 mt-2">Contents Tech Experience<br/>위치 기반 AR 광고 대행</p>
+            </div>
+            <div className="text-sm">
+              <div className="font-semibold mb-2">사업자 정보</div>
+              <p>상호 : 콘텍스</p>
+              <p>사업자등록번호 : 181-48-00499</p>
+              <p>통신판매업 신고번호 : 제2021-고양일산서-0031호</p>
+              <p>개인정보처리 담당자 : 홍정민</p>
+              <p>대표 : 홍정민</p>
+              <p>주소 : 경기도 고양시 일산서구 킨텍스로 240, 909호</p>
+            </div>
+            <div className="text-sm">
+              <div className="font-semibold mb-2">정책</div>
+              <a href="/privacy" className="block hover:underline">개인정보 처리방침</a>
+            </div>
+          </div>
+          <div className="container text-xs text-slate-500 mt-6">© {new Date().getFullYear()} CONTEX. All rights reserved.</div>
+        </Section>
+      </footer>
+    </div>
+  );
+}

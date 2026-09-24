@@ -2,6 +2,10 @@
 
 import { useState } from "react";
 import { CheckCircle2 } from "lucide-react";
+import {
+  Catalog, CONTENT_CATEGORIES, LOCATION_ANNUAL_KEY, LOCATION_DAILY_KEY, LOCATION_KEYS, MAX_LOCATION_DAYS,
+  activeProducts, badgeClass, buildQuote, clampDays, findGroup, findProduct, firstSentence, fmtWon as fmt,
+} from "@/lib/products";
 
 export type SelectedProducts = {
   keys: string[];
@@ -17,61 +21,32 @@ export type SelectedProducts = {
 type PurchaseType = "new" | "renewal";
 type LocationType = "annual" | "daily";
 
-const LOCATION_ANNUAL_PRICE = 100000;
-const LOCATION_DAILY_PRICE = 100000;
-
-const CONTENT_PRODUCTS = {
-  design_change:     { label: "배너 파일 교체",             price: 20000,   group: "design" },
-  design_create:     { label: "배너 디자인 제작",            price: 150000,  group: "design" },
-  banner_3d_replace: { label: "3D 모션 배너 파일 교체",      price: 60000,   group: "banner_3d" },
-  banner_3d_5s:      { label: "3D 모션 배너 제작 (5초)",    price: 550000,  group: "banner_3d" },
-  banner_3d_10s:     { label: "3D 모션 배너 제작 (10초)",   price: 1067000, group: "banner_3d" },
-  banner_3d_15s:     { label: "3D 모션 배너 제작 (15초)",   price: 1567500, group: "banner_3d" },
-} as const;
-
-type ContentKey = keyof typeof CONTENT_PRODUCTS;
-
-function fmt(n: number) {
-  return "₩" + n.toLocaleString("ko-KR");
-}
-
 type Props = {
+  catalog: Catalog;
   discountPercent?: number;
   promoPercent?: number;
   onNext: (products: SelectedProducts) => void;
   onBack: () => void;
 };
 
-export default function StepProducts({ discountPercent = 0, promoPercent = 0, onNext, onBack }: Props) {
+export default function StepProducts({ catalog, discountPercent = 0, promoPercent = 0, onNext, onBack }: Props) {
+  const annual = findProduct(catalog, LOCATION_ANNUAL_KEY);
+  const daily = findProduct(catalog, LOCATION_DAILY_KEY);
   const [purchaseType, setPurchaseType] = useState<PurchaseType>("new");
-  const [locationType, setLocationType] = useState<LocationType>("annual");
+  const [locationType, setLocationType] = useState<LocationType>(annual || !daily ? "annual" : "daily");
   const [locationDaysStr, setLocationDaysStr] = useState("1");
-  const locationDays = Math.max(1, Math.min(365, Number(locationDaysStr) || 1));
-  const [selected, setSelected] = useState<Set<ContentKey>>(new Set());
+  const locationDays = clampDays(locationDaysStr);
+  const [selected, setSelected] = useState<string[]>([]);
 
-  function toggle(key: ContentKey) {
-    const next = new Set(selected);
-    const group = CONTENT_PRODUCTS[key].group;
-    if (next.has(key)) {
-      next.delete(key);
-    } else {
-      if (group) {
-        (Object.keys(CONTENT_PRODUCTS) as ContentKey[]).forEach((k) => {
-          if (CONTENT_PRODUCTS[k].group === group && k !== key) next.delete(k);
-        });
-      }
-      next.add(key);
-    }
-    setSelected(next);
+  // 카테고리당 하나만 선택 (같은 카테고리의 다른 항목은 해제)
+  function toggle(key: string) {
+    const category = findProduct(catalog, key)?.category;
+    setSelected((prev) => prev.includes(key)
+      ? prev.filter((k) => k !== key)
+      : [...prev.filter((k) => findProduct(catalog, k)?.category !== category), key]);
   }
 
-  const locationItem = purchaseType === "new"
-    ? locationType === "annual"
-      ? { key: "location", label: "일반 GPS 위치 사용권 (연간)", price: LOCATION_ANNUAL_PRICE }
-      : { key: "location_daily", label: `대중집합공간 위치 사용권 (${locationDays}일)`, price: locationDays * LOCATION_DAILY_PRICE }
-    : null;
-
-  // 위치 할인: 위치 항목에만, 프로모션 할인: 전체 항목에
+  // 위치 할인: 위치 항목에만, 프로모션 할인: 전체 항목에 (서버와 같은 buildQuote로 계산)
   function applyLocationDiscount(price: number) {
     return discountPercent > 0 ? Math.round(price * (100 - discountPercent) / 100) : price;
   }
@@ -80,29 +55,28 @@ export default function StepProducts({ discountPercent = 0, promoPercent = 0, on
   }
   const hasAnyDiscount = discountPercent > 0 || promoPercent > 0;
 
-  // 콘텐츠: 프로모션 할인만
-  const contentItems = (Object.keys(CONTENT_PRODUCTS) as ContentKey[])
-    .filter((k) => selected.has(k))
-    .map((k) => ({ key: k, label: CONTENT_PRODUCTS[k].label, price: applyPromo(CONTENT_PRODUCTS[k].price), originalPrice: CONTENT_PRODUCTS[k].price }));
-
-  // 위치: 위치 할인 + 프로모션 할인
-  const allItems = locationItem
-    ? [{ ...locationItem, originalPrice: locationItem.price, price: applyPromo(applyLocationDiscount(locationItem.price)) }, ...contentItems]
-    : contentItems;
+  const allItems = buildQuote(catalog, {
+    locationType: purchaseType === "new" ? locationType : "none",
+    locationDays,
+    selectedKeys: selected,
+    discountPercent,
+    promoPercent,
+  }).map((i) => ({ key: i.key, label: i.label, price: i.price, originalPrice: i.original_price }));
+  const hasLocation = allItems.some((i) => LOCATION_KEYS.includes(i.key));
+  const contentCount = allItems.length - (hasLocation ? 1 : 0);
   const total = allItems.reduce((s, i) => s + i.price, 0);
-  const canSubmit = purchaseType === "renewal" ? contentItems.length > 0 : true;
+  const canSubmit = purchaseType === "renewal" ? contentCount > 0 : hasLocation;
 
-  const contentGroups = [
-    { title: "기본 배너", keys: ["design_change", "design_create"] as ContentKey[], note: "중복 선택 불가" },
-    { title: "3D 모션 배너", keys: ["banner_3d_replace", "banner_3d_5s", "banner_3d_10s", "banner_3d_15s"] as ContentKey[], note: "중복 선택 불가" },
-  ];
+  const contentGroups = CONTENT_CATEGORIES
+    .map((c) => ({ ...findGroup(catalog, c), products: activeProducts(catalog, c) }))
+    .filter((g) => g.products.length > 0);
 
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     onNext({
       keys: allItems.map((i) => i.key),
       total,
-      items: allItems.map((i) => ({ key: i.key, label: i.label, price: i.price, originalPrice: i.originalPrice })),
+      items: allItems,
       purchaseType,
       locationType: purchaseType === "new" ? locationType : undefined,
       locationDays: purchaseType === "new" && locationType === "daily" ? locationDays : undefined,
@@ -139,7 +113,7 @@ export default function StepProducts({ discountPercent = 0, promoPercent = 0, on
               className={`flex items-start gap-3 rounded-xl border p-4 cursor-pointer transition ${
                 purchaseType === opt.value ? "border-blue-400 bg-blue-50" : "border-slate-200 hover:border-slate-300"
               }`}
-              onClick={() => { setPurchaseType(opt.value); setSelected(new Set()); }}
+              onClick={() => { setPurchaseType(opt.value); setSelected([]); }}
             >
               <div className={`w-5 h-5 rounded-full border-2 flex-shrink-0 mt-0.5 flex items-center justify-center transition ${
                 purchaseType === opt.value ? "border-blue-500 bg-blue-500" : "border-slate-300"
@@ -160,7 +134,7 @@ export default function StepProducts({ discountPercent = 0, promoPercent = 0, on
         <div>
           <h3 className="text-sm font-semibold text-slate-700 mb-3">위치 유형 <span className="text-red-500">*</span></h3>
           <div className="grid gap-2">
-            <label
+            {annual && <label
               className={`flex items-start gap-3 rounded-xl border p-4 cursor-pointer transition ${
                 locationType === "annual" ? "border-blue-400 bg-blue-50" : "border-slate-200 hover:border-slate-300"
               }`}
@@ -173,19 +147,19 @@ export default function StepProducts({ discountPercent = 0, promoPercent = 0, on
               </div>
               <div className="flex-1">
                 <div className="flex items-center gap-2">
-                  <span className="text-sm font-medium">일반 GPS 위치 사용권</span>
-                  <span className="text-xs bg-slate-100 text-slate-600 px-2 py-0.5 rounded-full">연간</span>
+                  <span className="text-sm font-medium">{annual.label}</span>
+                  {annual.badge && <span className="text-xs bg-slate-100 text-slate-600 px-2 py-0.5 rounded-full">{annual.badge}</span>}
                 </div>
-                <p className="text-xs text-slate-500 mt-1">원하는 GPS 좌표에 연간 독점 AR 노출권을 확보합니다.</p>
+                {annual.description && <p className="text-xs text-slate-500 mt-1">{firstSentence(annual.description)}</p>}
               </div>
               <span className="text-sm font-semibold tabular-nums shrink-0">
-                {(discountPercent > 0 || promoPercent > 0) ? (
-                  <><span className="line-through text-slate-400 font-normal">{fmt(LOCATION_ANNUAL_PRICE)}</span>{" "}<span className="text-red-600">{fmt(applyPromo(applyLocationDiscount(LOCATION_ANNUAL_PRICE)))}</span></>
-                ) : fmt(LOCATION_ANNUAL_PRICE)}/년
+                {hasAnyDiscount ? (
+                  <><span className="line-through text-slate-400 font-normal">{fmt(annual.price)}</span>{" "}<span className="text-red-600">{fmt(applyPromo(applyLocationDiscount(annual.price)))}</span></>
+                ) : fmt(annual.price)}{annual.unit && `/${annual.unit}`}
               </span>
-            </label>
+            </label>}
 
-            <label
+            {daily && <label
               className={`flex items-start gap-3 rounded-xl border p-4 cursor-pointer transition ${
                 locationType === "daily" ? "border-blue-400 bg-blue-50" : "border-slate-200 hover:border-slate-300"
               }`}
@@ -198,31 +172,34 @@ export default function StepProducts({ discountPercent = 0, promoPercent = 0, on
               </div>
               <div className="flex-1">
                 <div className="flex items-center gap-2">
-                  <span className="text-sm font-medium">대중집합공간 위치 사용권</span>
-                  <span className="text-xs bg-orange-100 text-orange-700 border border-orange-200 px-2 py-0.5 rounded-full">일 단위</span>
+                  <span className="text-sm font-medium">{daily.label}</span>
+                  {daily.badge && <span className="text-xs bg-orange-100 text-orange-700 border border-orange-200 px-2 py-0.5 rounded-full">{daily.badge}</span>}
                 </div>
-                <p className="text-xs text-slate-500 mt-1">CONTEX가 보유한 대중집합공간에 AR 광고를 집행합니다.</p>
+                {daily.description && <p className="text-xs text-slate-500 mt-1">{firstSentence(daily.description)}</p>}
               </div>
               <span className="text-sm font-semibold tabular-nums shrink-0">
-                {(discountPercent > 0 || promoPercent > 0) ? (
-                  <><span className="line-through text-slate-400 font-normal">{fmt(LOCATION_DAILY_PRICE)}</span>{" "}<span className="text-red-600">{fmt(applyPromo(applyLocationDiscount(LOCATION_DAILY_PRICE)))}</span></>
-                ) : fmt(LOCATION_DAILY_PRICE)}/일
+                {hasAnyDiscount ? (
+                  <><span className="line-through text-slate-400 font-normal">{fmt(daily.price)}</span>{" "}<span className="text-red-600">{fmt(applyPromo(applyLocationDiscount(daily.price)))}</span></>
+                ) : fmt(daily.price)}{daily.unit && `/${daily.unit}`}
               </span>
-            </label>
+            </label>}
+            {!annual && !daily && (
+              <p className="text-sm text-red-600">현재 신청 가능한 위치 사용권이 없습니다. 문의해 주세요.</p>
+            )}
           </div>
 
-          {locationType === "daily" && (
+          {daily && locationType === "daily" && (
             <div className="mt-3 rounded-xl border border-orange-200 bg-orange-50 p-4">
               <label className="text-sm font-semibold text-slate-700 mb-2 block">운영 일수</label>
               <div className="flex items-center gap-3">
                 <input
-                  type="number" min={1} max={365} value={locationDaysStr}
+                  type="number" min={1} max={MAX_LOCATION_DAYS} value={locationDaysStr}
                   onChange={(e) => setLocationDaysStr(e.target.value)}
                   onBlur={() => setLocationDaysStr(String(locationDays))}
                   className="input w-24 text-center" required
                 />
-                <span className="text-sm text-slate-600">일 × {fmt(hasAnyDiscount ? applyPromo(applyLocationDiscount(LOCATION_DAILY_PRICE)) : LOCATION_DAILY_PRICE)} =</span>
-                <span className="text-sm font-extrabold text-orange-700">{fmt(applyPromo(applyLocationDiscount(locationDays * LOCATION_DAILY_PRICE)))}</span>
+                <span className="text-sm text-slate-600">일 × {fmt(hasAnyDiscount ? applyPromo(applyLocationDiscount(daily.price)) : daily.price)} =</span>
+                <span className="text-sm font-extrabold text-orange-700">{fmt(applyPromo(applyLocationDiscount(locationDays * daily.price)))}</span>
               </div>
             </div>
           )}
@@ -231,16 +208,15 @@ export default function StepProducts({ discountPercent = 0, promoPercent = 0, on
 
       {/* 콘텐츠 옵션 */}
       {contentGroups.map((g) => (
-        <div key={g.title}>
+        <div key={g.key}>
           <div className="flex items-center gap-2 mb-3">
             <h3 className="text-sm font-semibold text-slate-700">{g.title}</h3>
-            {g.note && <span className="text-xs text-slate-400">({g.note})</span>}
+            <span className="text-xs text-slate-400">(중복 선택 불가)</span>
           </div>
           <div className="grid gap-2">
-            {g.keys.map((key) => {
-              const prod = CONTENT_PRODUCTS[key];
-              const isSelected = selected.has(key);
-              const isBest = key === "banner_3d_10s";
+            {g.products.map((prod) => {
+              const key = prod.key;
+              const isSelected = selected.includes(key);
               return (
                 <label
                   key={key}
@@ -257,13 +233,9 @@ export default function StepProducts({ discountPercent = 0, promoPercent = 0, on
                   <div className="flex-1">
                     <div className="flex items-center gap-2">
                       <span className="text-sm font-medium">{prod.label}</span>
-                      {isBest && <span className="text-xs bg-blue-100 text-blue-700 border border-blue-200 px-2 py-0.5 rounded-full">Best</span>}
+                      {prod.badge && <span className={`text-xs border px-2 py-0.5 rounded-full ${badgeClass(prod.badge)}`}>{prod.badge}</span>}
                     </div>
-                    {(key === "banner_3d_10s" || key === "banner_3d_15s") && (
-                      <p className="text-xs text-blue-600 mt-0.5">
-                        {key === "banner_3d_10s" ? "3% 할인 적용" : "5% 할인 적용"}
-                      </p>
-                    )}
+                    {prod.note && <p className="text-xs text-blue-600 mt-0.5">{prod.note}</p>}
                   </div>
                   <span className="text-sm font-semibold tabular-nums">
                     {promoPercent > 0 ? (
@@ -306,7 +278,7 @@ export default function StepProducts({ discountPercent = 0, promoPercent = 0, on
             </span>
           </div>
         ))}
-        {purchaseType === "renewal" && total === 0 && (
+        {purchaseType === "renewal" && contentCount === 0 && (
           <p className="text-xs text-red-500 mt-2">콘텐츠 옵션을 하나 이상 선택해 주세요.</p>
         )}
       </div>

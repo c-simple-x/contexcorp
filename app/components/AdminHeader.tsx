@@ -11,6 +11,7 @@ const NAV_LINKS = [
   { href: "/admin/onhold", label: "보류" },
   { href: "/admin/completed", label: "종료됨" },
   { href: "/admin/contracts", label: "전체 계약" },
+  { href: "/admin/products", label: "상품·금액" },
 ];
 
 export default function AdminHeader() {

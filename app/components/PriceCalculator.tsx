@@ -2,62 +2,34 @@
 
 import { useState } from "react";
 import { CheckCircle2, Calculator } from "lucide-react";
+import {
+  Catalog, CONTENT_CATEGORIES, LOCATION_ANNUAL_KEY, LOCATION_DAILY_KEY, LocationType, MAX_LOCATION_DAYS,
+  activeProducts, badgeClass, buildQuote, clampDays, findGroup, findProduct, firstSentence, fmtWon as fmt,
+} from "@/lib/products";
 
-const LOCATION_ANNUAL_PRICE = 100000;
-const LOCATION_DAILY_PRICE = 100000;
+type Props = { catalog: Catalog };
 
-const CONTENT_PRODUCTS = {
-  design_change:     { label: "배너 파일 교체",             price: 20000,   group: "design" },
-  design_create:     { label: "배너 디자인 제작",            price: 150000,  group: "design" },
-  banner_3d_replace: { label: "3D 모션 배너 파일 교체",      price: 60000,   group: "banner_3d" },
-  banner_3d_5s:      { label: "3D 모션 배너 제작 (5초)",    price: 550000,  group: "banner_3d" },
-  banner_3d_10s:     { label: "3D 모션 배너 제작 (10초)",   price: 1067000, group: "banner_3d" },
-  banner_3d_15s:     { label: "3D 모션 배너 제작 (15초)",   price: 1567500, group: "banner_3d" },
-} as const;
-
-type ContentKey = keyof typeof CONTENT_PRODUCTS;
-type LocationType = "none" | "annual" | "daily";
-
-const CONTENT_GROUPS = [
-  { title: "기본 배너", keys: ["design_change", "design_create"] as ContentKey[], note: "중복 선택 불가", radio: true },
-  { title: "3D 모션 배너", keys: ["banner_3d_replace", "banner_3d_5s", "banner_3d_10s", "banner_3d_15s"] as ContentKey[], note: "중복 선택 불가", radio: true },
-];
-
-function fmt(n: number) {
-  return "₩" + n.toLocaleString("ko-KR");
-}
-
-export default function PriceCalculator() {
+export default function PriceCalculator({ catalog }: Props) {
+  const annual = findProduct(catalog, LOCATION_ANNUAL_KEY);
+  const daily = findProduct(catalog, LOCATION_DAILY_KEY);
   const [locationType, setLocationType] = useState<LocationType>("none");
   const [locationDaysStr, setLocationDaysStr] = useState("1");
-  const locationDays = Math.max(1, Math.min(365, Number(locationDaysStr) || 1));
-  const [selected, setSelected] = useState<Set<ContentKey>>(new Set());
+  const locationDays = clampDays(locationDaysStr);
+  const [selected, setSelected] = useState<string[]>([]);
 
-  function toggle(key: ContentKey, isRadio: boolean, groupKeys: ContentKey[]) {
-    const next = new Set(selected);
-    if (next.has(key)) {
-      next.delete(key);
-    } else {
-      if (isRadio) groupKeys.forEach((k) => next.delete(k));
-      next.add(key);
-    }
-    setSelected(next);
+  const contentGroups = CONTENT_CATEGORIES
+    .map((c) => ({ ...findGroup(catalog, c), products: activeProducts(catalog, c) }))
+    .filter((g) => g.products.length > 0);
+
+  // 카테고리당 하나만 선택 (같은 카테고리의 다른 항목은 해제)
+  function toggle(key: string) {
+    const category = findProduct(catalog, key)?.category;
+    setSelected((prev) => prev.includes(key)
+      ? prev.filter((k) => k !== key)
+      : [...prev.filter((k) => findProduct(catalog, k)?.category !== category), key]);
   }
 
-  const locationItem = locationType === "annual"
-    ? { label: "일반 GPS 위치 사용권 (연간)", price: LOCATION_ANNUAL_PRICE }
-    : locationType === "daily"
-    ? { label: `대중집합공간 위치 사용권 (${locationDays}일)`, price: locationDays * LOCATION_DAILY_PRICE }
-    : null;
-
-  const contentItems = (Object.keys(CONTENT_PRODUCTS) as ContentKey[])
-    .filter((k) => selected.has(k))
-    .map((k) => ({ key: k, ...CONTENT_PRODUCTS[k] }));
-
-  const allItems: { label: string; price: number }[] = [
-    ...(locationItem ? [locationItem] : []),
-    ...contentItems,
-  ];
+  const allItems = buildQuote(catalog, { locationType, locationDays, selectedKeys: selected });
   const subtotal = allItems.reduce((s, i) => s + i.price, 0);
   const vat = Math.round(subtotal * 0.1);
   const total = subtotal + vat;
@@ -80,7 +52,7 @@ export default function PriceCalculator() {
         {/* 위치 사용권 */}
         <div>
           <div className="flex items-center gap-2 mb-2">
-            <span className="text-sm font-semibold text-slate-700">위치 사용권</span>
+            <span className="text-sm font-semibold text-slate-700">{findGroup(catalog, "location").title}</span>
             <span className="text-xs text-slate-400">(중복 선택 불가)</span>
           </div>
           <div className="space-y-2">
@@ -98,7 +70,7 @@ export default function PriceCalculator() {
               <span className="flex-1 text-sm text-slate-500">선택 안 함 (변경/재구매만)</span>
             </label>
 
-            <label
+            {annual && <label
               className={`flex items-center gap-3 rounded-xl border p-3.5 cursor-pointer transition ${
                 locationType === "annual" ? "border-blue-400 bg-blue-50" : "border-slate-200 bg-white hover:border-blue-200"
               }`}
@@ -110,13 +82,13 @@ export default function PriceCalculator() {
                 {locationType === "annual" && <CheckCircle2 className="h-3.5 w-3.5 text-white" />}
               </div>
               <div className="flex-1">
-                <p className="text-sm">일반 GPS 위치 사용권</p>
-                <p className="text-xs text-slate-400 mt-0.5">GPS 좌표 연간 독점 AR 노출권</p>
+                <p className="text-sm">{annual.label}</p>
+                {annual.description && <p className="text-xs text-slate-400 mt-0.5">{firstSentence(annual.description)}</p>}
               </div>
-              <span className="text-sm font-semibold tabular-nums text-slate-700 shrink-0">{fmt(LOCATION_ANNUAL_PRICE)}/년</span>
-            </label>
+              <span className="text-sm font-semibold tabular-nums text-slate-700 shrink-0">{fmt(annual.price)}{annual.unit && `/${annual.unit}`}</span>
+            </label>}
 
-            <label
+            {daily && <label
               className={`flex items-start gap-3 rounded-xl border p-3.5 cursor-pointer transition ${
                 locationType === "daily" ? "border-orange-400 bg-orange-50" : "border-slate-200 bg-white hover:border-orange-200"
               }`}
@@ -129,30 +101,30 @@ export default function PriceCalculator() {
               </div>
               <div className="flex-1">
                 <div className="flex items-center gap-2">
-                  <p className="text-sm">대중집합공간 위치 사용권</p>
-                  <span className="text-xs bg-orange-100 text-orange-700 border border-orange-200 px-1.5 py-0.5 rounded-full">일 단위</span>
+                  <p className="text-sm">{daily.label}</p>
+                  {daily.badge && <span className="text-xs bg-orange-100 text-orange-700 border border-orange-200 px-1.5 py-0.5 rounded-full">{daily.badge}</span>}
                 </div>
-                <p className="text-xs text-slate-400 mt-0.5">CONTEX 보유 대중집합공간 AR 집행</p>
+                {daily.description && <p className="text-xs text-slate-400 mt-0.5">{firstSentence(daily.description)}</p>}
               </div>
-              <span className="text-sm font-semibold tabular-nums text-slate-700 shrink-0">{fmt(LOCATION_DAILY_PRICE)}/일</span>
-            </label>
+              <span className="text-sm font-semibold tabular-nums text-slate-700 shrink-0">{fmt(daily.price)}{daily.unit && `/${daily.unit}`}</span>
+            </label>}
 
-            {locationType === "daily" && (
+            {daily && locationType === "daily" && (
               <div className="rounded-xl border border-orange-200 bg-orange-50 p-4">
                 <label className="text-sm font-semibold text-slate-700 mb-2 block">운영 일수</label>
                 <div className="flex items-center gap-3">
                   <input
                     type="number"
                     min={1}
-                    max={365}
+                    max={MAX_LOCATION_DAYS}
                     value={locationDaysStr}
                     onClick={(e) => e.stopPropagation()}
                     onChange={(e) => setLocationDaysStr(e.target.value)}
                     onBlur={() => setLocationDaysStr(String(locationDays))}
                     className="input w-24 text-center"
                   />
-                  <span className="text-sm text-slate-600">일 × {fmt(LOCATION_DAILY_PRICE)} =</span>
-                  <span className="text-sm font-extrabold text-orange-700">{fmt(locationDays * LOCATION_DAILY_PRICE)}</span>
+                  <span className="text-sm text-slate-600">일 × {fmt(daily.price)} =</span>
+                  <span className="text-sm font-extrabold text-orange-700">{fmt(locationDays * daily.price)}</span>
                 </div>
               </div>
             )}
@@ -160,24 +132,23 @@ export default function PriceCalculator() {
         </div>
 
         {/* 콘텐츠 옵션 */}
-        {CONTENT_GROUPS.map((g) => (
-          <div key={g.title}>
+        {contentGroups.map((g) => (
+          <div key={g.key}>
             <div className="flex items-center gap-2 mb-2">
               <span className="text-sm font-semibold text-slate-700">{g.title}</span>
-              <span className="text-xs text-slate-400">({g.note})</span>
+              <span className="text-xs text-slate-400">(중복 선택 불가)</span>
             </div>
             <div className="space-y-2">
-              {g.keys.map((key) => {
-                const prod = CONTENT_PRODUCTS[key];
-                const isSelected = selected.has(key);
-                const isBest = key === "banner_3d_10s";
+              {g.products.map((prod) => {
+                const key = prod.key;
+                const isSelected = selected.includes(key);
                 return (
                   <label
                     key={key}
                     className={`flex items-center gap-3 rounded-xl border p-3.5 cursor-pointer transition ${
                       isSelected ? "border-blue-400 bg-blue-50" : "border-slate-200 bg-white hover:border-blue-200"
                     }`}
-                    onClick={() => toggle(key, g.radio, g.keys)}
+                    onClick={() => toggle(key)}
                   >
                     <div className={`w-5 h-5 rounded-full border-2 flex-shrink-0 flex items-center justify-center transition ${
                       isSelected ? "border-blue-500 bg-blue-500" : "border-slate-300"
@@ -209,8 +180,8 @@ export default function PriceCalculator() {
                         </span>
                       )}
                     </span>
-                    {isBest && (
-                      <span className="text-xs bg-blue-100 text-blue-700 border border-blue-200 px-2 py-0.5 rounded-full">Best</span>
+                    {prod.badge && (
+                      <span className={`text-xs px-2 py-0.5 rounded-full border ${badgeClass(prod.badge)}`}>{prod.badge}</span>
                     )}
                     <span className="text-sm font-semibold tabular-nums text-slate-700">{fmt(prod.price)}</span>
                   </label>
