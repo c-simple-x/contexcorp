@@ -1,0 +1,17 @@
+name: Supabase keep-alive
+
+# Vercel Cron과 별개로 매일 한 번 더 호출 (Supabase 무료 플랜 자동 일시정지 방지)
+on:
+  schedule:
+    - cron: "0 18 * * *" # 매일 03:00 KST
+  workflow_dispatch:
+
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Call keep-alive endpoint
+        run: |
+          curl -fsS --retry 3 --retry-delay 10 \
+            -H "Authorization: Bearer ${{ secrets.CRON_SECRET }}" \
+            https://www.c-simple-x.com/api/cron/keep-alive
