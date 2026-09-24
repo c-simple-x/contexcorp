@@ -70,4 +70,4 @@ Contents Technology Experience CONTEX Corp.(이하 '콘텍스')는 계약 진행
   (2) 이용 목적: 계약 진행, 세금계산서 발행, 정산 및 고객 관리
   (3) 보유기간: 계약 체결일로부터 5년간 (관련 법령에 따라 보관 후 파기)
   (4) 동의 거부권 및 불이익: 동의 거부 시 서비스 이용이 제한될 수 있습니다.
-개인정보 처리방침: https://www.contexcorp.com/privacy`;
+개인정보 처리방침: https://www.c-simple-x.com/privacy`;

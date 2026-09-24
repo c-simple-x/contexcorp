@@ -65,7 +65,7 @@ export async function POST(req: Request) {
       message: body.message || "",
       source: body.source || "web",
       token: gasToken,
-      origin: process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : "https://www.contexcorp.com",
+      origin: process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : "https://www.c-simple-x.com",
     });
 
     const gasRes = await fetch(scriptUrl, {
@@ -81,7 +81,7 @@ export async function POST(req: Request) {
 
     const text = await gasRes.text();
 
-    // Resend로 관리자 알림 발송 (hello@contexcorp.com 통일)
+    // Resend로 관리자 알림 발송 (hello@c-simple-x.com 통일)
     const resendKey = process.env.RESEND_API_KEY;
     const resendFrom = process.env.RESEND_FROM_EMAIL;
     const adminTo = process.env.ALERT_EMAIL_TO;

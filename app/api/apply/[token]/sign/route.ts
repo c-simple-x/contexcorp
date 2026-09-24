@@ -16,7 +16,7 @@ async function sendEmailWithPdf(opts: {
 }): Promise<{ ok: boolean; error?: string }> {
   const key = process.env.RESEND_API_KEY;
   // Resend requires a verified domain as sender.
-  // Set RESEND_FROM_EMAIL in env to e.g. "CONTEX Corp. <hello@contexcorp.com>"
+  // Set RESEND_FROM_EMAIL in env to e.g. "CONTEX Corp. <hello@c-simple-x.com>"
   const from = process.env.RESEND_FROM_EMAIL || process.env.ALERT_EMAIL_FROM;
   if (!key || !from) return { ok: false, error: "resend_env_missing" };
 
@@ -150,7 +150,7 @@ export async function POST(req: Request, { params }: Params) {
           <h3>입금 안내</h3>
           <p><b>금액:</b> ₩${contract.price.toLocaleString("ko-KR")} (부가세 별도)</p>
           <p>입금 안내는 담당자가 별도로 연락드립니다.</p>
-          <p>📞 +82-10-3653-1987 | ✉️ contact@contexcorp.com</p>
+          <p>📞 +82-10-3653-1987 | ✉️ contact@c-simple-x.com</p>
         `,
         pdfBuffer,
         pdfFilename: filename,

@@ -547,7 +547,7 @@ export default function Page() {
             <p className="mt-2 text-slate-600">어떤 위치에, 어떤 목적으로 활용하고 싶은지 편하게 알려주세요. 빠르게 연락드립니다.</p>
             <div className="mt-6 space-y-3 text-sm">
               <div className="flex items-center gap-2"><Phone className="h-4 w-4" /> +82-10-3653-1987</div>
-              <div className="flex items-center gap-2"><Mail className="h-4 w-4" /> contact@contexcorp.com</div>
+              <div className="flex items-center gap-2"><Mail className="h-4 w-4" /> contact@c-simple-x.com</div>
             </div>
           </div>
           <div className="card">

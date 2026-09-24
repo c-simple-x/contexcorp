@@ -87,7 +87,7 @@ export async function POST(req: Request, { params }: Params) {
           <h2>계약서를 재발송드립니다.</h2>
           <p>안녕하세요, <b>${escapeHtml(toName)}</b> 님.</p>
           <p>요청하신 CONTEX Corp. 계약서를 첨부 파일로 보내드립니다.</p>
-          <p>문의: contact@contexcorp.com | +82-10-3653-1987</p>
+          <p>문의: contact@c-simple-x.com | +82-10-3653-1987</p>
         `,
         attachments: [{ filename, content: pdfBuffer.toString("base64") }],
       }),

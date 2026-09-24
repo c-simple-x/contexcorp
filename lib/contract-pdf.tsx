@@ -292,7 +292,7 @@ function ContractPdfDoc(props: ContractPdfProps) {
               <Text style={S.cardBold}>CONTEX Corp. (콘텍스)</Text>
               <Text style={S.cardText}>사업자등록번호: 181-48-00499</Text>
               <Text style={S.cardText}>대표: 홍정민</Text>
-              <Text style={S.cardText}>contact@contexcorp.com</Text>
+              <Text style={S.cardText}>contact@c-simple-x.com</Text>
             </View>
             {/* 계약자 을 */}
             <View style={[S.card, S.col]}>

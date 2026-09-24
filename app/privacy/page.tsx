@@ -157,7 +157,7 @@ export default function PrivacyPage() {
           <li>개인정보 처리정지 요청</li>
         </ul>
         <p className="text-sm text-slate-600 mt-3">
-          권리 행사는 이메일(<a href="mailto:contact@contexcorp.com" className="text-blue-600 hover:underline">contact@contexcorp.com</a>)로 요청하시면 지체 없이 조치합니다.
+          권리 행사는 이메일(<a href="mailto:contact@c-simple-x.com" className="text-blue-600 hover:underline">contact@c-simple-x.com</a>)로 요청하시면 지체 없이 조치합니다.
           단, 법령에 따라 보존이 필요한 정보는 해당 기간 동안 삭제가 제한될 수 있습니다.
         </p>
       </section>
@@ -186,7 +186,7 @@ export default function PrivacyPage() {
         <h2 className="text-xl font-bold mb-3 pb-2 border-b">9. 개인정보 보호책임자</h2>
         <div className="text-sm text-slate-700 space-y-1">
           <p><span className="font-semibold">책임자:</span> 홍정민 (대표)</p>
-          <p><span className="font-semibold">이메일:</span> <a href="mailto:contact@contexcorp.com" className="text-blue-600 hover:underline">contact@contexcorp.com</a></p>
+          <p><span className="font-semibold">이메일:</span> <a href="mailto:contact@c-simple-x.com" className="text-blue-600 hover:underline">contact@c-simple-x.com</a></p>
           <p><span className="font-semibold">전화:</span> +82-10-3653-1987</p>
         </div>
         <p className="text-sm text-slate-600 mt-3">
@@ -204,7 +204,7 @@ export default function PrivacyPage() {
       </section>
 
       <div className="mt-10 pt-6 border-t text-xs text-slate-400">
-        <p>CONTEX Corp. · 대표: 홍정민 · 이메일: contact@contexcorp.com</p>
+        <p>CONTEX Corp. · 대표: 홍정민 · 이메일: contact@c-simple-x.com</p>
         <p className="mt-1">본 방침은 2026년 3월 1일부터 시행됩니다.</p>
       </div>
     </main>

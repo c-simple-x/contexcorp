@@ -902,7 +902,7 @@ export default function GuidePage() {
 
           {/* Footer */}
           <div className="text-center text-slate-400 text-sm pb-8">
-            <p>CONTEX Corp. | contact@contexcorp.com | +82-10-3653-1987</p>
+            <p>CONTEX Corp. | contact@c-simple-x.com | +82-10-3653-1987</p>
             <p className="mt-1">본 가이드에 대한 문의사항은 담당자에게 연락해 주세요.</p>
           </div>
         </main>

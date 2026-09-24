@@ -4,4 +4,4 @@ Disallow: /admin
 Disallow: /apply
 Disallow: /contracts
 
-Sitemap: https://www.contexcorp.com/sitemap.xml
+Sitemap: https://www.c-simple-x.com/sitemap.xml

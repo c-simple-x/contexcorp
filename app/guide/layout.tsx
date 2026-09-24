@@ -8,7 +8,7 @@ export const metadata: Metadata = {
     title: "AR 광고 확인 가이드 | CONTEX Corp.",
     description:
       "AR 콘텐츠 접속 → 3D 광고 확인 → 화면 녹화까지, 단계별 안내 가이드",
-    url: "https://www.contexcorp.com/guide",
+    url: "https://www.c-simple-x.com/guide",
     siteName: "CONTEX Corp.",
     images: [
       {
